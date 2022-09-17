@@ -1,0 +1,218 @@
+<div class="container">
+  <div class="row justify-content-md-center">
+
+    <form class="col-6">
+      <div class="form-group">
+        <label for="asn">ASN</label>
+        <input
+          type="text"
+          class="form-control"
+          id="new_asn"
+          value=""
+          disabled
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="account">子用户名</label>
+        <input
+          type="text"
+          class="form-control"
+          id="new_account"
+          value=""
+          placeholder="新帐户名 (只限英文字母)"
+          onkeyup="masterCheck()"
+          disabled
+        />
+      </div>
+      <div class="form-group col-6">
+        <label for="prefix">单位缩写</label>
+        <input
+          type="text"
+          class="form-control"
+          id="new_prefix"
+          value=""
+          placeholder="限2-3英文字母"
+          onkeyup="prefix_check()"
+          disabled
+        />
+      </div>
+      <div class="form-group">
+        <label for="description">货品描述</label>
+        <input
+          type="text"
+          class="form-control"
+          id="new_des"
+          onkeyup="masterCheck()"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="sku">SKU</label>
+        <input
+          type="text"
+          class="form-control"
+          id="new_sku"
+          onkeyup="masterCheck()"
+        />
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <label for="length">长</label>
+          <input
+            type="number"
+            class="form-control"
+            id="new_len"
+            onkeyup="masterCheck()"
+            placeholder="公分"
+          />
+        </div>
+        <div class="col">
+          <label for="width">宽</label>
+          <input
+            type="number"
+            class="form-control"
+            id="new_wid"
+            onkeyup="masterCheck()"
+            placeholder="公分"
+          />
+        </div>
+        <div class="col">
+          <label for="height">高</label>
+          <input
+            type="number"
+            class="form-control"
+            id="new_hei"
+            onkeyup="masterCheck()"
+            placeholder="公分"
+          />
+        </div>
+        <div class="col">
+          <label for="weight">毛重</label>
+          <input
+            type="number"
+            class="form-control"
+            id="new_wei"
+            onkeyup="masterCheck()"
+            placeholder="公斤"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="total">箱总数</label>
+        <input
+          type="number"
+          class="form-control"
+          id="new_tot"
+          onkeyup="masterCheck()"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="qty_per_box">单箱货量</label>
+        <input
+          type="number"
+          class="form-control"
+          id="new_qty"
+          onkeyup="masterCheck()"
+        />
+      </div>
+
+      <a
+        id="order_pre-check"
+        class="btn btn-primary mt-2 text-white"
+        href="#precheck-selection"
+        uk-toggle
+        style="display: none;"
+      >预先校验</a>
+      <a
+        id="fake"
+        class="btn btn-secondary mt-2 text-white"
+        onclick="infoAlert()"
+      >预先校验</a>
+      <div
+        id="precheck-selection"
+        class="uk-modal-container text-center"
+        uk-modal
+      >
+        <div class="uk-modal-dialog">
+          <button
+            class="uk-modal-close-default"
+            type="button"
+            onclick="reset()"
+            uk-close
+          ></button>
+          <div class="uk-modal-header">
+            <h2 class="uk-modal-title">Pre-check Table</h2>
+          </div>
+          <div id="fixedInfo"></div>
+          <div
+            class="uk-modal-body"
+            oncopy="return false"
+            oncut="return false"
+            onpaste="return false"
+          >
+            <div id="table" class="table-editable">
+              <table class="table" id="ordertable">
+                <tr>
+                  <th uk-tooltip="Box Number">箱码</th>
+                  <th
+                    class="text-success"
+                    uk-tooltip="Item Description"
+                  >货品描述</th>
+                  <th class="text-success" uk-tooltip="SKU">存货单位(SKU)</th>
+                  <th
+                    class="text-success"
+                    uk-tooltip="Quantity per Box"
+                  >单箱货量</th>
+                  <th uk-tooltip="Box">Box#</th>
+                  <th uk-tooltip="of Boxes">箱总数(of Boxes)</th>
+                  <th class="text-success" uk-tooltip="Weight(kg)">重</th>
+                  <th class="text-success" uk-tooltip="Length(cm)">长</th>
+                  <th class="text-success" uk-tooltip="Width(cm)">宽</th>
+                  <th class="text-success" uk-tooltip="Height(cm)">高</th>
+                </tr>
+
+              </table>
+            </div>
+          </div>
+
+          <div class="uk-modal-footer uk-text-right">
+            <button
+              class="btn btn-secondary mt-2 uk-modal-close"
+              onclick="reset()"
+            >取消</button>
+
+            <button
+              class="btn btn-primary mt-2 text-white"
+              id="export-btn"
+              onclick="exportData()"
+              disabled
+            >送出</button>
+            <button class="btn btn btn-success mt-2 text-white" id="spinner" style="display: none">建档中...
+              <div class="spinner-border text-light" role="status"></div>
+            </button>
+            {{! <div id="modal-full" class="uk-modal-full" uk-modal>
+                        <div class="uk-modal-dialog">
+                            <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button>
+                            <div class="uk-flex uk-flex-center">
+                                        <div class="uk-padding-small">
+                                            <div class="barcode">
+
+                                            </div>
+                                        </div>
+                                                <div class="uk-modal-footer uk-text-right">
+                                    <button class="uk-button uk-button-default uk-modal-close" onclick="done()">Done</button>
+                                    </div>
+                            </div>
+                        </div>
+                    </div> }}
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<script src="javascript/create.js"></script>

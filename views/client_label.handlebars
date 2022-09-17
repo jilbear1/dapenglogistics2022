@@ -1,0 +1,19 @@
+{{#if admin}}
+<script src="javascript/admin_redirect.js"></script>
+{{else}}
+<p class="uk-heading-line uk-text-right uk-margin-small-right"><span>所在页面 <span class="uk-text-bold uk-label uk-label-primary">出口标签</span></span></p>
+
+<div class="container">
+<div class="row text-center">
+
+
+  {{#each data as |box|}}
+    {{> client_pending-label box }}
+  {{else}}
+<h3 class="text-center">All pending order has been received! 所有挂单已完成存货管理</h3>
+  {{/each}}
+
+
+</div>
+</div>
+{{/if}}

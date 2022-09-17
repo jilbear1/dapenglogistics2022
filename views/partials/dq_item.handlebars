@@ -1,0 +1,10 @@
+<tr scope="row">
+    <td><input class="uk-checkbox" type="checkbox"></td>
+    <td id="{{0.account_id}}">{{0.account.name}}</td>
+    <td class="text-primary">{{0.item_number}}</td>
+    <td>
+        {{#each this as |container|}}
+            {{> dq_eachcontainer container }}
+        {{/each}}
+    </td>
+</tr>

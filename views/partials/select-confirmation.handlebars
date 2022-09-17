@@ -1,0 +1,22 @@
+<tr id="container_{{id}}" class="{{tracking}}">
+  <td><input
+      class="uk-checkbox"
+      onclick="selectBatch(`{{tracking}}`, event)"
+      type="checkbox"
+    /></td>
+  <td>{{account.name}}</td>
+  <td onclick="selectAll({{id}})">{{container_number}}</td>
+  <td></td>
+  <td></td>
+  {{#if custom_1}}
+  <td>{{length}} x {{height}} x {{width}}</td>
+  <td>{{weight}}</td>
+  <td>{{status}}</td>
+  <td class="text-primary">{{custom_1}}</td>
+  {{else}}
+  <td class="text-primary">{{length}} x {{height}} x {{width}}</td>
+  <td>{{weight}}</td>
+  <td>{{status}}</td>
+  <td></td>
+  {{/if}}
+</tr>

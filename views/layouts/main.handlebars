@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Dapeng Logistics</title>
+    <link rel="icon" type="image/png type" sizes="32x32" href="/media/logo.jpeg">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/reset.css">
+{{!-- uikit attachments --}}
+    <link rel="stylesheet" href="/css/uikit/uikit.min.css"/>
+    <script src="/javascript/uikit/uikit.min.js"></script>
+    <script src="/javascript/uikit/uikit-icons.min.js"></script>
+{{!-- bootstrap --}}
+    <script src="/javascript/bootstrap/bootstrap.bundle.min.js"></script>
+    <link href="/css/bootstrap/bootstrap.min.css" rel="stylesheet">
+{{!-- jquery --}}
+    <script src="/javascript/jquery.js"></script>
+    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="/css/print_setting.css">
+</head>
+<body>
+{{#if loggedIn}}
+<nav class="navbar navbar-expand-lg navbar-light bg-light p-3" id="nav_bar">
+    <div class="container">
+    <a class="navbar-brand" href="/" uk-tooltip="回到主页"><img src="/media/panpan-0-1.png" width="120" height="auto" class="d-inline-block align-top" alt="logo"></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#dapengitems" aria-controls="dapengitems" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="dapengitems">
+        <ul class="navbar-nav mr-auto">
+            {{#if admin}}
+            <li class="nav-item"><a class="nav-link rounded-sm text-center text-dark" href="/admin_move_main" uk-tooltip="出货通知">Requests</a></li>
+            <li class="nav-item"><a class="nav-link rounded-sm text-center text-dark" href="/admin_receiving_main" uk-tooltip="海外货品接收">Reception <img src="/media/china_icon.png" alt="chinaLogo" width="20" height="auto"></a></li>
+            <li class="nav-item"><a class="nav-link rounded-sm text-center text-dark" href="/amazon_receiving" uk-tooltip="亚马逊货品接收">Reception <img src="/media/us_icon.png" alt="usLogo" width="20" height="auto"></a></li>
+            <li class="nav-item"><a class="nav-link rounded-sm text-center text-dark" href="/box_location" onclick="resetLocalStorage()" uk-tooltip="载入货架">Allocation</a></li>
+            <li class="nav-item"><a class="nav-link rounded-sm text-center text-dark" href="/delete_queue_admin" uk-tooltip="货物删除请求">Deletion <span class="text-danger" id="dq_count"></span></a></li>
+            <li class="nav-item"><a class="nav-link logout rounded-sm text-center text-dark" style="background-color: #E0EEEE;">Log Out<span uk-icon="icon: sign-out"></span></a></li>
+            {{else}}
+            <li class="create_order nav-item" onclick="accountList()"><a class="nav-link rounded-sm text-center text-dark" href="#createneworder" uk-toggle>新订单</a></li>
+            {{!-- uk-toogle --}}
+                <div id="createneworder" uk-modal>
+                    <div class="uk-modal-dialog">
+                        <button class="uk-modal-close-default" type="button" uk-close></button>
+                        <div class="uk-modal-header uk-background-muted uk-text-center">
+                            <h4 class="lead">帐号<u class="text-primary">子用户</u>选择</h4>
+                        </div>
+                        <p class="uk-margin-medium-left uk-margin-medium-right uk-margin-medium-top uk-margin-medium-bottom">Before creating a new shipment, please select an existed account to where the new order will be assigned. If you would like to create a new account, select "Create New Account" and continue. <br><small>创造新订单前，请选择一个已注册子用户，如欲创立新子用户名，选择“create new account”然后“确认”。</small></p>
+                        <form class="uk-form-horizontal uk-margin-small uk-margin-small-left">
+                            <div class="uk-margin">
+                                <label class="uk-form-label" for="form-horizontal-select"><span uk-icon="icon: user"></span>USER: {{name}}</label>
+                                <div class="uk-form-controls uk-form-width-medium">
+                                    <select class="uk-select accountList" id="accountList">
+                                        <option>Create New Account</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="uk-modal-footer uk-text-right">
+                                <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+                                <a class="uk-button uk-button-primary" id="account_selection" uk-icon="icon:  arrow-right" href="/neworder">Continue(确认)</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            <li class="nav-item"><a class="nav-link rounded-sm text-center text-dark" href="/client_label">总挂单</a></li>
+            <li class="nav-item"><a class="nav-link rounded-sm text-center text-dark" href="/master" uk-tooltip="此页负载大量数据，可能影响使用品质；建议使用子用户查询">总库存</a></li>
+            <li class="nav-item"><a class="nav-link rounded-sm text-center text-dark" href="/request">总出货</a></li>
+            <li class="nav-item"><a class="nav-link rounded-sm text-center text-dark" href="/dq_chinabox">删除请求</a></li>
+            <li class="nav-item"><a class="nav-link logout rounded-sm text-center text-dark" style="background-color: #E0EEEE">登出<span uk-icon="icon: sign-out"></span></a></li>
+            {{/if}}
+        </ul>
+    </div>
+    </div>
+</nav>
+{{/if}}
+<small id="session_timer"></small>
+<main>
+    {{{body}}}
+</main>
+<footer class="text-center text-lg-start mt-3 uk-animation-slide-bottom-small">
+{{!-- <hr class="mt-3"> --}}
+  <!-- Copyright -->
+  <div class="text-center p-3" style="background-color: rgb(254, 254, 254);">
+    © 2022 Dapeng-wuliu.cn Copyright <br>ICP证:
+    <a class="text-dark" href="http://beian.miit.gov.cn/">辽CP备2022006670号</a>
+  </div>
+  <!-- Copyright -->
+</footer>
+{{#if loggedIn}}
+<script src="javascript/main.js"></script>
+<script src="javascript/logout.js"></script>
+{{/if}}
+</body>
+</html>

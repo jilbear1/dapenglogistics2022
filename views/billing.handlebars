@@ -1,0 +1,308 @@
+{{#if admin}}
+  <link rel="stylesheet" href="css/loader.css" />
+  <p class="uk-heading-line uk-text-right uk-margin-small-right"><span>logged in
+      as
+      <span
+        class="uk-text-bold uk-label uk-label-success"
+      >{{name}}</span></span></p>
+
+  <div class="container mb-3">
+    <div class="row justify-content-between">
+      <div class="col-6">
+        <a
+          href="/billing"
+          class="lead badge bg-primary shadow-sm mb-2"
+          onclick="reset()"
+        >China Billing</a>
+        <a
+          href="/billing_amazon"
+          class="lead badge bg-secondary shadow-sm mb-2"
+          onclick="reset()"
+        >Amazon Billing</a>
+        <h1>Billing Date: <span id="today"></span> </h1>
+        <div class="row">
+          <div class="col">
+            <button
+              class="btn btn-outline-primary btn-sm shadow-sm"
+              id="r_only"
+              onclick="r_only()"
+              disabled
+            >Receiving Charge: $<span id="receiving_total">0</span></button>
+          </div>
+          <div class="col">
+            <button
+              class="btn btn-outline-primary btn-sm shadow-sm"
+              id="st_only"
+              onclick="st_only()"
+              disabled
+            >Storage Charge: $<span id="storage_total">0</span></button>
+          </div>
+          <div class="col">
+            <button
+              class="btn btn-outline-primary btn-sm shadow-sm"
+              id="s_only"
+              onclick="s_only()"
+              disabled
+            >Shipping Charge: $<span id="shipping_total">0</span></button>
+          </div>
+          <div class="col">
+            <button
+              class="btn btn-outline-primary btn-sm shadow-sm"
+              id="x_only"
+              onclick="x_only()"
+              disabled
+            >Additonal Charge: $<span id="xcharge_total">0</span></button>
+          </div>
+          <div class="col">
+            <button
+              class="btn btn-outline-primary btn-sm shadow-sm"
+              id="all"
+              onclick="show_all()"
+              disabled
+            ><b>Grand Total: $<span id="all_total">0</span></b></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-4">
+        <div class="row justify-content-end">
+          <div class="col">
+            <select
+              class="uk-select"
+              id="client_list"
+              onchange="client()"
+              disabled
+            >
+              <option value="0">select client</option>
+            </select>
+          </div>
+
+          <div class="col">
+            <div id="popup">
+              <input
+                id="pass"
+                type="password"
+                placeholder="access code"
+                onkeyup="done()"
+              />
+            </div>
+            <button
+              class="btn btn-outline-success"
+              type="button"
+              id="charge_btn"
+              uk-toggle="target: #modal-cost"
+              style="display: none;"
+            >Charge</button>
+            <button
+              class="btn btn-outline-info"
+              type="button"
+              onclick="reset()"
+              id="reset_btn"
+              style="display: none;"
+            >Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- billing units -->
+  <div id="modal-cost" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+      <h2 class="uk-modal-title text-center mb-4">Billing Units</h2>
+      <div class="container">
+        <div class="row">
+          <div class="input-group mb-3 col">
+            <div class="input-group-prepend">
+              <span class="input-group-text">$</span>
+            </div>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Receiving Charge"
+              id="receiving_cost"
+              value="3"
+            />
+          </div>
+
+          <div class="input-group mb-3 col">
+            <div class="input-group-prepend">
+              <span class="input-group-text">$</span>
+            </div>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Storage Charge"
+              id="storage_cost"
+              value="0.33"
+            />
+          </div>
+
+          <div class="input-group mb-3 col">
+            <div class="input-group-prepend">
+              <span class="input-group-text">$</span>
+            </div>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Shipping Charge"
+              id="shipping_cost"
+              value="7"
+            />
+          </div>
+
+        </div>
+      </div>
+
+      <p class="uk-text-center">
+        <button
+          class="uk-button uk-button-default uk-modal-close"
+          type="button"
+        >Cancel</button>
+        <button
+          class="uk-button uk-button-primary uk-modal-close"
+          type="button"
+          onclick="unlock_select()"
+        >Save</button>
+      </p>
+    </div>
+  </div>
+
+  <div class="container" id="all_tables">
+    <div class="" id="storageTable" style="display: none;">
+      <h4>Storing Charge: $<span id="storage_total_2">0</span></h4>
+      <table
+        class="uk-table uk-table-small uk-table-divider myTable bg-light shadow"
+        id="stTable"
+      >
+        <thead>
+          <tr>
+            <th onclick="sortStTable(0)">User</th>
+            <th onclick="sortStTable(1)">Account</th>
+            <th onclick="sortStTable(2)">Box number</th>
+            <th onclick="sortStTable(3)">Item Description</th>
+            <th onclick="sortStTable(4)">Received Date</th>
+            <th onclick="sortStTable(5)">Last Billed Date</th>
+            <th onclick="sortStTable(6)">Ending Date</th>
+            <th onclick="sortStTable(7)">Volume</th>
+            <th onclick="sortStTable(8)">Billable Days</th>
+            <th>Cost</th>
+          </tr>
+        </thead>
+        <tbody id="storage_table">
+        </tbody>
+      </table>
+      <button
+        class="btn btn-outline-danger"
+        id="st_onlyConfrim"
+        style="display: none;"
+        onclick="bill_confirm(storageBoxArr, 'st')"
+      >Confirm</button>
+    </div>
+    <br />
+    <div class="" id="receivedTable" style="display: none;">
+      <h4>Receiving Charge: $<span id="receiving_total_2">0</span></h4>
+      <table
+        class="uk-table uk-table-small uk-table-divider myTable bg-light shadow"
+        id="rTable"
+      >
+        <thead>
+          <tr>
+            <th onclick="sortRTable(0)">User</th>
+            <th onclick="sortRTable(1)">Account</th>
+            <th onclick="sortRTable(2)">Box number</th>
+            <th onclick="sortRTable(3)">Item Description</th>
+            <th onclick="sortRTable(4)">Received Date</th>
+            <th>Cost</th>
+          </tr>
+        </thead>
+        <tbody id="received_table">
+        </tbody>
+      </table>
+      <button
+        class="btn btn-outline-danger"
+        id="r_onlyConfrim"
+        style="display: none;"
+        onclick="bill_confirm(receivedBoxArr, 'r')"
+      >Confirm</button>
+    </div>
+    <br />
+    <div class="" id="shippedTable" style="display: none;">
+      <h4>Shipping Charge: $<span id="shipping_total_2">0</span></h4>
+      <table
+        class="uk-table uk-table-small uk-table-divider myTable bg-light shadow"
+        id="sTable"
+      >
+        <thead>
+          <tr>
+            <th onclick="sortSTable(0)">User</th>
+            <th onclick="sortSTable(1)">Account</th>
+            <th onclick="sortSTable(2)">Box number</th>
+            <th onclick="sortSTable(3)">FBA#</th>
+            <th onclick="sortSTable(4)">Item Description</th>
+            <th onclick="sortSTable(5)">Shipped Date</th>
+            <th>Cost</th>
+          </tr>
+        </thead>
+        <tbody id="shipped_table">
+        </tbody>
+      </table>
+      <button
+        class="btn btn-outline-danger"
+        id="s_onlyConfrim"
+        style="display: none;"
+        onclick="bill_confirm(shippedBoxArr, 's')"
+      >Confirm</button>
+    </div>
+    <br />
+    <div class="" id="xchargeTable" style="display: none">
+      <h4>Additonal charge: $<span id="xcharge_total_2">0</span>
+        <a
+          id="x_plus"
+          onclick="addRow('xcharge_table', 9)"
+          uk-icon="icon: plus"
+        ></a></h4>
+      <table
+        class="uk-table uk-table-small uk-table-divider bg-light shadow border border-danger"
+        id="xTable"
+      >
+        <thead>
+          <tr>
+            <th onclick="sortXTable(0)">Date</th>
+            <th onclick="sortXTable(1)">User</th>
+            <th onclick="sortXTable(2)">Account</th>
+            <th style="display: none;">Billing ID</th>
+            <th onclick="sortXTable(4)">FBA#</th>
+            <th onclick="sortXTable(5)">Description</th>
+            <th>Qty</th>
+            <th>Unit Charge</th>
+            <th>Total Cost</th>
+          </tr>
+        </thead>
+        <tbody id="xcharge_table">
+        </tbody>
+      </table>
+      <button
+        class="btn btn-outline-success"
+        id="x_onlySave"
+        style="display: none;"
+        onclick="xcharge_create()"
+      >Save</button>
+      <button
+        class="btn btn-outline-danger"
+        id="x_onlyConfrim"
+        style="display: none;"
+        onclick="bill_confirm(xchargeBoxArr, 'x')"
+      >Confirm</button>
+    </div>
+  </div>
+
+  <div id="loader" style="display: none;">
+    <h1 class="text-center">Updating <span id="numberOfItems"></span>...</h1>
+    <div class="loader container"></div>
+  </div>
+
+  <script src="javascript/billing_main.js"></script>
+{{else}}
+  <script src="javascript/client_redirect.js"></script>
+{{/if}}

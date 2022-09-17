@@ -1,0 +1,6 @@
+<tr id="drag_{{id}}" ondrop="drop(event)" ondragover="allowDrop(event)" ondragstart="drag(event)">
+  <td><input type="radio" name="sku_Selection" id="radio_{{id}}_{{container_id}}" value="{{item_number}}" onclick="evt_trigger(`{{item_number}}`, {{qty_per_sku}}, `{{container_id}}`, `{{id}}`, event)"></td>
+  <td>{{item_number}}</td>
+  <td id="qty_{{id}}">{{qty_per_sku}}</td>
+  <td>{{description}}</td>
+</tr>

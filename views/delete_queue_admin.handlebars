@@ -1,0 +1,27 @@
+{{#if admin}}
+<p class="uk-heading-line uk-text-right uk-margin-small-right"><span>logged in as <span class="uk-text-bold uk-label uk-label-success">{{name}}</span></span></p>
+<div class="container mt-2 mb-2">
+<table class="table table-hover p-2" style="table-layout: fixed; width: 100%">
+  <thead class="bg-primary">
+    <tr class="text-white">
+      <th scope="col" style="width: 15%;">Requestor</th>
+      <th scope="col" style="width: 12%;">Ref. #</th>
+      <th scope="col"style="width: 35%;">Targets</th>
+      <th scope="col" style="width: 30%;">Notes</th>
+      <th scope="col" style="width: 8%;">Reversal</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each xc_boxes as |xc|}}
+        {{> delete_req xc }}
+    {{/each}}
+    {{#each xc_containers as |xc|}}
+        {{> delete_req xc }}
+    {{/each}}
+  </tbody>
+</table>
+</div>
+<script src="javascript/delete_queue_admin.js"></script>
+{{else}}
+<script src="javascript/client_redirect.js"></script>
+{{/if}}

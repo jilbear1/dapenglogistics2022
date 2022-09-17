@@ -1,0 +1,36 @@
+<div class="card mb-4 text-center" id="box_bar" style="width: 4in; height: 4in">
+  <div class="card-body">
+    <h3
+      class="card-text"
+      style="
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-wrap: break-word;
+            display: block;
+            line-height: 1em;
+            max-height: 2em;
+        "
+    >{{description}}</h3>
+  </div>
+  <h6>{{account.name}}</h6>
+  <h2 class="card-text">{{sku}}</h2>
+  <h1 class="card-text" style="font-size:250%"><b><big
+      >{{order}}/{{batch.total_box}}</big></b></h1>
+  <div class="inline">{{length}}
+    x
+    {{height}}
+    x
+    {{width}},
+    {{weight}}KG,
+    {{qty_per_box}}PCS</div>
+  <div class="col-5 align-self-center">
+    <small>made in China</small>
+    <img
+      class="rounded"
+      src="http://bwipjs-api.metafloor.com/?bcid=code128&text={{box_number}}"
+      alt="Card image cap"
+    />
+  </div>
+
+  <h1 class="card-text" style="font-size:280%"><b>{{box_number}}</b></h1>
+</div>

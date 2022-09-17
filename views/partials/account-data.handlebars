@@ -1,0 +1,22 @@
+{{#if boxes}}
+  {{#if containers}}
+    <a
+      class="btn btn-outline-primary mt-1 ml-1 shadow-sm btn-sm uk-animation-scale-up uk-transform-origin-top-center"
+      href="/account/{{id}}"
+      onclick="accountStore({{id}})"
+    >{{name}}
+      <span class="uk-badge">{{boxes.length}}/{{containers.length}}</span></a>
+  {{else}}
+    <a
+      class="btn btn-outline-primary mt-1 ml-1 shadow-sm btn-sm uk-animation-scale-up uk-transform-origin-top-center"
+      href="/account/{{id}}"
+      onclick="accountStore({{id}})"
+    >{{name}} <span class="uk-badge">{{boxes.length}}/0</span></a>
+  {{/if}}
+{{else}}
+  <a
+    class="btn btn-outline-primary mt-1 ml-1 shadow-sm btn-sm uk-animation-scale-up uk-transform-origin-top-center"
+    href="/amazon/{{id}}"
+    onclick="accountStore({{id}})"
+  >{{name}} <span class="uk-badge">0/{{containers.length}}</span></a>
+{{/if}}

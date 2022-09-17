@@ -1,0 +1,42 @@
+<div class="px-1 py-1 col-lg-4 col-md-6 col-sm-10 uk-animation-slide-top-small" id="requested_card">
+<div class="card bg-light shadow-sm text-center border-info" id="{{0.container_id}}">
+    <div class="lead mt-2">#{{0.container.container_number}}</div>
+    <h5 class="card-title mt-3">{{0.user.name}} - {{0.account.name}}</h5>
+    <p>Requested Date: {{0.container.requested_date}}</p>
+ <div class="card-body">
+     <a onclick="deleteConfirm(`{{0.container_id}}`)" class="border border-warning rounded-circle" uk-icon="icon: trash"></a>
+     <a href="/admin_pre_ship_amazon/{{0.container_id}}" class="btn btn-outline-primary btn-sm">Proceed</a>
+     {{#if 0.container.file}}
+        <a href="/pdf/{{0.container.file}}" class="btn btn-success btn-sm">File #1</a>
+        {{#if 0.container.file_2}}
+        <a href="/pdf/{{0.container.file_2}}" class="btn btn-success btn-sm">File #2</a>
+        {{/if}}
+    {{else}}
+        <a href="" class="btn btn-danger btn-sm">No File</a>
+    {{/if}}
+</div>
+
+<ul uk-accordion="multiple: true">
+    <li class="uk-close">
+        <a class="uk-accordion-title" href="/admin_pre_ship_amazon/{{0.container_id}}"></a>
+        <div class="uk-accordion-content">
+         <table class="uk-table uk-table-small uk-table-divider myTable" id="myTable">
+            <thead>
+                <tr>
+                    <th>SKU</th>
+                    <th>QTY</th>
+                    <th>Box#: Location</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each this as |item|}}
+                    {{> card-content-amazon item }}
+                {{/each}}
+            <tbody>
+         </table>
+         <a href="/admin_pre_ship_amazon/{{0.container_id}}" class="btn btn-primary btn-sm">Proceed</a>
+        </div>
+    </li>
+</ul>
+</div>
+</div>

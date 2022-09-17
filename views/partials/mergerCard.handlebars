@@ -1,0 +1,29 @@
+{{#if 0.reqboxfrom}}
+<div>
+    {{!-- <a href="" uk-icon="icon: arrow-right" id="a_{{0.description}}"></a> --}}
+    <h5 class="lead text-center bg-light rounded shadow-sm">{{0.description}}</h5>
+</div>
+{{else}}
+    {{#if 0.reqboxto}}
+    <h5 class="lead text-center bg-light rounded shadow-sm">{{0.description}}</h5>
+    {{else}}
+    <h5 class="lead text-center bg-light rounded shadow-sm">{{0.container.container_number}}:{{0.container.location}}</h5>
+    {{/if}}
+{{/if}}
+
+
+<table class="uk-table uk-table-small uk-table-divider myTable bg-light rounded">
+            <thead>
+                <tr>
+                    <th>SKU</th>
+                    <th>QTY</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each this as |obj|}}
+                    {{> preShipAmazonCard obj }}
+                {{/each}}
+            <tbody>
+</table>
+
+<hr>

@@ -1,0 +1,243 @@
+{{#if admin}}
+  <link rel="stylesheet" href="css/loader.css" />
+  <p class="uk-heading-line uk-text-right uk-margin-small-right"><span>logged in
+      as
+      <span
+        class="uk-text-bold uk-label uk-label-success"
+      >{{name}}</span></span></p>
+  <div class="container">
+    <div class="row justify-content-md-center mb-3">
+      <button
+        class="badge bg-success col-sm-3 col-md-1 shadow-sm"
+        id="badge"
+        onclick="modeChange()"
+        uk-tooltip="create mode = to create a brand new amazon box; refill mode = to add more items into an existed amazon box"
+      ><span id="mode">Create</span> Mode</button>
+      <button
+        class="badge bg-warning col-sm-3 col-md-1 shadow-sm"
+        id="reconcile"
+        onclick="reconciliation()"
+      >Reset</button>
+      <button
+        class="badge bg-secondary col-sm-3 col-md-1 shadow-sm"
+        id="removeEmptyContainer"
+        onclick="removeEmptyContainer()"
+        uk-tooltip="It reconciles the container table and remove empty containers; you may re-use the old container number after the removal"
+      >Reconcile</button>
+    </div>
+    <div class="row justify-content-md-center">
+      <div id="loader" style="display: none;">
+        <h1 class="text-center">Updating
+          <span id="numberOfItems"></span>...</h1>
+        <div class="loader container"></div>
+      </div>
+      <form
+        class="col-md-6 col-sm-8 shadow p-4 rounded bg-light uk-card-body"
+        id="creator_form"
+      >
+        <div class="row">
+          <div class="form-group col" id="scanDiv">
+            <label for="scan" class="text-danger">Search</label>
+            <input
+              type="text"
+              class="form-control"
+              id="scan"
+              placeholder="scan sku"
+              onkeyup="delay(scanSKU)"
+            />
+          </div>
+          <div class="form-group col">
+            <label for="Date">Date</label>
+            <input
+              type="text"
+              class="form-control"
+              id="today"
+              value=""
+              disabled
+            />
+          </div>
+          <div class="form-group col">
+            <label for="Client">Client</label>
+            <select
+              name="user"
+              id="user"
+              class="uk-select uk-form-default rounded mt-1"
+              onchange="account_data()"
+            >
+              <option value="">select client</option>
+              <option value="0">--- create new client ---</option>
+            </select>
+            <input
+              type="text"
+              class="form-control rounded mt-1"
+              id="newUserName"
+              placeholder="username"
+              style="display: none"
+              onkeyup="masterCheck()"
+            />
+            <input
+              type="text"
+              class="form-control rounded mt-1"
+              id="newPassword"
+              placeholder="password"
+              style="display: none"
+              onkeyup="masterCheck()"
+            />
+          </div>
+          <div class="form-group col" id="accountDiv">
+            <label for="Account">Account</label>
+            <select
+              name="account"
+              id="account"
+              class="uk-select uk-form-default rounded mt-1"
+              onchange="accountSelection()"
+              disabled
+            >
+              <option value="">select account</option>
+              <option value="0">--- create new account ---</option>
+            </select>
+            <input
+              type="text"
+              class="form-control rounded mt-1"
+              id="newAccountInput"
+              placeholder="new account name"
+              style="display: none;"
+              onkeyup="masterCheck()"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <input
+            type="text"
+            class="form-control"
+            id="new_des"
+            onkeyup="masterCheck()"
+          />
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label for="length">Length</label>
+            <input
+              type="number"
+              class="form-control"
+              id="new_len"
+              placeholder="inch"
+              onkeyup="masterCheck()"
+            />
+          </div>
+          <div class="col">
+            <label for="width">Width</label>
+            <input
+              type="number"
+              class="form-control"
+              id="new_wid"
+              placeholder="inch"
+              onkeyup="masterCheck()"
+            />
+          </div>
+          <div class="col">
+            <label for="height">Height</label>
+            <input
+              type="number"
+              class="form-control"
+              id="new_hei"
+              placeholder="inch"
+              onkeyup="masterCheck()"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="container">Box Number
+            <span id="uniqueMark"></span></label>
+          <input
+            type="text"
+            class="form-control"
+            id="new_container"
+            onkeyup="masterCheck()"
+            placeholder="new amazon box #"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="sku">SKU</label>
+          <input
+            type="text"
+            class="form-control"
+            id="sku"
+            placeholder="sku"
+            onkeyup="delay(itemInput)"
+          />
+        </div>
+
+        <div class="form-group mt-3">
+          <table
+            class="uk-table uk-table-small uk-table-divider bg-light shadow-sm"
+            id="sku_table"
+          >
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th>Quantity</th>
+              </tr>
+            </thead>
+            <tbody id="sku_list">
+            </tbody>
+          </table>
+          <a
+            id="order_pre-check"
+            class="btn btn-primary mt-3 text-white col-12"
+            style="display: none;"
+            onclick="amazonCreate()"
+          >Ready to Create</a>
+          <a id="fake" class="btn btn-secondary mt-3 text-white col-12">Not
+            Ready to Create</a>
+        </div>
+      </form>
+
+      <form
+        id="qucik_receiving"
+        style="display: none;"
+        class="col-md-6 col-sm-8 shadow p-4 rounded bg-light"
+      >
+        <div class="mb-3 container">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item active">Client:
+                <span id="clientName_q"></span>
+              </li>
+              <li class="breadcrumb-item active">Account:
+                <span id="accountName_q"></span>
+              </li>
+            </ol>
+            <h3 class="breadcrumb-item active">Box Number:
+              <span id="containerNumber_q"></span>
+            </h3>
+          </nav>
+          <input
+            type="text"
+            class="form-control"
+            id="scanned_item"
+            placeholder="Scan..."
+            aria-label="Username"
+            aria-describedby="basic-addon1"
+            onkeyup="delay(quickReceiving)"
+            uk-tooltip="Scan existed amazon box first, then scan each item sku"
+          />
+        </div>
+        <div class="uk-text-center">
+          <h1 class="lead">status:</h1>
+          <ol id="inserted_item">
+          </ol>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="javascript/amazon_receiving.js"></script>
+{{else}}
+  <script src="javascript/client_redirect.js"></script>
+{{/if}}

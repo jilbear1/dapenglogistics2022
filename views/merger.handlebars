@@ -1,0 +1,110 @@
+{{#if admin}}
+  <p class="uk-heading-line uk-text-right uk-margin-small-right"><span>logged in
+      as
+      <span
+        class="uk-text-bold uk-label uk-label-success"
+      >{{name}}</span></span></p>
+  <div class="container mb-3">
+    <div class="uk-grid-item-match">
+      <div class="uk-card uk-card-default uk-card-body uk-width-1-3@m rounded">
+        <h3 class="lead"><b>Account Merge</b>
+          <span id="mergerType">(single)</span></h3>
+        <div class="form-group col">
+          <select
+            name="user"
+            id="user"
+            class="uk-select uk-form-default rounded mt-1"
+            onchange="account_data()"
+          >
+            <option value="">select client</option>
+          </select>
+        </div>
+        <div class="form-group col" id="accountDiv">
+          <label for="Account">From</label>
+          <select
+            name="account_out"
+            id="accountOut"
+            class="uk-select uk-form-default rounded mt-1"
+            onchange="self_delete()"
+            disabled
+          >
+            <option value="">select account</option>
+          </select>
+        </div>
+        <div class="form-group col" id="accountDiv">
+          <label for="Account">To</label>
+          <select
+            name="account_in"
+            id="accountIn"
+            class="uk-select uk-form-default rounded mt-1"
+            onchange="self_delete()"
+            disabled
+          >
+            <option value="">select account</option>
+          </select>
+        </div>
+
+        <button
+          class="btn btn-outline-danger btn-sm mt-3"
+          onclick="merge()"
+        >Merge</button>
+      </div>
+      <hr />
+      <div class="uk-card uk-card-default uk-card-body uk-width-1-3@m rounded">
+        <h3 class="lead"><b>Container Merge</b>
+          <span id="mergerType">(Amazon)</span></h3>
+        <input
+          type="checkbox"
+          id="manualChecker"
+          class="form-check-input"
+        /><small
+          uk-tooltip="The manual input checkbox extends the waiting time to 1.5 seconds after your last keyboard input before executing validation function. (The default wait time of 0.05 s is designed for scanning)"
+          class="text-success ml-2"
+        > Manual Input</small>
+        <form>
+          <div class="row">
+            <div class="mt-2" id="fromContainer">
+              <label for="fromBox">From</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Scan box number..."
+                onkeyup="delay(fromInput)"
+              />
+            </div>
+            <div class="mt-2" id="toContainer">
+              <label for="toBox">To</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Scan box number..."
+                onkeyup="delay(toInput)"
+                disabled
+              />
+            </div>
+          </div>
+        </form>
+        <button
+          class="btn btn-outline-info btn-sm mt-3"
+          onclick="location.reload()"
+        >Reset</button>
+        <button
+          id="ataBtn"
+          class="btn btn-outline-danger btn-sm mt-3"
+          onclick="ataMerge()"
+          style="display: none;"
+        >All-to-All Merge</button>
+        <button
+          id="pBtn"
+          class="btn btn-outline-warning btn-sm mt-3"
+          onclick="pMerge()"
+          style="display: none;"
+        >Partial Merge</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="javascript/merger.js"></script>
+{{else}}
+  <script src="javascript/client_redirect.js"></script>
+{{/if}}

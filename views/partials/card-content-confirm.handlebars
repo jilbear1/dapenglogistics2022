@@ -1,0 +1,29 @@
+<tr>
+  {{#if custom_1}}
+  <td>{{container_number}}<br>(<small>{{custom_1}}</small>)</td>
+  {{else}}
+  <td>{{container_number}}</td>
+  {{/if}}
+  <td><a
+      class="uk-button uk-button-default"
+      href="#{{container_number}}"
+      uk-toggle
+      onclick="skuseeker({{id}},{{container_number}}_ol)"
+    >SKU/QTY</a></td>
+  <td>{{location}}</td>
+</tr>
+
+<!-- This is the modal -->
+<div id="{{container_number}}" uk-modal>
+  <div class="uk-modal-dialog">
+    <button class="uk-modal-close-default" type="button" uk-close></button>
+    <div class="uk-modal-header">
+      <h2 class="lead text-center"><b>SKU/QTY</b></h2>
+    </div>
+    <div class="uk-modal-body text-center">
+      <ol id="{{container_number}}_ol">
+        {{! sku/qty content here }}
+      </ol>
+    </div>
+  </div>
+</div>

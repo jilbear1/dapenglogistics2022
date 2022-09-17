@@ -1,0 +1,118 @@
+{{#if admin}}
+<p class="uk-heading-line uk-text-right uk-margin-small-right" id="topline"><a uk-icon="icon: print" onclick="printTable()"><span class="uk-text-bold uk-label uk-label-danger"></span></a></p>
+<div class="container">
+        <div class="row">
+            <div class="col-sm-8 col-md-4">
+                <div class="card" id="controller">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Ref: {{xc_number}}</h5>
+                        <hr>
+                        <div>
+                            <form>
+                                <div class="row">
+                                    <div class="col" id="scanGroup">
+                                        <input type="text" id="scanInput" class="form-control border border-info" placeholder="Scan" onkeyup="displayInfo()">
+                                    </div>
+                                    <div class="col">
+                                        <select class="form-control uk-select">
+                                            <option value="99" selected>DELETE</option>
+                                            <option value="-1">REVERSE</option>
+                                            {{!-- <option value="0">DESTROY (not recommended)</option> --}}
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <button class="btn btn-outline-primary form-control" onclick="proceed()">Proceed</button>
+                                    </div>
+                                </div>
+                            </form>
+                            <div id="info" class="mt-2 text-center"></div>
+                        </div>
+                        <hr>
+                        <p class="card-text">{{xc_notes}}</p>
+                    </div>
+                </div>
+            </div>
+    {{#if china}}
+            <div class="col-sm-8 col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table table-hover table-striped shadow-sm" id="dqTable">
+                            <thead>
+                                <tr class="bg-danger text-light">
+                                    <th onclick="undisable()" scope="col" uk-icon="check" uk-tooltip="enable mannual checkbox" class="shadow-sm rounded-circle"></th>
+                                    <th scope="col"><b>Acct</b></th>
+                                    <th scope="col"><b>Box Number</b></th>
+                                    <th scope="col"><b>Location</b></th>
+                                </tr>
+                            </thead>
+                             <tbody>
+                                {{#each boxes as |box|}}
+                                    {{> dq_handle_china box }}
+                                {{else}}
+                                    {{> xc_charge}}
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{else}}
+        {{#if amazon}}
+            <div class="col-sm-8 col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <table class="table table-hover table-striped shadow-sm" id="dqTable">
+                                <thead>
+                                    <tr class="bg-warning">
+                                        <th onclick="undisable()" scope="col" uk-icon="check" uk-tooltip="To enable mannual checkbox" class="shadow-sm border border-light rounded-circle"></th>
+                                        <th scope="col"><b>Acct</b></th>
+                                        <th scope="col"><b>Container Number</b></th>
+                                        <th scope="col"><b>SKUs</b></th>
+                                        <th scope="col"><b>Location</b></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{#each containers as |container|}}
+                                        {{> dq_handle_container container }}
+                                    {{else}}
+                                        {{> xc_charge}}
+                                    {{/each}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{else}}
+            <div class="col-sm-8 col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <table class="table table-hover table-striped shadow-sm" id="dqTable">
+                                <thead>
+                                    <tr class="bg-info">
+                                        <th onclick="undisable()" scope="col" uk-icon="check" uk-tooltip="enable mannual checkbox" class="shadow-sm rounded-circle"></th>
+                                        <th scope="col"><b>Acct</b></th>
+                                        <th scope="col"><b>SKUs</b></th>
+                                        <th scope="col"><b>Containers</b></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{#each items as |item|}}
+                                        {{> dq_handle_sku item }}
+                                    {{else}}
+                                        {{> xc_charge}}
+                                    {{/each}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{/if}}
+    {{/if}}
+</div>
+<script src="javascript/del_req_handling.js"></script>
+{{else}}
+<script src="javascript/client_redirect.js"></script>
+{{/if}}

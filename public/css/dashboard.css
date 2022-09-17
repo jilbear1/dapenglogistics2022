@@ -1,0 +1,10 @@
+@media only screen and (max-width: 600px) {
+    #info_dashbaord {
+        display: none;
+    }
+    #nav_bar {
+        background-image: url("../media/logistics_animation.gif");
+        background-size: cover;
+        background-position: center;
+    }
+}

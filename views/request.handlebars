@@ -1,0 +1,141 @@
+<link rel="stylesheet" href="css/loader.css">
+<div class="uk-overflow-auto">
+<p class="uk-heading-line uk-text-right uk-margin-small-right"><span>所在页面 <span class="uk-text-bold uk-label uk-label-success">出货通知（海外货物）</span></span></p>
+{{!-- notes --}}
+<div id="modal-notes" uk-modal>
+    <div class="uk-modal-dialog">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <div class="uk-modal-header text-center">
+            <h2 class="uk-modal-title">特别指示 Notes</h2>
+        </div>
+        <div class="uk-modal-body">
+           <textarea class="form-control" id="notes" placeholder="如有特别指示 请在此留言..." rows="10"></textarea>
+        </div>
+        <div class="uk-modal-footer uk-text-right">
+            <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel 取消</button>
+            <button class="uk-button uk-button-primary uk-modal-close" type="button">Save 暂存</button>
+        </div>
+    </div>
+</div>
+{{!-- file --}}
+<div id="modal-files" uk-modal>
+    <div class="uk-modal-dialog">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <div class="uk-modal-header text-center">
+            <h2 class="uk-modal-title">选择运输标签档（.pdf)</h2>
+            <input class="form-check-input me-2" type="checkbox" value="" id="label_not_required" onclick="clear_file()"/>
+            <label class="form-check-label text-danger" for="label_not_required"><small><u>No file to attach 无运输标签</u></small></label>
+        </div>
+
+
+        <div class="uk-modal-body">
+            <input type="file" class="mt-2 custom-file-input" id="label" accept=".pdf, .doc, .docx" onclick="second_file()">
+            <input type="file" class="mt-2 custom-file-input" id="label_2" accept=".pdf, .doc, .docx" style="display: none;">
+        </div>
+        <div class="uk-modal-footer uk-text-right">
+            <input type="text" class="form-control mb-3 border-warning" id="amazon_ref" placeholder="Amazon Reference Number (e.g. FBAxxxxxxxxx)" aria-describedby="basic-addon1" style="display: none;">
+            <button class="uk-button uk-button-default uk-modal-close" type="button" onclick="clear_file()">Clear 清除</button>
+            <button class="uk-button uk-button-primary uk-modal-close" type="button" onclick="check_amazon()">Save 暂存</button>
+        </div>
+    </div>
+</div>
+<nav class="uk-navbar-container" uk-navbar>
+    <div class="uk-navbar-center">
+        <div class="uk-navbar-item">
+            {{#if accountId}}
+            <a class="btn btn-white border-warning btn-sm shadow-sm" href="/account/{{accountId}}" uk-icon="icon: home" uk-tooltip="Personal Homepage"></a>
+            {{else}}
+            <a class="btn btn-white border-warning btn-sm shadow-sm" href="/master" uk-icon="icon: home" uk-tooltip="Personal Homepage"></a>
+            {{/if}}
+            <a class="btn btn-secondary btn-sm shadow-sm" href="/request/{{accountId}}" uk-tooltip="中国跨海货物">海外货物</a>
+            <a class="btn btn-light btn-sm shadow-sm" href="/request_amazon/{{accountId}}" uk-tooltip="美国内地转运货物">亚马逊/其他货物</a>
+        </div>
+        <div class="uk-navbar-item">
+            <form class="uk-search uk-search-default">
+                <span uk-search-icon></span>
+                <input class="uk-search-input form-control search-input" type="search" placeholder="Search" data-table="myTable">
+            </form>
+        </div>
+
+        <div class="uk-navbar-item">
+            <a class="btn btn-sm btn-outline-danger" id='file_btn' href="#modal-files" uk-toggle uk-tooltip=".pdf">夹带档案</a>
+            <a class="btn btn-sm btn-outline-success" href="#modal-notes" uk-toggle uk-tooltip="Notes">附注留言</a>
+        </div>
+
+        <a id="js-modal-confirm" class="btn btn-primary shadow-sm" value="Get Selected" onclick="validation_request()" uk-icon="arrow-right" uk-tooltip="Complete Request">完成出货通知</a>
+
+    </div>
+</nav>
+<div id="loader" style="display: none;">
+    <h1 class="text-center">Uploading...</h1>
+    <h3 class="text-center">上传中，请耐心等候</h3>
+    <div class="loader container"></div>
+</div>
+<div class="container">
+        <table class="uk-table uk-table-small uk-table-divider myTable" id="myTable">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th onclick="sortTable(1)">子用户</th>
+                    <th onclick="sortTable(2)">箱码</th>
+                    <th onclick="sortTable(3)">货品描述</th>
+                    <th>Box#</th>
+                    <th>箱总数(of Boxes)</th>
+                    <th>单箱货量</th>
+                    <th>SKU</th>
+                    <th>容量(立方公分)</th>
+                    <th onclick="sortTable(9)">入货日</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each boxes as |box|}}
+                    {{> select-box box }}
+                {{else}}
+                <h2 class="text-center mt-3">您的货物皆已出货或已通知，暂时无物件可出货</h2>
+                <h3 class="text-center">NO ORDER WAS FOUND!</h3>
+                {{/each}}
+            </tbody>
+        </table>
+</div>
+
+<script>
+        (function(document) {
+            'use strict';
+
+            var TableFilter = (function(myArray) {
+                var search_input;
+
+                function _onInputSearch(e) {
+                    search_input = e.target;
+                    var tables = document.getElementsByClassName(search_input.getAttribute('data-table'));
+                    myArray.forEach.call(tables, function(table) {
+                        myArray.forEach.call(table.tBodies, function(tbody) {
+                            myArray.forEach.call(tbody.rows, function(row) {
+                                var text_content = row.textContent.toLowerCase();
+                                var search_val = search_input.value.toLowerCase();
+                                row.style.display = text_content.indexOf(search_val) > -1 ? '' : 'none';
+                            });
+                        });
+                    });
+                }
+
+                return {
+                    init: function() {
+                        var inputs = document.getElementsByClassName('search-input');
+                        myArray.forEach.call(inputs, function(input) {
+                            input.oninput = _onInputSearch;
+                        });
+                    }
+                };
+            })(Array.prototype);
+
+            document.addEventListener('readystatechange', function() {
+                if (document.readyState === 'complete') {
+                    TableFilter.init();
+                }
+            });
+
+        })(document);
+    </script>
+<script src="javascript/request_china.js"></script>

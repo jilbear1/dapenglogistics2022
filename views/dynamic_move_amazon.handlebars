@@ -1,0 +1,114 @@
+{{#if admin}}
+<p class="uk-heading-line uk-text-right uk-margin-small-right"><span>logged in as <span class="uk-text-bold uk-label uk-label-success">{{name}}</span></span></p>
+<div class="container">
+  <a href="/admin_move_main" class="badge bg-secondary shadow-sm">China Request</a>
+  {{#if confirm}}
+  <a href="/admin_move_main_amazon" class="badge bg-secondary shadow-sm">Amazon Request</a>
+  <a href="/admin_confirm_amazon" class="badge bg-info shadow-sm">Amazon Confirm ({{confirms.length}})</a>
+  <hr>
+  <a href="/admin_confirm_amazon_pal" class="btn btn-sm btn-outline-primary shadow-sm" uk-tooltip="The pallet-only filter allows admin to perform final confirmation on requested pallets individually">
+    Pallet Mode <b id="palletMode">OFF</b></a>
+  </a>
+  {{else}}
+    {{#if type_2}}
+      <a href="/admin_move_main_amazon" class="badge bg-info shadow-sm">Amazon Request ({{requests.length}})</a>
+      <a href="/admin_confirm_amazon" class="badge bg-secondary shadow-sm">Amazon Confirm</a>
+      <hr>
+      <a href="/admin_move_main_amazon" class="btn btn-sm bg-info shadow-sm">Quick Mode <b>ON</b></a>
+      <a uk-icon="icon: album; ratio: 2" class="text-primary px-1" uk-tooltip="SKU filter options" data-bs-toggle="offcanvas" href="#skuFilterChange" role="button" aria-controls="skuFilterChange"></a>
+       <a href="/admin/sku_modification" uk-icon="icon: cloud-upload; ratio: 2" uk-tooltip="sku files upload"></a>
+
+      {{!-- offcanvas --}}
+      <div class="offcanvas offcanvas-top" tabindex="-1" id="skuFilterChange" aria-labelledby="skuFilterChangeLabel">
+        <div class="offcanvas-header text-center">
+          {{!-- <h6 class="offcanvas-title">Mapping Filters</h6> --}}
+          <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body container">
+        <div scope="col">
+          <b class="text-primary">Filter Options</b>
+          <small>(the most recent one on the top)</small>
+          <input type="checkbox" id="allowFilter" class="form-check-input" checked><small uk-tooltip="The (SKU) filter performs auto-replacing function via pre-loaded old-new sku filters and collect associated label images. !!The reversal function will not be fully operational when this function is active." class="text-primary ml-2" > Filter On/Off</small>
+          <input type="checkbox" id="palletizeCheckBox" class="form-check-input" checked onclick="palletizeAuthFunction()"><small uk-tooltip="" class="text-primary ml-2" > Palletization</small>
+        </div>
+        <hr>
+        <div id="mapping options" class="form-check">
+      </div>
+      {{!-- offcanvas --}}
+  </div>
+</div>
+    {{else}}
+      <a href="/admin_move_main_amazon" class="badge bg-info shadow-sm">Amazon Request ({{requests.length}})</a>
+      <a href="/admin_confirm_amazon" class="badge bg-secondary shadow-sm">Amazon Confirm</a>
+      <hr>
+      <a href="/admin_move_main_amazon_type_2" class="btn btn-sm shadow-sm">Quick Mode OFF</a>
+    {{/if}}
+  {{/if}}
+</div>
+<div class="uk-flex uk-flex-center@m uk-flex-right@l uk-margin-small-right mb-2">
+  {{!-- <a href="/admin_move_amazon" class="rounded uk-button-small uk-button-primary">Manual Handling</a> --}}
+</div>
+<div class="container">
+  <div class="row">
+  {{#if confirm}}
+    {{#if pal}}
+      {{#each confirms as |confirm|}}
+        {{> confirm-card-amazon-pal confirm }}
+      {{else}}
+        <h1 class="lead text-center">Great! You have completed all of the ship-out confirmation!</h1>
+        <div class="col-4 uk-align-center mt-2">
+          <a href="/" class="uk-button uk-button-default text-center" uk-icon="home"></a>
+        </div>
+      {{/each}}
+    {{else}}
+      {{#each confirms as |confirm|}}
+        {{> confirm-card-amazon confirm }}
+      {{else}}
+        <h1 class="lead text-center">Great! You have completed all of the ship-out confirmation!</h1>
+        <div class="col-4 uk-align-center mt-2">
+          <a href="/" class="uk-button uk-button-default text-center" uk-icon="home"></a>
+        </div>
+      {{/each}}
+    {{/if}}
+  {{else}}
+    {{#if type_2}}
+    {{!-- for quick handling of amazon request --}}
+     {{#each requests as |request|}}
+        {{> requested-card-amazon-2 request }}
+      {{else}}
+        <h1 class="lead text-center">Great! You have completed all of the ship-out requests!</h1>
+        <div class="col-4 uk-align-center mt-2">
+          <a href="/" class="uk-button uk-button-default text-center" uk-icon="home"></a>
+        </div>
+      {{/each}}
+    {{!-- for quick handling of amazon request /--}}
+    {{else}}
+      {{!-- for regulrar handling of amazon request --}}
+      {{#each requests as |request|}}
+        {{> requested-card-amazon request }}
+      {{else}}
+        <h1 class="lead text-center">Great! You have completed all of the ship-out requests!</h1>
+        <div class="col-4 uk-align-center mt-2">
+          <a href="/" class="uk-button uk-button-default text-center" uk-icon="home"></a>
+        </div>
+      {{/each}}
+     {{!-- for regulrar handling of amazon request /--}}
+    {{/if}}
+  {{/if}}
+  </div>
+</div>
+
+{{#if confirm}}
+  <script src="javascript/amazon_label_confirmation.js"></script>
+{{else}}
+  {{#if type_2}}
+    <script src="javascript/amazon_label_handle_2.js"></script>
+  {{else}}
+    <script src="javascript/amazon_label_handle.js"></script>
+  {{/if}}
+{{/if}}
+
+{{!-- if requestor is a client --}}
+{{else}}
+  <script src="javascript/client_redirect.js"></script>
+{{/if}}

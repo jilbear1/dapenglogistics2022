@@ -1,0 +1,31 @@
+{{#if admin}}
+<p class="uk-heading-line uk-text-right uk-margin-small-right"><span>logged in as <span class="uk-text-bold uk-label uk-label-success">{{name}}</span></span></p>
+<div class="container">
+<a href="/admin_move_main" class="badge bg-info shadow-sm">China Request ({{data.length}})</a>
+<a href="/admin_move_main_amazon" class="badge bg-secondary shadow-sm">Amazon Request (<span id="aRequest"></span>)</a>
+<a href="/admin_confirm_amazon" class="badge bg-secondary shadow-sm">Amazon Confirm (<span id="aConfirm"></span>)</a>
+</div>
+<div class="uk-flex uk-flex-center@m uk-flex-right@l uk-margin-small-right mb-2">
+<a href="/admin_move" class="rounded uk-button-small uk-button-primary">Manual Handling</a>
+</div>
+
+
+
+<div class="container">
+<div class="row text-center">
+  {{#each data as |box|}}
+    {{> requested-card box }}
+  {{else}}
+  <h1 class="lead">Great! You have completed all of the ship-out requests!</h1>
+  <div class="col-4 uk-align-center mt-2">
+    <a href="/" class="uk-button uk-button-default" uk-icon="home"></a>
+  </div>
+  {{/each}}
+</div>
+</div>
+
+
+<script src="javascript/admin_ship.js"></script>
+{{else}}
+<script src="javascript/client_redirect.js"></script>
+{{/if}}

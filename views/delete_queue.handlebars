@@ -1,0 +1,163 @@
+
+<p class="uk-heading-line uk-text-right uk-margin-small-right"><span>所在页面 <span class="uk-text-bold uk-label uk-label-danger">删除请求</span></span></p>
+{{!-- notes --}}
+<div id="modal-notes" uk-modal>
+    <div class="uk-modal-dialog">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <div class="uk-modal-header text-center">
+            <h2 class="uk-modal-title">备注留言</h2>
+        </div>
+        <div class="uk-modal-body">
+           <textarea class="form-control" id="notes" placeholder="如有特别指示 请在此留言..." rows="10"></textarea>
+        </div>
+        <div class="uk-modal-footer uk-text-right">
+            <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel 取消</button>
+            <button class="uk-button uk-button-primary uk-modal-close" type="button">Save 暂存</button>
+        </div>
+    </div>
+</div>{{!-- /notes --}}
+<nav class="uk-navbar-container uk-navbar-transparent" uk-navbar>
+    <div class="uk-navbar-center">
+        <div class="uk-navbar-item">
+             {{#if china}}
+                    <button href="/dq_chinabox" class="btn btn-outline-secondary btn-sm shadow-sm rounded" disabled uk-tooltip="China Box">跨海货物</button>
+                    <a href="/dq_container" class="btn btn-outline-primary btn-sm shadow-sm rounded" uk-tooltip="Amazon/Walmart Container">美国转运货物</a>
+                    <a href="/dq_sku" class="btn btn-outline-primary btn-sm shadow-sm rounded" uk-tooltip="Container Items">转运货品(SKUs)</a>
+                {{else}}
+                    {{#if amazon}}
+                        <a href="/dq_chinabox" class="btn btn-outline-primary btn-sm shadow-sm rounded" uk-tooltip="China Box">跨海货物</a>
+                        <button href="/dq_container" class="btn btn-outline-secondary btn-sm shadow-sm rounded" disabled uk-tooltip="Amazon/Walmart Container">美国转运货物</button>
+                        <a href="/dq_sku" class="btn btn-outline-primary btn-sm shadow-sm rounded" uk-tooltip="Container Items">转运货品(SKUs)</a>
+                    {{else}}
+                        <a href="/dq_chinabox" class="btn btn-outline-primary btn-sm shadow-sm rounded" uk-tooltip="China Box">跨海货物</a>
+                        <a href="/dq_container" class="btn btn-outline-primary btn-sm shadow-sm rounded" uk-tooltip="Amazon/Walmart Container">美国转运货物</a>
+                        <button href="/dq_sku" class="btn btn-outline-secondary btn-sm shadow-sm rounded" disabled uk-tooltip="Container Items">转运货品(SKUs)</button>
+                    {{/if}}
+                {{/if}}
+        </div>
+
+        <div class="uk-navbar-item">
+            <form class="uk-search uk-search-default">
+                <span uk-search-icon></span>
+                {{#if china}}
+                    <input class="uk-search-input form-control search-input" type="search" placeholder="关键字搜寻" data-table="chinaTable">
+                {{else}}
+                    {{#if amazon}}
+                        <input class="uk-search-input form-control search-input" type="search" placeholder="关键字搜寻" data-table="containerTable">
+                    {{else}}
+                        <input class="uk-search-input form-control search-input" type="search" placeholder="关键字搜寻" data-table="skuTable">
+                    {{/if}}
+                {{/if}}
+            </form>
+        </div>
+
+        <div class="uk-navbar-item">
+            {{!-- <a class="btn btn-sm btn-outline-danger" id='file_btn' href="#modal-files" uk-toggle uk-tooltip=".pdf, .zip, .rar">夹带档案</a> --}}
+            <a class="btn btn-sm btn-outline-success" href="#modal-notes" uk-toggle uk-tooltip="Notes">备注</a>
+        </div>
+
+        <a id="js-modal-confirm" class="btn btn-primary shadow-sm" onclick="preCheckPage()" uk-icon="arrow-right" uk-tooltip="Send Out Delete Request">传送删除请求</a>
+    </div>
+</nav>
+
+<div class="container mt-2" id="container">
+    {{#if china}}
+        <table class="table table-hover table-striped shadow-sm chinaTable" id="chinaTable">
+            <thead>
+                <tr class="bg-danger text-light">
+                    <th onclick="location.reload()" scope="col" uk-tooltip="可多项目复选"><b>勾选</b></th>
+                    <th scope="col"><b>子用户名</b></th>
+                    <th scope="col"><b>箱码</b></th>
+                    <th scope="col"><b>细目</b></th>
+                    <th scope="col"><b>物件数</b></th>
+                    <th scope="col"><b>SKU</b></th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each boxes as |box|}}
+                    {{> dq_china box }}
+                {{else}}
+                <h3 class="text-center">NO BOX WAS FOUND!</h3>
+                {{/each}}
+            </tbody>
+        </table>
+        <script src="javascript/dq_chinabox.js"></script>
+    {{else}}
+        {{#if amazon}}
+            <table class="table table-hover shadow-sm table-striped containerTable" id="containerTable">
+                <thead>
+                    <tr class="bg-warning">
+                        <th onclick="location.reload()" uk-tooltip="可多项目复选"><b>勾选</b></th>
+                        <th><b>子用户名</b></th>
+                        <th><b>箱码</b></th>
+                        <th><b>相关SKUs</b></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {{#each containers as |container|}}
+                    {{> dq_container container }}
+                {{else}}
+                <h3 class="text-center">NO CONTAINER WAS FOUND!</h3>
+                {{/each}}
+                </tbody>
+            </table>
+            <script src="javascript/dq_container.js"></script>
+        {{else}}
+            <table class="skuTable table table-hover shadow-sm table-striped" id="skuTable">
+                <thead>
+                    <tr class="bg-info">
+                        <th onclick="location.reload()" uk-tooltip="可多项目复选"><b>勾选</b></th>
+                        <th><b>子用户名</b></th>
+                        <th><b>SKU</b></th>
+                        <th><b>相关箱码</b></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {{#each items as |item|}}
+                    {{> dq_item item }}
+                {{else}}
+                <h3 class="text-center">NO ITEM WAS FOUND!</h3>
+                {{/each}}
+                </tbody>
+            </table>
+            <script src="javascript/dq_sku.js"></script>
+        {{/if}}
+    {{/if}}
+    <footer class="row">
+        <a href="#js-modal-confirm" class="btn btn-sm shadow-sm btn-outline-primary col align-self-center">Back to The Top</a>
+    </footer>
+</div>
+<script>
+    (function(document) {
+        'use strict';
+        var TableFilter = (function(myArray) {
+            var search_input;
+            function _onInputSearch(e) {
+                search_input = e.target;
+                var tables = document.getElementsByClassName(search_input.getAttribute('data-table'));
+                myArray.forEach.call(tables, function(table) {
+                    myArray.forEach.call(table.tBodies, function(tbody) {
+                        myArray.forEach.call(tbody.rows, function(row) {
+                            var text_content = row.textContent.toLowerCase();
+                            var search_val = search_input.value.toLowerCase();
+                            row.style.display = text_content.indexOf(search_val) > -1 ? '' : 'none';
+                        });
+                    });
+                });
+            }
+            return {
+                init: function() {
+                    var inputs = document.getElementsByClassName('search-input');
+                    myArray.forEach.call(inputs, function(input) {
+                        input.oninput = _onInputSearch;
+                    });
+                }
+            };
+        })(Array.prototype);
+        document.addEventListener('readystatechange', function() {
+            if (document.readyState === 'complete') {
+                TableFilter.init();
+            }
+        });
+    })(document);
+</script>

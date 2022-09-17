@@ -1,0 +1,43 @@
+
+<div class="px-1 py-1 col-lg-4 col-md-6 col-sm-10 uk-animation-slide-top-small" id="requested_card">
+<div class="card bg-light shadow-sm" id="{{0.s3}}" style="background-image:url('https://render.fineartamerica.com/images/rendered/default/greeting-card/images/artworkimages/medium/1/pink-vintage-color-trends-feather-texture-background-nattaya-mahaum.jpg?&targetx=-25&targety=0&imagewidth=750&imageheight=500&modelwidth=700&modelheight=500&backgroundcolor=F2B7CB&orientation=0');">
+    <h5 class="card-title mt-3">{{0.user.name}} - {{0.account.name}}</h5>
+    <p>Requested Date: {{0.requested_date}}</p>
+ <div class="card-body">
+     <a href="#" class="btn btn-outline-primary btn-sm" onclick="pre_ship_scan({{0.s3}})">Proceed</a>
+     {{#if 0.file}}
+        <a href="/pdf/{{0.file}}" class="btn btn-success btn-sm">PDF File</a>
+        {{#if 0.file_2}}
+        <a href="/pdf/{{0.file_2}}" class="btn btn-success btn-sm">File #2</a>
+        {{/if}}
+    {{else}}
+        <a href="" class="btn btn-danger btn-sm">No File</a>
+    {{/if}}
+</div>
+
+<ul uk-accordion="multiple: true">
+    <li class="uk-close">
+        <a class="uk-accordion-title" href="#"></a>
+        <div class="uk-accordion-content">
+         <table class="uk-table uk-table-small uk-table-divider myTable" id="myTable">
+            <thead>
+                <tr>
+                    <th>Box Number</th>
+                    <th>Box Order</th>
+                    <th>Location</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each this as |obj|}}
+                    {{> card-content obj }}
+                {{/each}}
+            <tbody>
+         </table>
+         <a href="#" class="btn btn-primary btn-sm" onclick="pre_ship_scan({{0.s3}})">Proceed</a>
+        </div>
+    </li>
+</ul>
+
+
+</div>
+</div>

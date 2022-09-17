@@ -1,0 +1,54 @@
+{{#if admin}}
+  <p class="uk-heading-line uk-text-right uk-margin-small-right"><span>logged in
+      as
+      <span
+        class="uk-text-bold uk-label uk-label-success"
+      >{{name}}</span></span></p>
+
+  <div
+    class="uk-flex uk-flex-center@m uk-flex-right@l uk-margin-small-right mb-2"
+  >
+    <a
+      href="/admin_receiving"
+      class="uk-button-small uk-button-default"
+      uk-tooltip="手动接收"
+    >Manual Receiving</a>
+  </div>
+
+  <div class="input-group mb-3 container">
+    <div class="input-group-prepend">
+      <span
+        class="input-group-text"
+        id="basic-addon1"
+        uk-tooltip="货品接收：请扫描每个货箱条码 ，系统会自行更新状态"
+      >AUTO</span>
+    </div>
+    <input
+      type="text"
+      class="form-control"
+      id="scanned_item"
+      placeholder="SCAN TO RECEIVE"
+      aria-label="Username"
+      aria-describedby="basic-addon1"
+      onkeyup="delay(update)"
+    />
+  </div>
+
+  <div class="uk-text-center">
+    <h1 class="uk-heading-bullet">Now Receiving:</h1>
+    <ol id="inserted_item">
+    </ol>
+  </div>
+
+  <script src="javascript/auto_receive.js"></script>
+{{else}}
+  <script src="javascript/client_redirect.js"></script>
+{{/if}}
+
+{{! <audio id="xyz" src="whatever_you_want.mp3" preload="auto"></audio>
+
+if(x > 10)
+{
+    document.getElementById('xyz').play();
+    alert("Thank you!");
+} }}

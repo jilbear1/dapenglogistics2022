@@ -1,0 +1,28 @@
+<div class="container text-center" id="barcode_btn">
+    <h2>Account 帐户: <u>{{account}}</u></h2>
+    <p>Order was placed on {{date}}</p>
+    <div class="row justify-content-center">
+        <button type="button" id="done" class="btn btn-primary col-1" onclick="done()">Done 完成</button>
+        <button type="button" id='go_back' class="btn btn-secondary ml-2 col-2" onclick="history.back()" style="display: none;">Go Back</button>
+    </div>
+    <p>(Don’t worry! You can always come back to reprint)<br>您可以从挂单区或者主页回到此区</p>
+</div>
+
+
+{{#each boxes as |box|}}
+<div class="container">
+{{> barcode-data box }}
+</div>
+
+{{else}}
+<script src="javascript/admin_redirect.js"></script>
+<h3 class="text-center">NO ORDER WAS FOUND!</h3>
+{{/each}}
+
+
+<script>
+    function done() {
+        window.location.replace('/')
+    };
+    window.onload = function() { window.print(); }
+</script>

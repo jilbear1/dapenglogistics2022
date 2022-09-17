@@ -1,0 +1,30 @@
+<div
+  class="card mb-4 text-center shadow-sm"
+  id="box_bar"
+  style="width: 4in; height: 4in"
+>
+  <div class="card-body">
+    <h1
+      class="card-text"
+      style="
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-wrap: break-word;
+            display: block;
+            line-height: 1em;
+            max-height: 2em;
+        "
+    >{{container_number}}</h1>
+    <h5 class="card-text">{{length}} cm x {{height}} cm x {{width}} cm</h5>
+    <h5>{{weight}} KG</h5>
+    <h6>sealed on {{received_date}}</h6>
+    <p>{{user.name}} - {{account.name}}</p>
+  </div>
+  <div class="col-6 align-self-center mb-3">
+    <img
+      class="rounded"
+      src="http://bwipjs-api.metafloor.com/?bcid=code128&text={{container_number}}"
+      alt="Card image cap"
+    />
+  </div>
+</div>

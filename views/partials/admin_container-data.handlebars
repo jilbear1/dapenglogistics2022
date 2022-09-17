@@ -1,0 +1,46 @@
+<tr style="display: none;">
+  <td>{{user.name}}</td>
+  <td>{{account.name}}</td>
+  <td>{{container_number}}</td>
+  <td></td>
+  <td></td>
+  <td>{{description}}</td>
+  {{#if shipped_date}}
+    <td class="dropdown">{{shipped_date}}
+      <div class="dropdown-content">
+        <div href="#">received:
+          <a
+            href="/admin/container/{{container_number}}"
+          >{{received_date}}</a></div>
+        <div href="#">requested:
+          <a href="/pdf/{{file}}">{{requested_date}}</a></div>
+        <div href="#">shipped: {{shipped_date}}</div>
+      </div></td>
+  {{else}}
+    {{#if requested_date}}
+      <td class="dropdown">{{requested_date}}
+        <div class="dropdown-content">
+          <div href="#">received:
+            <a
+              href="/admin/container/{{container_number}}"
+            >{{received_date}}</a></div>
+          <div href="#">requested:
+            <a href="/pdf/{{file}}">{{requested_date}}</a></div>
+          <div href="#">shipped: {{shipped_date}}</div>
+        </div></td>
+    {{else}}
+      <td class="dropdown">{{received_date}}
+        <div class="dropdown-content">
+          <div href="#">received:
+            <a
+              href="/admin/container/{{container_number}}"
+            >{{received_date}}</a></div>
+          <div href="#">requested:
+            <a href="/pdf/{{file}}">{{requested_date}}</a></div>
+          <div href="#">shipped: {{shipped_date}}</div>
+        </div></td>
+    {{/if}}
+  {{/if}}
+  <td>{{status}}</td>
+  <td>{{location}}</td>
+</tr>

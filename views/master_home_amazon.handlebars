@@ -1,0 +1,124 @@
+<link rel="stylesheet" href="css/table.css">
+<link rel="stylesheet" href="css/loader_2.css">
+<div class="uk-overflow-auto">
+<p class="uk-heading-line uk-text-right uk-margin-small-right"><span>所在页面 <span class="uk-text-bold uk-label uk-label-info">库存（境内转运）</span></span></p>
+{{!-- <header class="text-center">美国内地转运货物浏览页</header> --}}
+<div class="uk-margin uk-overflow-auto">
+<div class="container">
+    {{!-- <nav class="uk-navbar-container" > --}}
+        <div class="uk-navbar-right uk-child-width-expand@s">
+
+            <div class="uk-navbar-item">
+            <div class="uk-grid-small uk-child-width-auto uk-grid">
+                <label><input id="radio" class="uk-radio" type="radio" value='1' name="radio2" onclick="status_trigger(1)">全部交易</label>
+                <label><input id="radio" class="uk-radio" type="radio" value='2' name="radio2" onclick="status_trigger(2)">挂单 (Pending)</label>
+                <label><input id="radio" class="uk-radio" type="radio" value='3' name="radio2" onclick="status_trigger(3)">存货 (Received)</label>
+                <label><input id="radio" class="uk-radio" type="radio" value='4' name="radio2" onclick="status_trigger(4)">出货通知 (Requested)</label>
+                <label><input  id="radio"class="uk-radio" type="radio" value='5' name="radio2" onclick="status_trigger(5)">已出货 (Shipped)</label>
+            </div>
+            </div>
+
+            <div class="uk-navbar-item">
+            <button type="button" id='inventory_btn' class="btn btn-sm btn-light border-primary text-primary shadow-sm" onclick="status_trigger(6)" uk-tooltip="Inventory">
+                库存: <b><span class="text-primary" id="numberOfInventory"></span></b> 件
+            </button>
+            {{#if accountId}}
+            <a class="btn btn-light btn-sm shadow-sm" href="/account/{{accountId}}" uk-tooltip="中国跨海货物">海外货物</a>
+            <a class="btn btn-primary btn-sm shadow-sm" href="/amazon/{{accountId}}" uk-tooltip="美国内地转运货物">亚马逊/其他货物</a>
+            <a class="btn btn-warning btn-sm shadow-sm" href="/request_amazon/{{accountId}}" uk-tooltip="Ship-out" >单位出货页面</a>
+            {{else}}
+            <a class="btn btn-light btn-sm shadow-sm" href="/master" uk-tooltip="中国跨海货物">海外货物</a>
+            <a class="btn btn-primary btn-sm shadow-sm" href="/amazon/{{accountId}}" uk-tooltip="美国内地转运货物">亚马逊/其他货物</a>
+            <a class="btn btn-outline-warning btn-sm shadow-sm" href="/request_amazon/{{accountId}}" uk-tooltip="Ship-out" >综合出货页面</a>
+            {{/if}}
+            </div>
+
+            {{!-- <div class="uk-navbar-item">
+                <a href="" class="btn btn-success">Labeling</a>
+            </div> --}}
+
+            <div class="uk-navbar-item">
+                <form class="uk-search uk-search-default">
+                    <span uk-search-icon></span>
+                    <input class="uk-search-input form-control search-input" type="search" placeholder="Search" data-table="myTable">
+                 </form>
+                 <a href="/amazon_overview/{{accountId}}" uk-icon="icon: file-text" class="badge bg-primary shadow-sm"></a>
+            </div>
+
+
+        </div>
+    {{!-- </nav> --}}
+    </div>
+</div>
+<div class="loader" id="loader"></div>
+    <div class="container">
+        <table class="uk-table uk-table-small uk-table-divider myTable shadow-sm" id="myTable">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">子用户</th>
+                    <th onclick="sortTable(1)">箱码</th>
+                    <th onclick="sortTable(2)">SKU</th>
+                    <th onclick="sortTable(3)">数量</th>
+                    <th onclick="sortTable(4)">货品描述</th>
+                    <th onclick="sortTable(5)">日期</th>
+                    <th onclick="sortTable(6)">状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each containers as |container|}}
+                {{> container-data container }}
+                {{else}}
+                    {{#if admin}}
+                        <h3 class="text-center uk-text-bold">Loading admin files...</h3>
+                    {{else}}
+                        <h3 class="text-center">NO AMAZON BOX WAS FOUND!</h3>
+                    {{/if}}
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+    </div>
+<script>
+        (function(document) {
+            'use strict';
+
+            var TableFilter = (function(myArray) {
+                var search_input;
+
+                function _onInputSearch(e) {
+                    search_input = e.target;
+                    var tables = document.getElementsByClassName(search_input.getAttribute('data-table'));
+                    myArray.forEach.call(tables, function(table) {
+                        myArray.forEach.call(table.tBodies, function(tbody) {
+                            myArray.forEach.call(tbody.rows, function(row) {
+                                var text_content = row.textContent.toLowerCase();
+                                var search_val = search_input.value.toLowerCase();
+                                row.style.display = text_content.indexOf(search_val) > -1 ? '' : 'none';
+                            });
+                        });
+                    });
+                }
+
+                return {
+                    init: function() {
+                        var inputs = document.getElementsByClassName('search-input');
+                        myArray.forEach.call(inputs, function(input) {
+                            input.oninput = _onInputSearch;
+                        });
+                    }
+                };
+            })(Array.prototype);
+
+            document.addEventListener('readystatechange', function() {
+                if (document.readyState === 'complete') {
+                    TableFilter.init();
+                }
+            });
+
+        })(document);
+    </script>
+
+<script src="javascript/amazon_table.js"></script>
+{{#if admin}}
+<script src="javascript/admin_redirect.js"></script>
+{{/if}}

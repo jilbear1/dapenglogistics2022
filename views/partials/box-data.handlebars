@@ -1,0 +1,53 @@
+<tr style="display: none;">
+  <td>{{account.name}}</td>
+  <td><a href="/box/{{box_number}}">{{box_number}}</a></td>
+  <td>{{description}}</td>
+  <td>{{order}}</td>
+  <td>{{batch.total_box}}</td>
+  <td>{{qty_per_box}}</td>
+  <td>{{sku}}</td>
+  <td><a href="/batch/{{batch_id}}" uk-icon="print"></a></td>
+  <td>{{tracking}}</td>
+  {{#if shipped_date}}
+    <td class="dropdown">{{shipped_date}}
+      <div class="dropdown-content">
+        <div href="#">pending: {{batch.pending_date}}</div>
+        <div href="#">received: {{received_date}}</div>
+        <div href="#">requested:
+          <a href="/pdf/{{file}}">{{requested_date}}</a></div>
+        <div href="#">shipped: {{shipped_date}}</div>
+      </div></td>
+  {{else}}
+    {{#if requested_date}}
+      <td class="dropdown">{{requested_date}}
+        <div class="dropdown-content">
+          <div href="#">pending: {{batch.pending_date}}</div>
+          <div href="#">received: {{received_date}}</div>
+          <div href="#">requested:
+            <a href="/pdf/{{file}}">{{requested_date}}</a></div>
+          <div href="#">shipped: {{shipped_date}}</div>
+        </div></td>
+    {{else}}
+      {{#if received_date}}
+        <td class="dropdown">{{received_date}}
+          <div class="dropdown-content">
+            <div href="#">pending: {{batch.pending_date}}</div>
+            <div href="#">received: {{received_date}}</div>
+            <div href="#">requested:
+              <a href="/pdf/{{file}}">{{requested_date}}</a></div>
+            <div href="#">shipped: {{shipped_date}}</div>
+          </div></td>
+      {{else}}
+        <td class="dropdown">{{batch.pending_date}}
+          <div class="dropdown-content">
+            <div href="#">pending: {{batch.pending_date}}</div>
+            <div href="#">received: {{received_date}}</div>
+            <div href="#">requested:
+              <a href="/pdf/{{file}}">{{requested_date}}</a></div>
+            <div href="#">shipped: {{shipped_date}}</div>
+          </div></td>
+      {{/if}}
+    {{/if}}
+  {{/if}}
+  <td>{{status}}</td>
+</tr>

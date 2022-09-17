@@ -1,0 +1,209 @@
+{{#if admin}}
+  <h3 class="text-center uk-text-bold">Loading admin files...</h3>
+  <script src="javascript/admin_redirect.js"></script>
+{{else}}
+<p class="uk-heading-line uk-text-right uk-margin-small-right"><span>所在页面 <span class="uk-text-bold uk-label">{{name}}的主面板</span></span></p>
+<div class="uk-flex uk-flex-center@m uk-flex-right@l uk-margin-small-right mb-2">
+  <button class="badge bg-info shadow-sm" uk-toggle="target: #modal-skuSearch" onclick="skuListing()" uk-tooltip="只限美国转运货物">SKU查询</button>
+  {{!-- <a href="/master" class="badge bg-warning shadow-sm" uk-tooltip="此页面乘载大量资料，可能会降低使用速度与品质!">总库存浏览页</a> --}}
+</div>
+{{!-- modal- for sku search ***********************--}}
+{{!-- search form --}}
+<div id="modal-skuSearch" uk-modal>
+    <div class="uk-modal-dialog">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <div class="uk-modal-header">
+            <a href="#modal-bulkSearch" uk-toggle><h2 class="lead text-center" onclick="resetBulkResult()">SKU Search (Single)</h2></a>
+        </div>
+        <div class="uk-modal-body">
+          {{!-- search form***********************--}}
+            <form class="uk-form-horizontal uk-margin-large">
+              <div class="uk-margin">
+                <label class="uk-form-label" for="form-horizontal-text">SKU</label>
+                <div class="uk-form-controls">
+                  <input class="uk-input" id="form-horizontal-text" type="text" placeholder="sku..." disabled>
+                </div>
+              </div>
+              <div class="uk-margin">
+                <label class="uk-form-label" for="form-horizontal-select">SKU select</label>
+                <div class="uk-form-controls" id="skuSelect">
+                  <select class="uk-select" id="form-horizontal-select">
+                  </select>
+                </div>
+              </div>
+            </form>
+        </div>
+        <div class="uk-modal-footer uk-text-right">
+            <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+            <a href="#searchResult" class="uk-button uk-button-primary" uk-toggle onclick="searchBySku()">Search</a>
+        </div>
+    </div>
+</div>
+{{!-- search outcome --}}
+<div id="searchResult" uk-modal>
+    <div class="uk-modal-dialog">
+        <button class="uk-modal-close-default" type="button" uk-close onclick="location.reload()"></button>
+        <div class="uk-modal-header">
+            <h2 class="lead text-center">Search Result: <b><span id="searchNumber"></span></b> Items</h2>
+        </div>
+        <div class="uk-modal-body">
+           <table class="uk-table uk-table-small uk-table-divider bg-light shadow" id="skuResult">
+            <thead>
+                <tr>
+                    <th>container/sku</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+      </table>
+        </div>
+        <div class="uk-modal-footer uk-text-right">
+            <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+            <a href="#modal-skuSearch" class="uk-button uk-button-primary" uk-toggle onclick="unattachTr()">Return</a>
+        </div>
+    </div>
+</div>
+{{!-- bulk search --}}
+<div id="modal-bulkSearch" uk-modal>
+    <div class="uk-modal-dialog">
+        <button class="uk-modal-close-default" type="button" uk-close onclick="location.reload()"></button>
+        <div class="uk-modal-header">
+            <a href="#modal-skuSearch" uk-toggle><h2 class="lead text-center" onclick="removeBulkHistory()">SKU Search (Bulk)</h2></a>
+        </div>
+        <div class="uk-modal-body">
+            <form class="uk-form-horizontal uk-margin-large">
+              <div class="container">
+                <div class="row" id="collection">
+                </div>
+              </div>
+              <div class="uk-margin">
+                <label class="uk-form-label" for="form-horizontal-select">SKU select</label>
+                <div class="uk-form-controls" id="bulkSelect">
+                  <select class="uk-select" id="form-horizontal-select" onchange="skuCollection()">
+                  </select>
+                </div>
+              </div>
+            </form>
+        </div>
+        <div class="uk-modal-footer uk-text-right">
+          <a href="/amazon_overview/{{accountId}}" uk-icon="icon: file-text" uk-tooltip="view all sku inventory"></a>
+          <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+          <a href="#bulkSearchResult" class="uk-button uk-button-primary" uk-toggle onclick="searchByBulkSku()">Search</a>
+        </div>
+    </div>
+</div>
+{{!-- bulk search outcome --}}
+<div id="bulkSearchResult" class='uk-modal-container' uk-modal>
+    <div class="uk-modal-dialog">
+        <button class="uk-modal-close-default" type="button" uk-close onclick="location.reload()"></button>
+        <div class="uk-modal-header">
+            <h2 class="lead text-center">Search Result</h2>
+        </div>
+        <div class="uk-modal-body">
+           <table class="uk-table uk-table-small uk-table-divider bg-light shadow" id="bulkResult">
+            <thead>
+                <tr>
+                    <th>container/sku</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+      </table>
+        </div>
+        <div class="uk-modal-footer uk-text-right">
+            <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+            <a href="#modal-bulkSearch" class="uk-button uk-button-primary" uk-toggle onclick="resetBulkResult()">Return</a>
+        </div>
+    </div>
+</div>
+{{!-- modal- for sku search ***********************--}}
+
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active">挂单总数: <span id="pending_c"></span> </li>
+      <li class="breadcrumb-item active">库存量: <span id="inventory_c"></span></li>
+    </ol>
+  </nav>
+
+
+  <div class="form-check">
+  <input class="form-check-input" type="radio" name="account_checkbox" id="account_search" onclick="account_show()" checked>
+  <label class="form-check-label" for="accountSearch">
+   子用户查找
+  </label>
+</div>
+<div class="form-check">
+  <input class="form-check-input" type="radio" name="box_checkbox" id="box_search" onclick="box_show()">
+  <label class="form-check-label" for="boxSearch">
+    货品讯息快搜
+  </label>
+  <div class="badge bg-success" id="badge" onclick="modeChange()"><span id="mode">C</span> Mode</div>
+</div>
+
+
+  <form class="uk-search uk-search-large" id="accountInput">
+    <span uk-search-icon></span>
+    <input class="uk-search-input" type="search" placeholder="子用户查询" id="myInput" onkeyup="filterFunction()">
+  </form>
+
+  <form class="uk-search uk-search-large" id="boxInput" style="display: none;">
+    <span uk-search-icon></span>
+    <input class="uk-search-input" type="search" placeholder="跨海货物查询" id="myBoxInput" onkeyup="box_searching()" uk-tooltip="快搜引擎会依据货物代码中的任何连续三位以上数字/字母来搜查 (例：若想查询SWLYA******, 可用SWL、LYA、WLYA等等来搜查)">
+    <input class="uk-search-input" type="search" placeholder="美国转运货件查询" id="containerInput" onkeyup="container_searching()" style="display: none;">
+  </form>
+</div>
+
+<div class="container" id="myDropdown">
+  {{#each accounts as |account|}}
+  {{> account-data account }}
+  {{else}}
+    <h3 class="text-center">NO ACCOUNT WAS FOUND!</h3>
+  {{/each}}
+</div>
+<div class="container" id="boxTable" style="display: none;">
+<small id="searchNote" class="text-primary"></small>
+<table class="uk-table uk-table-small uk-table-divider bg-light shadow">
+            <thead>
+                <tr>
+                    <th>子用户</th>
+                    <th>箱码</th>
+                    <th>货品描述</th>
+                    <th>Box#</th>
+                    <th>箱总数(of Boxes)</th>
+                    <th>单箱货量</th>
+                    <th>SKU</th>
+                    <th>日期</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody id="boxBody">
+
+            </tbody>
+      </table>
+
+</div>
+
+<div class="container" id="containerTable" style="display: none;">
+<small id="containerSearchNote" class="text-primary"></small>
+<table class="uk-table uk-table-small uk-table-divider bg-light shadow">
+  <thead>
+    <tr>
+      <th>子用户</th>
+      <th>箱码</th>
+      <th>SKU</th>
+      <th>数量</th>
+      <th>货品描述</th>
+      <th>日期</th>
+      <th>状态</th>
+    </tr>
+  </thead>
+    <tbody id="containerBody">
+    </tbody>
+</table>
+</div>
+
+<script src="javascript/homepage.js"></script>
+{{/if}}

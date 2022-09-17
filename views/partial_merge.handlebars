@@ -1,0 +1,160 @@
+{{#if admin}}
+<p class="uk-heading-line uk-text-right uk-margin-small-right"><span>logged in as <span class="uk-text-bold uk-label uk-label-success">{{name}}</span></span></p>
+
+<div class="container col-md-5 col-sm-8" id="notesFunction">
+<div id="alert" class="text-danger text-center"></div>
+</div>
+<div class="container">
+    {{!-- from box --}}
+    <form class="p-2 py-3 mt-2 mb-1">
+        {{#if newBox}}
+        {{else}}
+        <a class="btn btn-outline-primary" href="/partial_merge/{{toBoxId}}&{{fromBoxId}}" onclick="localStorageSwap()">Quick Swap</a>
+        {{/if}}
+        <a class="btn btn-outline-success" href="#boxReselect" uk-toggle>Container Change</a>
+        <a class="btn btn-outline-warning" href="/partial_merge/{{fromBoxId}}&new" uk-tooltip="transfer TO a new AM container">New Container</a>
+        <a class="btn btn-outline-danger" onclick="deleteConfirm()" uk-tooltip="delete remaining items and box itself from transfer-from box">Delete Remainder</a>
+    </form>
+<hr>
+<div id="boxReselect" class="uk-flex-top mt-2" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <div>
+            <input type="text" class="form-control mb-3" id="fromContainer" placeholder="Container # (from)" aria-label="container" aria-describedby="basic-addon1" onkeyup="findId('fromContainer')">
+        </div>
+        <div>
+            <input type="text" class="form-control mb-3" id="toContainer" placeholder="Container # (to)" aria-label="container" aria-describedby="basic-addon1" onkeyup="findId('toContainer')">
+        </div>
+        <a class="uk-button uk-button-primary uk-button-small uk-align-right" id="okBtn" uk-icon="icon: arrow-right" disabled>ok</a>
+    </div>
+</div>
+
+
+  <div class="row justify-content-md-center">
+    <div class="col-lg-5 col-md-6" id="assignFunction">
+        <h2>Transfer From: <span id="fromBoxId{{fromBoxId}}">{{fromBoxId}}</span></h2>
+        <form class="shadow p-2 py-3 mt-2 rounded">
+        <input type="checkbox" id="scanned_whole" class="form-check-input" onclick="auth()"><small uk-tooltip="The bulk-select function allows admin to move all contents in one move by scanning the associated box number twice" class="text-success ml-2"> Bulk Select</small>
+        {{!-- <input type="checkbox" id="alt_step" class="form-check-input" onclick="alter()"><small uk-tooltip="The 2-step sort allows admin to move all requested items into one single TEMP box and reassign into SP boxes" class="text-primary ml-2"> 2-Step Sort</small> --}}
+        <input type="text" class="form-control mb-3" id="scanned_item" placeholder="Scan..." aria-label="Username" aria-describedby="basic-addon1" onkeyup="delay(pre_check)">
+        <div class="row justify-content-center p-3" id="from_confirmTable">
+            {{#each fromRequest as |request|}}
+                {{> mergerCard request }}
+            {{else}}
+                <h1 class="lead">Great! You have completed all of the ship-out requests!</h1>
+                <div class="col-4 uk-align-center mt-2">
+                    <a href="/" class="uk-button uk-button-default" uk-icon="home"></a>
+                </div>
+            {{/each}}
+        </div>
+        </form>
+    </div>
+    {{!-- to box --}}
+  {{!-- divdie line --}}
+  {{#if newBox}}
+    <div class="col-lg-4 col-md-5">
+        <h2>Transfer To: <span class="text-primary">New AM Box</span></h2>
+             <form class=" shadow p-4 rounded bg-light" id="creator_form">
+                  <div class="row">
+                        <div class="form-group col" id="scanDiv">
+                            <label for="scan" class="text-danger">Search</label>
+                            <input type="text" class="form-control" id="scan" placeholder="scan sku" onkeyup="delay(scanSKU)">
+                        </div>
+                        <div class="form-group col">
+                            <label for="Date">Date</label>
+                            <input type="text" class="form-control" id="today" value="" disabled>
+                        </div>
+                        <div class="form-group col">
+                            <label for="Client">Client</label>
+                            <select name="user" id="user" class="uk-select uk-form-default rounded mt-1" onchange="account_data()">
+                                <option value="">select client</option>
+                                <option value="0">--- create new client ---</option>
+                            </select>
+                            <input type="text" class="form-control rounded mt-1" id="newUserName" placeholder="username" style="display: none" onkeyup="masterCheck()">
+                            <input type="text" class="form-control rounded mt-1" id="newPassword" placeholder="password" style="display: none" onkeyup="masterCheck()">
+                        </div>
+                        <div class="form-group col" id="accountDiv">
+                            <label for="Account">Account</label>
+                            <select name="account" id="account" class="uk-select uk-form-default rounded mt-1" onchange="accountSelection()" disabled>
+                                <option value="">select account</option>
+                                <option value="0">--- create new account ---</option>
+                            </select>
+                            <input type="text" class="form-control rounded mt-1" id="newAccountInput" placeholder="new account name" style="display: none;" onkeyup="masterCheck()">
+                        </div>
+                  </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <input type="text" class="form-control" id="new_des" onkeyup="masterCheck()">
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                    <label for="length">Length</label>
+                      <input type="number" class="form-control" id="new_len" placeholder="inch" onkeyup="masterCheck()">
+                    </div>
+                    <div class="col">
+                        <label for="width">Width</label>
+                      <input type="number" class="form-control" id="new_wid" placeholder="inch" onkeyup="masterCheck()">
+                    </div>
+                    <div class="col">
+                        <label for="height">Height</label>
+                        <input type="number" class="form-control" id="new_hei" placeholder="inch" onkeyup="masterCheck()">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="container">Box Number <span id="uniqueMark"></span></label>
+                    <input type="text" class="form-control" id="new_container" onkeyup="masterCheck()" placeholder="new amazon box #">
+                </div>
+
+                {{!-- <div class="form-group">
+                    <label for="sku">SKU</label>
+                    <input type="text" class="form-control" id="sku" placeholder="sku" onkeyup="delay(itemInput)">
+                </div> --}}
+
+                <div class="form-group mt-3">
+                    <table class="uk-table uk-table-small uk-table-divider bg-light shadow-sm" id="sku_table">
+                        <thead>
+                            <tr>
+                                <th>SKU</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sku_list">
+                        </tbody>
+                    </table>
+                <a id="order_pre-check" class="btn btn-primary mt-3 text-white col-12" style="display: none;" onclick="amazonCreate()">Ready to Create</a>
+                <a id="fake" class="btn btn-secondary mt-3 text-white col-12">Not Ready to Create</a>
+                </div>
+        </form>
+    </div>
+{{!--
+    <script src="javascript/amazon_receiving.js"></script> --}}
+    {{else}}
+    <div class="col-lg-5 col-md-6" id="assignFunction">
+        <h2>Transfer To: <span id="toBoxId{{toBoxId}}">{{toBoxId}}</span></h2>
+        <div class="row justify-content-center p-4">
+                <button class="btn btn-outline-dark" onclick="transferAM()">Confirm Transfer</button>
+        </div>
+        <form class="shadow p-2 py-3 mt-2 rounded bg-success">
+            <div class="row justify-content-center p-3" id="to_confirmTable">
+                {{#each toRequest as |request|}}
+                    {{> mergerCard request }}
+                {{else}}
+                <h1 class="lead">Great! You have completed all of the ship-out requests!</h1>
+                <div class="col-4 uk-align-center mt-2">
+                <a href="/" class="uk-button uk-button-default" uk-icon="home"></a>
+            </div>
+                {{/each}}
+            </div>
+        </form>
+    </div>
+    {{!-- <script src="javascript/partial_merge.js"></script> --}}
+    {{/if}}
+  </div>
+</div>
+<script src="javascript/partial_merge.js"></script>
+{{else}}
+<script src="javascript/client_redirect.js"></script>
+{{/if}}

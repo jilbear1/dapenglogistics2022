@@ -1,0 +1,47 @@
+<div class="card-body border border-success rounded shadow-sm mb-3">
+  <h5 class="card-title text-center">Ref: {{xc_number}}</h5>
+  <hr />
+  <div>
+    <form>
+      <div class="row">
+        <div class="col">
+          <label for="unit">Qty</label>
+          <input
+            type="number"
+            id="unit"
+            class="form-control border border-info"
+            placeholder="unit"
+            value="1"
+            onkeyup="calculator()"
+          />
+        </div>
+        <div class="col">
+          <label for="fee">Fee/Qty</label>
+          <input
+            type="number"
+            id="fee_per_unit"
+            class="form-control border border-info"
+            placeholder="fee/unit"
+            value="1"
+            onkeyup="calculator()"
+          />
+        </div>
+        <div class="col">
+          <label for="total">Grand Total (USD)</label>
+          <input
+            type="number"
+            id="total"
+            class="form-control border border-info"
+            placeholder="total"
+            value="1"
+          />
+        </div>
+      </div>
+    </form>
+  </div>
+  <div id="info" class="mt-2">
+    <textarea class="form-control" id="xcNewNotes" rows="3">Service Fee
+      (Deletion):
+      {{description}}</textarea>
+  </div>
+</div>

@@ -1,0 +1,36 @@
+
+<div class="px-1 py-1 col-4 uk-animation-fade" id="pending_card">
+<div class="card bg-light border-danger shadow" id="{{0.batch_id}}">
+    <h5 class="card-title mt-3">{{0.account.name}}</h5>
+    <small>{{0.description}}</small>
+    <p>挂单日期: {{0.batch.pending_date}}</p>
+ <div class="card-body">
+     <a href="/batch/{{0.batch_id}}" class="btn btn-light border-dark btn-sm">挂单标签群</a>
+</div>
+
+<ul uk-accordion="multiple: true">
+    <li class="uk-close">
+        <a class="uk-accordion-title" href="#" uk-icon="more"></a>
+        <div class="uk-accordion-content">
+         <table class="uk-table uk-table-small uk-table-divider myTable" id="myTable">
+            <thead>
+                <tr>
+                    <th>箱碼</th>
+                    <th>Box of Boxes</th>
+                    <th>单箱货量</th>
+                    <th>存货单位</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each this as |obj|}}
+                    {{> pending-content obj }}
+                {{/each}}
+            <tbody>
+         </table>
+         <a href="/batch/{{0.batch_id}}" class="btn btn-primary btn-sm">Shipping Label(s) 挂单标签群</a>
+        </div>
+    </li>
+</ul>
+
+</div>
+</div>

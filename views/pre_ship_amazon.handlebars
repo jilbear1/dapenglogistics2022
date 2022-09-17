@@ -1,0 +1,112 @@
+{{#if admin}}
+<link rel="stylesheet" href="css/print_setting.css">
+<div class="uk-heading-line uk-text-right uk-margin-small-right" id="topline">
+  <div>
+    <a onclick="deleteConfirm()" uk-icon="icon: trash; ratio: 2" uk-tooltip="Remove remaining items and destroy the REQ box" class="text-danger px-1"></a>
+    <a href="/admin/sku_modification" uk-icon="icon: cloud-upload; ratio: 2" uk-tooltip="SKU label upload/ SKU payload setting" class="px-1"></a>
+    <a onclick="printImage()" uk-icon="icon: tag; ratio: 2" id="printSku" uk-tooltip="Print associated SKU labels" class="px-1"></a>
+    <a uk-icon="icon: album; ratio: 2" class="text-primary px-1" uk-tooltip="SKU filter options" data-bs-toggle="offcanvas" href="#skuFilterChange" role="button" aria-controls="skuFilterChange"></a>
+  </div>
+</div>
+
+{{!-- offcanvas --}}
+<div class="offcanvas offcanvas-top" tabindex="-1" id="skuFilterChange" aria-labelledby="skuFilterChangeLabel">
+  <div class="offcanvas-header text-center">
+    {{!-- <h6 class="offcanvas-title">Mapping Filters</h6> --}}
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body container">
+      <div scope="col"><b class="text-primary">Filter Options</b> <small>(the most recent one on the top)</small></div>
+      <hr>
+      <div id="mapping options" class="form-check">
+      </div>
+  </div>
+</div>
+
+<div class="container col-md-5 col-sm-8" id="notesFunction">
+<div class="mb-2 card border-info p-2" uk-tooltip="Scan the targeted box first, then scan requested sku(s). If the client requested the whole box, scan the box twice to select all requested items" ><span class="lead">Notes:</span> <span id="notes"></spans></div>
+<div id="alert" class="text-danger text-center"></div>
+</div>
+
+<div class="container">
+  <div class="row justify-content-md-center">
+    <div class="col-lg-5 col-md-6" id="assignFunction">
+      <form class="shadow p-2 py-3 mt-2 rounded">
+      <input type="checkbox" id="scanned_whole" class="form-check-input" onclick="auth()"><small uk-tooltip="The bulk-select function allows admin to move all contents in one move by scanning the associated box number twice" class="text-success ml-2"> Bulk Select</small>
+      <input type="checkbox" id="alt_step" class="form-check-input" onclick="alter()"><small uk-tooltip="The 2-step sort allows admin to move all requested items into one single TEMP box and reassign into SP boxes" class="text-primary ml-2"> 2-Step Sort</small>
+      <input type="checkbox" id="allowFilter" class="form-check-input" checked><small uk-tooltip="The (SKU) filter performs auto-replacing function via pre-loaded old-new sku filters and collect associated label images. !!The reversal function will not be fully operational when this function is active." class="text-danger ml-2" > Filter</small>
+      <input type="text" class="form-control mb-3" id="scanned_item" placeholder="Scan..." aria-label="Username" aria-describedby="basic-addon1" onkeyup="delay(pre_check)">
+    <div class="row justify-content-center p-3" id="pre_confirmTable">
+  {{#each requests as |request|}}
+    {{> preShipAmazonConfirmation request }}
+  {{else}}
+    <h1 class="lead">Great! You have completed all of the ship-out requests!</h1>
+    <div class="col-4 uk-align-center mt-2">
+      <a href="/" class="uk-button uk-button-default" uk-icon="home"></a>
+    </div>
+  {{/each}}
+  </div>
+      </form>
+    </div>
+  {{!-- divdie line --}}
+    <div class="col-lg-4 col-md-5">
+      <form class="shadow p-2 py-3 mt-2 rounded border border-info" id="creator_form">
+        <div class="py-2">
+          <a class="btn btn btn-primary mt-3 text-white col-12" id="spinner" style="display: none">Creating...
+            <div class="spinner-border text-light" role="status"></div>
+          </a>
+          <a id="order_pre-check" class="btn btn-primary mt-3 text-white col-12" style="display: none;" onclick="pre_create_checker()">Ready to Seal</a>
+          <a id="fake" class="btn btn-secondary mt-3 text-white col-12">Not Ready to Seal</a>
+        </div>
+        <hr>
+        <div class="mb-2 text-center lead">
+          <div>
+            <a uk-tooltip="printable" onclick="printable()" id="printable"><h2 id="pre-shipN"></h2></a>
+          </div>
+          <img class="rounded" src="" id="image" alt="Card image cap" >
+        </div>
+                <div class="row">
+                    <div class="col">
+                    <label for="length">Length</label>
+                      <input type="number" class="form-control" id="new_len" placeholder="inch" onkeyup="masterCheck()">
+                    </div>
+                    <div class="col">
+                        <label for="width">Width</label>
+                      <input type="number" class="form-control" id="new_wid" placeholder="inch" onkeyup="masterCheck()">
+                    </div>
+                    <div class="col">
+                        <label for="height">Height</label>
+                        <input type="number" class="form-control" id="new_hei" placeholder="inch" onkeyup="masterCheck()">
+                    </div>
+                    <div class="col">
+                        <label for="weight">Weight</label>
+                        <input type="number" class="form-control" id="new_wei" placeholder="lb" onkeyup="masterCheck()">
+                    </div>
+                </div>
+
+                <div class="form-group mt-3">
+                    <table class="uk-table uk-table-small uk-table-divider bg-light shadow-sm" id="sku_table" style="table-layout: fixed; width: 100%">
+                        <thead>
+                            <tr>
+                                <th>SKU</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sku_list">
+                        </tbody>
+                    </table>
+                {{!-- <a id="order_pre-check" class="btn btn-primary mt-3 text-white col-12" style="display: none;" onclick="pre_create_checker()">Ready to Seal</a>
+                <a id="fake" class="btn btn-secondary mt-3 text-white col-12">Not Ready to Seal</a> --}}
+                <h2 id="totalItem" class="text-center"></h2>
+                </div>
+      </form>
+      <div class="p-2 py-3 mt-2" id="image_placeholder" style="display: none;"></div>
+    </div>
+  </div>
+</div>
+
+
+<script src="javascript/pre_ship_amazon.js"></script>
+{{else}}
+<script src="javascript/client_redirect.js"></script>
+{{/if}}

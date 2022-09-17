@@ -1,0 +1,15 @@
+<tr>
+  {{#if box_number}}
+    <td class="text-danger">{{user.name}}: {{account.name}}</td>
+    <td>{{box_number}}</td>
+    <td style="word-wrap: break-word"><a>{{description}}</a></td>
+    <td style="word-wrap: break-word">{{notes}}</td>
+    <td><button uk-icon="icon: reply"></button></td>
+  {{else}}
+    <td class="text-success">{{user.name}}: {{account.name}}</td>
+    <td>{{container_number}}</td>
+    <td style="word-wrap: break-word"><a>{{description}}</a></td>
+    <td style="word-wrap: break-word">{{notes}}</td>
+    <td><button uk-icon="icon: reply"></button></td>
+  {{/if}}
+</tr>

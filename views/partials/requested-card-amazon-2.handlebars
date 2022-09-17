@@ -1,0 +1,117 @@
+<div class="px-1 py-1 col-lg-4 col-md-6 col-sm-10 uk-animation-slide-top-small card_collection" id="thisCard_{{0.container_id}}">
+<div class="card bg-dark shadow-sm text-center text-light" id="{{0.container_id}}" style="background-image:url('https://w0.peakpx.com/wallpaper/420/416/HD-wallpaper-black-wall-clen-black-wall-only-black-thumbnail.jpg');">
+    <div class="lead mt-2">#{{0.container.container_number}}</div>
+    <h5 class="card-title mt-3">{{0.user.name}} - {{0.account.name}}</h5>
+    <p>Requested Date: {{0.container.requested_date}}</p>
+ <div class="card-body">
+     <a onclick="masterFunction(`{{0.container_id}}`, `delete`)" class="border border-warning rounded-circle" uk-icon="icon: trash; ratio: 1.2" uk-tooltip="Delete"></a>
+     <a onclick="masterFunction(`{{0.container_id}}`, `merge`)" class="border border-warning rounded-circle" uk-icon="icon: shrink; ratio: 1.2" uk-tooltip="Combine"></a>
+     <a onclick="masterFunction(`{{0.container_id}}`, `reverse`)" class="border border-warning rounded-circle" uk-icon="icon: reply; ratio: 1.2" uk-tooltip="Reverse"></a>
+     <a class="border border-warning rounded-circle" id="pallet_confirm_btn{{0.container_id}}" href="#pallet_confirm_{{0.container_id}}" uk-toggle uk-icon="icon: thumbnails; ratio: 1.2" uk-tooltip="Palletize" style="display: none"></a>
+     <hr>
+     {{#if 0.container.file}}
+        <a href="/pdf/{{0.container.file}}" class="btn btn-success btn-sm">File #1</a>
+        {{#if 0.container.file_2}}
+        <a href="/pdf/{{0.container.file_2}}" class="btn btn-success btn-sm">File #2</a>
+        {{/if}}
+    {{else}}
+        <a href="" class="btn btn-danger btn-sm">No File</a>
+    {{/if}}
+    <a href="#notes_{{0.container_id}}"  class="btn btn-light btn-sm" uk-toggle>Notes</a>
+</div>
+
+<!-- Notes -->
+<div id="notes_{{0.container_id}}" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <h2 class="uk-modal-title">Notes</h2>
+        <p>{{0.container.notes}}</p>
+    </div>
+</div>
+<!-- Notes -->
+{{!-- Pallet Confirmation --}}
+<div id="pallet_confirm_{{0.container_id}}" class="uk-modal-container" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <input type="checkbox" id="applyAllCheckBox{{0.container_id}}" class="form-check-input" checked onclick="applyAllAuthFunction({{0.container_id}})"><small uk-tooltip="" class="text-primary ml-2" > Apply All</small>
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <h4 class="text-center lead">Pallet List</h4>
+        <ul class="uk-list uk-list-circle">
+        </ul>
+    </div>
+    <a class="btn btn btn-primary mt-3 text-white col-12" id="spinner_2" style="display: none">Creating...
+        <div class="spinner-border text-light" role="status"></div>
+    </a>
+    <a class="btn btn-primary mt-3 text-white col-12" onclick="shipment_next({{0.container_id}}, {{0.user_id}}, {{0.account_id}}, event)">Ready to Seal</a>
+</div>
+{{!-- Pallet Confirmation --}}
+<ul uk-accordion="multiple: true">
+    <li class="uk-close">
+        <a class="uk-accordion-title" href="/admin_pre_ship_amazon/{{0.container_id}}"></a>
+        <div class="uk-accordion-content">
+         <table class="uk-table uk-table-small uk-table-divider myTable text-white" id="myTable">
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>SKU</th>
+                    <th>QTY</th>
+                    <th>Box#: Location</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each this as |item|}}
+                    {{> card-content-amazon-2 item }}
+                {{/each}}
+            <tbody>
+         </table>
+        <form class="shadow p-2 py-3 mt-2 rounded border border-info" style="display: none">
+            <div class="py-2">
+                 <a class="btn btn btn-primary mt-3 text-white col-12" id="spinner" style="display: none">Creating...
+                    <div class="spinner-border text-light" role="status"></div>
+                 </a>
+                <a id="order_pre-check" class="btn btn-success mt-3 text-white col-12" style="display: none;" onclick="shipment_init({{0.container_id}}, {{0.user_id}}, {{0.account_id}})">Ready</a>
+                <a id="fake" class="btn btn-secondary mt-3 text-white col-12">Not Ready</a>
+            </div>
+            <hr>
+            <div class="mb-2 text-center lead">
+            </div>
+                    <div class="row">
+                        <div class="col">
+                            <label for="length">Length</label>
+                            <input type="number" class="form-control" id="new_len" placeholder="inch" onkeyup="masterCheck()">
+                        </div>
+                        <div class="col">
+                            <label for="width">Width</label>
+                            <input type="number" class="form-control" id="new_wid" placeholder="inch" onkeyup="masterCheck()">
+                        </div>
+                        <div class="col">
+                            <label for="height">Height</label>
+                            <input type="number" class="form-control" id="new_hei" placeholder="inch" onkeyup="masterCheck()">
+                        </div>
+                        <div class="col">
+                            <label for="weight">Weight</label>
+                            <input type="number" class="form-control" id="new_wei" placeholder="lb" onkeyup="masterCheck()">
+                        </div>
+                    </div>
+                <div class="form-group mt-3">
+                    <table class="uk-table uk-table-small uk-table-divider bg-light shadow-sm">
+                        {{!-- style="table-layout: fixed; width: 100%" --}}
+                        <thead>
+                            <tr>
+                                <th>Put Back</th>
+                                <th>SP Box#</th>
+                                <th>SKU</th>
+                                <th uk-tooltip="# items per box (# items per UNIT x # units per BOX)">Quantity</th>
+                                <th>Pallet#</th>
+                            </tr>
+                        </thead>
+                        <tbody id="{{0.container_id}}" class="bigTable">
+                        </tbody>
+                    </table>
+                </div>
+        </form>
+
+        </div>
+    </li>
+</ul>
+
+</div>
+</div>

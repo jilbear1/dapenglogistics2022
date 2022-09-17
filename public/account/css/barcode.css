@@ -1,0 +1,23 @@
+.line {
+    margin:5px 0;
+    height:2px;
+    background:
+      repeating-linear-gradient(to right,rgb(12, 12, 12) 0,rgb(3, 3, 3) 5px,transparent 5px,transparent 7px)
+      /*5px red then 2px transparent -> repeat this!*/
+  }
+
+  .line1 {
+    margin:5px 0;
+    height:2px;
+    background:
+      repeating-linear-gradient(to right,black 0,black 3px,transparent 3px,transparent 7px)
+      /*3px black then 4px transparent -> repeat this!*/
+  }
+
+  .line2 {
+    margin:5px 0;
+    height:2px;
+    background:
+      repeating-linear-gradient(to right,black 0, black 10px,transparent 10px,transparent 12px)
+      /*10px red then 2px transparent -> repeat this!*/
+  }

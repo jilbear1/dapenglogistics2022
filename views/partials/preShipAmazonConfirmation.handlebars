@@ -1,0 +1,14 @@
+<h5 class="lead text-center bg-light rounded shadow-sm">{{0.description}}</h5>
+<table class="uk-table uk-table-small uk-table-divider myTable bg-light rounded">
+            <thead>
+                <tr>
+                    <th>SKU</th>
+                    <th>QTY</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each this as |obj|}}
+                    {{> preShipAmazonCard obj }}
+                {{/each}}
+            <tbody>
+</table>

@@ -1,0 +1,116 @@
+{{#if admin}}
+  <p class="uk-heading-line uk-text-right uk-margin-small-right"><span>logged in
+      as
+      <span
+        class="uk-text-bold uk-label uk-label-success"
+      >{{name}}</span></span></p>
+  <div class="container">
+    <div class="uk-grid-item-match">
+      <div
+        class="uk-card uk-card-default uk-card-body uk-width-1-3@m rounded bg-light border border-primary"
+      >
+        <h3 class="lead"><b>Password Update</b></h3>
+        <div class="form-group col">
+          <select
+            name="user"
+            id="user"
+            class="uk-select uk-form-default rounded mt-1"
+          >
+            <option value="">select client</option>
+          </select>
+        </div>
+
+        <div class="form-group col mt-3" id="password">
+          <label for="password">New Password </label>
+          <input
+            class="uk-input uk-form-warning uk-form-width-medium rounded"
+            type="password"
+            placeholder="new password"
+          />
+        </div>
+
+        <button
+          class="btn btn-outline-primary btn-sm mt-3"
+          onclick="proceed()"
+        >Update</button>
+        <hr />
+        <div id="bulk_box">
+          <h3 class="lead text-danger mt-2"><b>Box Archive</b>
+            <a
+              uk-icon="icon: settings"
+              uk-tooltip="switch to billing record maintenance"
+              onclick="switchMode()"
+            ></a></h3>
+          <div class="form-group col">
+            <select
+              name="status"
+              id="statusChange"
+              class="uk-select uk-form-default rounded mt-1"
+            >
+              <option value="98">archive</option>
+              <option value="99">delete</option>
+            </select>
+          </div>
+          <div class="form-group col mt-3" id="maintenance">
+            <p>All boxes which were<br />
+              <u>shipped</u>
+              &
+              <u>completely billed</u><br />
+              before the
+              <u>target date</u><br />
+              will be cleared/ archived from the database
+              <br />(notes**: no box can get deleted without being archived
+              first.)</p>
+            <label for="holding-period" class="text-danger">Target Date</label>
+            <input
+              class="uk-input uk-form-danger uk-form-width-medium rounded"
+              type="date"
+            />
+          </div>
+          <button
+            class="btn btn-outline-danger btn-sm mt-3"
+            onclick="proceed_archieve()"
+          >Confirm</button>
+        </div>
+
+        <div id="bulk_xc" style="display: none;">
+          <h3 class="lead text-success mt-2"><b>Billing Record Maintenance</b>
+            <a
+              uk-icon="icon: settings"
+              uk-tooltip="switch to box archive"
+              onclick="switchMode()"
+            ></a></h3>
+          <div class="form-group col">
+            <select
+              name="status"
+              id="statusChange_xc"
+              class="uk-select uk-form-default rounded mt-1"
+            >
+              <option value="99">delete</option>
+            </select>
+          </div>
+          <div class="form-group col mt-3" id="maintenance_xc">
+            <p>All Addtional Charges which were<br />
+              <u>billed</u><br />
+              before the
+              <u>target date</u><br />
+              will be cleared from the database</p>
+            <label for="holding-period" class="text-success">Target Date</label>
+            <input
+              class="uk-input uk-form-success uk-form-width-medium rounded"
+              type="date"
+            />
+          </div>
+          <button
+            class="btn btn-outline-success btn-sm mt-3"
+            onclick="proceed_removal()"
+          >Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="javascript/client_setting.js"></script>
+{{else}}
+  <script src="javascript/client_redirect.js"></script>
+{{/if}}

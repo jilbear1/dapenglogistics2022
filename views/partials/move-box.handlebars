@@ -1,0 +1,19 @@
+<tr>
+  <td><input class="uk-checkbox" type="checkbox" /></td>
+  <td>{{user.name}}</td>
+  <td>{{account.name}}</td>
+  <td>{{box_number}}</td>
+  <td>{{description}}</td>
+  <td>{{order}}</td>
+  <td>{{batch.total_box}}</td>
+  <td>{{qty_per_box}}</td>
+  <td>{{sku}}</td>
+  <td>{{location}}</td>
+  <td>{{requested_date}}</td>
+  <td>{{status}}</td>
+  {{#if file}}
+    <td><a href="/pdf/{{file}}" uk-icon="cloud-download"></a></td>
+  {{else}}
+    <td><span uk-icon="close"></span></td>
+  {{/if}}
+</tr>
