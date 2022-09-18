@@ -378,7 +378,9 @@ const applyAllAuthFunction = (id) => {
         applyAll = false;
         console.log('apply all OFF');
     }
-};
+}
+
+
 ////master check function//////
 let length, height, weight, width;
 function masterCheck () {
@@ -396,6 +398,7 @@ function masterCheck () {
         document.getElementById('fake').style.display = '';
     }
 };
+
 //////get additional charge
 var xcQtyCount = 0;
 var xcExist = false;
@@ -426,6 +429,8 @@ const getXC = async (container_id) => {
     })
 };
 filterLoader (10);
+
+
 var palletCount = 0;
 // var palletMap = new Map();
 var palletized = true;//************ */
@@ -487,7 +492,7 @@ const sync = (ev) => {
         error();
         UIkit.notification({message: 'The input value should be greater than 0', pos: 'top-center'});
     }
-};
+}
 function error() {
     var audio = new Audio('../media/wrong.mp3');
     audio.play();
@@ -512,7 +517,7 @@ const shipment_next = (container_id, user_id, account_id, event) => {
     Promise.all(promises).then(() => {
         console.log('done');
     }).catch((e) => {console.log(e)})
-};
+}
 
 const piArr=[];
 const piMap = new Map();
@@ -702,29 +707,24 @@ async function self_destroy(container_id) {
     }
 
 };
-const reversePromises = [];
 const reverseConfirm = (container_id) => {
     fetch(`/api/item/findAllPerContainer/${container_id}`, {
         method: 'GET'
     }).then((response) => {
         return response.json();
     }).then((data) => {
-        record_action_reverse(data, reversePromises);
-        Promise.all(reversePromises).then(() => {
-            console.log('record insert!');
-            for (let i = 0; i < data.length; i++) {
-                startPoint++;
-                const container_number = data[i].description.split(':')[0];
-                fetch(`/api/container/amazon_container/${container_number}`, {
-                    method: 'GET'
-                }).then((r) => {
-                    return r.json();
-                }).then((d) => {
-                    const parentContainerId = d.id
-                    duplicatationValidator(data[i], parentContainerId, container_id)
-                })
-            }
-        }).catch((e) => {console.log(e)})
+        for (let i = 0; i < data.length; i++) {
+            startPoint++;
+            const container_number = data[i].description.split(':')[0];
+            fetch(`/api/container/amazon_container/${container_number}`, {
+                method: 'GET'
+            }).then((r) => {
+                return r.json();
+            }).then((d) => {
+                const parentContainerId = d.id
+                duplicatationValidator(data[i], parentContainerId, container_id)
+            })
+        }
     })
 };
 async function duplicatationValidator(obj, ContainerId, oldContainerId) {
@@ -791,54 +791,3 @@ const unlabelShippedDate = async (id, delete_id) => {
         }
     }
 }
-/**
- * AM = 1
- * Req = 11;
- * Req reverse = 10
- * SP = 12;
- * SP create = 121
- * SP final confirm = 129;
- * China = 0 (create and request);
- * China Confirm  = -100;
- * Mapping = 50
- * */
- const record_action_reverse = (data) => {
-    for (let b = 0; b < data.length; b++) {
-        const mainBoxNumber = data[b].description.split(':')[0];
-        const accountName = data[b].account.name;
-        const user_id  = data[b].user_id;
-        const itemNumber = data[b].item_number;
-        const qty_to = data[b].qty_per_sku
-        reversePromises.push(record_put_action(user_id, itemNumber, mainBoxNumber, qty_to, accountName, data[b].container_id))
-    }
- }
- const record_put_action = async (id, ref, sub, count, accountName, parentBoxId) => {
-    const user_id = id;
-    const ref_number = ref;
-    const sub_number = sub;
-    const qty_to = count;
-    const status_from = 2;
-    const status_to = 1;
-    const action = `Admin Reversed Req Box #${parentBoxId} (for Acct: ${accountName})`;
-    const action_notes = `Quick Mode Reversal Performed; ${ref}(${count}) back to ${sub}`
-    const type = 112;
-    const date = new Date().toISOString().split('T')[0];
-    const response = await fetch(`/api/record/record_create`, {
-      method: 'POST',
-      body: JSON.stringify({
-        user_id,
-        ref_number,
-        sub_number,
-        qty_to,
-        status_to,
-        status_from,
-        action,
-        action_notes,
-        type,
-        date
-      }),
-      headers: {
-          'Content-Type': 'application/json'
-      }
-    });
-};

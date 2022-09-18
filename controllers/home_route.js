@@ -264,9 +264,6 @@ router.get('/request_amazon_confirmation', withAuth, async (req, res) => {
         status: 1,
         type: 3
       },
-      order: [
-        ['custom_1', 'ASC']
-      ],
       attributes: [
         'id',
         'user_id',
@@ -1079,7 +1076,7 @@ router.get('/admin_move_main_amazon_type_2', withAuth, async (req, res) => {
 
 });
 
-router.get('/admin_confirm_amazon_pal', withAuth, async (req, res) => {
+router.get('/admin_confirm_amazon_ez', withAuth, async (req, res) => {
   try {
     const containerData = await Container.findAll({
       where: {
@@ -1130,7 +1127,7 @@ router.get('/admin_confirm_amazon_pal', withAuth, async (req, res) => {
       return r;
     }, Object.create(null));
     const confirms = Object.values(requestsBatch);
-    res.render('dynamic_move_amazon', {confirms, loggedIn: true, admin: req.session.admin, name: req.session.name, confirm: true, pal: true});
+    res.render('dynamic_move_amazon', {confirms, loggedIn: true, admin: req.session.admin, name: req.session.name, confirm: true, ez: false});
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
@@ -1186,7 +1183,7 @@ router.get('/admin_confirm_amazon', withAuth, async (req, res) => {
       return r;
     }, Object.create(null));
     const confirms = Object.values(requestsBatch);
-    res.render('dynamic_move_amazon', {confirms, loggedIn: true, admin: req.session.admin, name: req.session.name, confirm: true, pal: false});
+    res.render('dynamic_move_amazon', {confirms, loggedIn: true, admin: req.session.admin, name: req.session.name, confirm: true, ez: true});
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
@@ -2374,6 +2371,10 @@ router.get('/dq_handle_admin/:code&:xc_box&:detailarr', withAuth, async (req, re
     console.log(err);
     res.status(500).json(err);
   }
+})
+
+router.get('/dress', async(req, res) => {
+  res.render('dress');
 })
 
 module.exports = router

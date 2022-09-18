@@ -107,7 +107,7 @@ var requestedObjArr = [];
 var requestedItemIdArr = [];
 var masterArr = [];
 var masterContainerIdArr = [];//to update shipped_date to containers which are empty after the request, so that it can be only billed once for storage fee afterwards
-function GetSelected(event) {
+function GetSelected() {
   const code = new Date().valueOf();
   var fba = document.getElementById('amazon_ref').value.trim()
   fba = fba.toUpperCase();
@@ -168,8 +168,6 @@ function GetSelected(event) {
     requestedContainer.container_number = `REQ-${code}`
    };
   if (requestedObjArr.length) {
-    event.target.innerHTML = `<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span><span class="sr-only"> 整理资料中...</span>`;
-    event.target.onclick = null;
     updateMasterItem(masterArr, requestedObjArr, requestedContainer);
   } else {
     loader.style.display = 'none';
@@ -213,10 +211,10 @@ function itemCreate(objArr, s3, id, container_number) {
   for (let i = 0; i < objArr.length; i++) {
     objArr[i].container_id = id;
     promises.push(loadingItems(objArr[i]));
-    promises.push(record_item(objArr[i], container_number, id));
+    promises.push(record_item(objArr[i], container_number));
   };
   Promise.all(promises).then(() => {
-    upload_file(s3, container_number, id)
+    upload_file(s3, container_number)
   }).catch((e) => {console.log(e)})
 };
 async function loadingItems(data) {
@@ -230,22 +228,22 @@ async function loadingItems(data) {
     itemCounter += data.qty_per_sku;
   }
 };
-function upload_file(e, container_number, id) {
+function upload_file(e, container_number) {
   const promises_2 = [];
   const file = document.getElementById('label').files[0];
   const file_2 = document.getElementById('label_2').files[0];
   if (!file_2 && file) {
-    promises_2.push(record_container(itemCounter, itemCollection, container_number, e, '1', id));
+    promises_2.push(record_container(itemCounter, itemCollection, container_number, e, '1'));
     promises_2.push(upload_framwork(file, e))
   } else if (!file && file_2) {
-    promises_2.push(record_container(itemCounter, itemCollection, container_number, e, '1', id));
+    promises_2.push(record_container(itemCounter, itemCollection, container_number, e, '1'));
     promises_2.push(upload_framwork(file_2, e))
   } else if (file && file_2) {
-    promises_2.push(record_container(itemCounter, itemCollection, container_number, e, '2', id));
+    promises_2.push(record_container(itemCounter, itemCollection, container_number, e, '2'));
     promises_2.push(upload_framwork(file, e))
     promises_2.push(upload2F_framwork_file2(file_2, e))
   } else {
-    promises_2.push(record_container(itemCounter, itemCollection, container_number, e, '0', id));
+    promises_2.push(record_container(itemCounter, itemCollection, container_number, e, '0'));
   };
   Promise.all(promises_2).then(() => {
     loader.style.display = 'none';
@@ -322,18 +320,18 @@ function selectAll(id) {
   }
 };
 ////// request init & pre check ////////
-function validation_request(event) {
+function validation_request() {
   const file = document.getElementById('label').files[0];
   const file_2 = document.getElementById('label_2').files[0];
   var check_label = document.getElementById('label_not_required')
   if (!file && !file_2 && !check_label.checked) {
     alert('The shipping label is missing! Please attach a pdf file and try again! 无夹带档案！请夹带档案或者勾选无夹带档案栏，然后再试一遍。')
   } else {
-    preCheckPage(file, file_2, event)
+    preCheckPage(file, file_2)
   }
 };
 var accountName;
-function preCheckPage(file, file_2, event) {
+function preCheckPage(file, file_2) {
   var fileName, fileName_2;
   var confirmationArr = [];
   var noRepeatArr = [];
@@ -390,7 +388,7 @@ function preCheckPage(file, file_2, event) {
       </tbody>
       </table><hr><b>附注留言</b>: ${notes}<hr><b>档案:</b> <u>${fileName}</u> & <u>${fileName_2}</u>`).then(function () {
         loader.style.display = '';
-        GetSelected(event)
+        GetSelected()
     }, function () {
         console.log('Rejected.')
     });
@@ -471,9 +469,9 @@ function check_amazon() {
   }
 };
 /////record//////
-const record_item = async (itemData, container_number, id) => {
+const record_item = async (itemData, container_number) => {
   const ref_number = itemData.item_number;
-  const sub_number = container_number + ` (#${id})`;
+  const sub_number = container_number;
   const status_from = 1;
   const status_to = 2;
   const qty_to = itemData.qty_per_sku;
@@ -549,8 +547,8 @@ const record_itemUpdate = async (itemData) => {
     }
   });
 };
-const record_container = async (count, collection, container_number, file_code, numberOfFile, id) => {
-  const ref_number = container_number + ` (#${id})`;
+const record_container = async (count, collection, container_number, file_code, numberOfFile) => {
+  const ref_number = container_number;
   const sub_number = file_code;
   const status_to = 2;
   const qty_to = count;

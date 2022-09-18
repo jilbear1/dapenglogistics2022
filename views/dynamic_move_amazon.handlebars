@@ -6,7 +6,7 @@
   <a href="/admin_move_main_amazon" class="badge bg-secondary shadow-sm">Amazon Request</a>
   <a href="/admin_confirm_amazon" class="badge bg-info shadow-sm">Amazon Confirm ({{confirms.length}})</a>
   <hr>
-  <a href="/admin_confirm_amazon_pal" class="btn btn-sm btn-outline-primary shadow-sm" uk-tooltip="The pallet-only filter allows admin to perform final confirmation on requested pallets individually">
+  <a href="/admin_confirm_amazon_ez" class="btn btn-sm btn-outline-primary shadow-sm" uk-tooltip="The pallet-only filter allows admin to perform final confirmation on requested pallets individually">
     Pallet Mode <b id="palletMode">OFF</b></a>
   </a>
   {{else}}
@@ -51,9 +51,9 @@
 <div class="container">
   <div class="row">
   {{#if confirm}}
-    {{#if pal}}
+    {{#if ez}}
       {{#each confirms as |confirm|}}
-        {{> confirm-card-amazon-pal confirm }}
+        {{> confirm-card-amazon-ez confirm }}
       {{else}}
         <h1 class="lead text-center">Great! You have completed all of the ship-out confirmation!</h1>
         <div class="col-4 uk-align-center mt-2">

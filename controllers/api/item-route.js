@@ -548,14 +548,6 @@ router.get('/findAllPerContainer/:container_id', withAuth, async (req, res) => {
         'user_id',
         'account_id',
         'container_id'
-      ],
-      include: [
-        {
-          model: Account,
-          attributes: [
-            'name',
-          ]
-        }
       ]
     });
     const items = itemData.map(i => i.get({ plain: true }));
@@ -974,8 +966,7 @@ router.get('/itemValidation/:item_number&:container_id', withAuth, async (req, r
         'qty_per_sku'
       ],
     });
-    var data;
-    itemData?data=itemData.get({plain: true}):data=null;
+    const data = itemData.get({plain: true});
     res.json(data);
   } catch (err) {
     console.log(err);
