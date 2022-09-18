@@ -12,5 +12,5 @@ In heroku config var:
 # 21YunBox
 
 #Contributer
-Rex Yu: lead UI designer, software developer
+Rex Yu: lead UI designer, software developer, integration specialist
 Jilbear Hatch: project owner
