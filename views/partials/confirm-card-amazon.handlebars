@@ -1,11 +1,11 @@
-<div class="px-1 py-1 col-lg-4 col-md-6 col-sm-10" id="requested_card">
+<div class="px-1 py-1 col-lg-4 col-md-6 col-sm-10" id="requested_card{{0.custom_2}}">
 <div class="card shadow-sm text-center border-warning uk-animation-slide-top-small" id="{{0.id}}" style="background-color:#{{0.custom_2}}">
-    <div class="lead mt-2">#{{0.tracking}}</div>
-    <h5 class="card-title mt-3">{{0.user.name}} - {{0.account.name}}</h5>
+    <div class="lead mt-2">#{{0.custom_2}}</div>
+    <h5 class="card-title mt-3" id="{{0.user.id}}">{{0.user.name}} - {{0.account.name}}</h5>
     <p>Requested Date: {{0.requested_date}}</p>
  <div class="card-body">
-     <a class="btn btn-outline-primary btn-sm shadow-sm" uk-icon="icon: check" href="#modal-sections{{0.tracking}}" uk-toggle>Proceed</a>
-     <a class="btn btn-sm btn-warning shadow-sm" href="#modal-container{{0.tracking}}" uk-toggle>Notes</a>
+     <a class="btn btn-outline-primary btn-sm shadow-sm" uk-icon="icon: check" href="#modal-sections{{0.custom_2}}" uk-toggle>Proceed</a>
+     <a class="btn btn-sm btn-warning shadow-sm" href="#modal-container{{0.custom_2}}" uk-toggle>Notes</a>
      {{#if 0.file}}
         <a href="/pdf/{{0.file}}" class="btn btn-success btn-sm shadow-sm">Label File #1</a>
         {{#if 0.file_2}}
@@ -34,7 +34,7 @@
                 {{/each}}
                  <tbody>
             </table>
-         <a class="btn btn-primary btn-sm" uk-icon="icon: check" href="#modal-sections{{0.tracking}}" uk-toggle>Proceed</a>
+         <a class="btn btn-primary btn-sm" uk-icon="icon: check" href="#modal-sections{{0.custom_2}}" uk-toggle>Proceed</a>
         </div>
     </li>
 </ul>
@@ -42,7 +42,7 @@
 </div>
 
 
-<div id="modal-container{{0.tracking}}"  uk-modal>
+<div id="modal-container{{0.custom_2}}"  uk-modal>
     <div class="uk-modal-dialog uk-modal-body">
         <button class="uk-modal-close-default" type="button" uk-close></button>
         <h4 class="lead">Notes ({{0.fba}}):</h4>
@@ -51,15 +51,15 @@
 </div>
 
 
-<div id="modal-sections{{0.tracking}}" uk-modal>
+<div id="modal-sections{{0.custom_2}}" uk-modal>
     <div class="uk-modal-dialog">
         <button class="uk-modal-close-default" type="button" uk-close></button>
         <div class="uk-modal-body">
             <label class="uk-form-label" for="description">Admin Notes (if any):</label><br>
-            <input class="uk-input uk-width-1-2" type="text" placeholder="All tasks completed; shipped." id="input{{0.tracking}}">
+            <input class="uk-input uk-width-1-2" type="text" placeholder="All tasks completed; shipped." id="input{{0.custom_2}}">
         </div>
         <div class="uk-modal-footer uk-text-right">
-            <a class="btn btn-primary btn-sm" onclick="statusChange(`{{0.tracking}}`,null)">Confirm</a>
+            <a class="btn btn-primary btn-sm" onclick="statusChange(null,`{{0.custom_2}}`)">Confirm</a>
         </div>
     </div>
 </div>

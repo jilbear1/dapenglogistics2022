@@ -110,21 +110,21 @@ dress.init(
               model: 'account',
               key: 'name'
              },
-          },
+          }
         client_id: {
             type: DataTypes.INTEGER,
             references: {
               model: 'account',
               key: 'ID'
              },
-          },
+          }
         account_id: {
             type: DataTypes.INTEGER,
             references: {
               model: 'user',
               key: 'ID'
              },
-          },
+          }
     },
     {
       sequelize,

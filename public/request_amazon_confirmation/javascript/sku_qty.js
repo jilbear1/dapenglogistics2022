@@ -12,6 +12,7 @@ var containerRef = new Map();
 var locationRef = new Map();
 var costCount = 0;
 var masterAccountIdArr = [];
+var itemCollection = 'Colletion: ';
 //init
 function getByValue(map, searchValue) {
   for (let [key, value] of map.entries()) {
@@ -29,7 +30,7 @@ const init = () => {
         const item = data[k];
         itemRef.set(item.id, item.item_number);
         containerRef.set(item.container_id, item.container.container_number);
-        locationRef.set(item.container_id, item.container.location);
+        // locationRef.set(item.container_id, item.container.location);***************9/15/2022 dead code not using in app
       };
       const container_data = data.reduce((r, a) => {
         r[a.container.container_number] = r[a.container.container_number] || [];
@@ -109,7 +110,9 @@ const palletSwitch = (ev) => {
 }
 var selectPerPallet = true;
 var selectIndividual = true;
+var accountName;
 function selectBatch (tracking, ev) {
+  accountName = ev.target.parentNode.parentElement.querySelectorAll('td')[1].innerText;
   if (!selectIndividual) {
     var allSiblingBoxes;
     selectPerPallet?allSiblingBoxes = document.getElementsByClassName(tracking):allSiblingBoxes=siblingTracker(tracking);
@@ -183,8 +186,11 @@ function getRandomColor() {
   }
   return color;
 }
-function GetSelected() {
+
+function GetSelected(numberOfFile) {
   if (selectBoxId.length) {
+    document.getElementById('js-modal-confirm').innerHTML = '<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>';
+    document.getElementById('js-modal-confirm').onclick = null;
     var confirmationBatch = new Object()
     const s3 = new Date().valueOf();
     var fba = document.getElementById('amazon_ref').value.trim()
@@ -197,7 +203,21 @@ function GetSelected() {
     confirmationBatch.notes = notes;
     confirmationBatch.status = 2;
     confirmationBatch.custom_2 = getRandomColor();
-    updateContainer(confirmationBatch, s3)
+    ///record keeping system starts here
+    const promises = [];
+    for (let i = 0; i < selectBoxId.length; i++) {
+      var itemCollection = 'Colletion: ';
+      var total_skus = 0;
+      const sku_collection = containerMap.get(selectBoxId[i]).forEach(item => {
+        itemCollection += `${item.item_number}(${item.qty_per_sku}), `;
+        total_skus+= item.qty_per_sku;
+      })
+      promises.push(record_container(total_skus, itemCollection, containerRef.get(selectBoxId[i]), s3, numberOfFile));
+    }
+    ///record keeping system ends here
+    Promise.all(promises).then(() => {
+      updateContainer(confirmationBatch, s3)
+    }).catch((e) => {console.log(e)})
   } else {
     alert('no container was selected! please try again!');
     loader.style.display = 'none';
@@ -306,14 +326,22 @@ function clear_noFile_radio() {
   }
 };
 function validation_request() {
+  var numberOfFile = 0;
   const file = document.getElementById('label').files[0];
   const file_2 = document.getElementById('label_2').files[0];
+  if (file) {
+    numberOfFile++;
+  }
+  if(file_2) {
+    numberOfFile++
+  }
+  console.log(numberOfFile);
   var check_label = document.getElementById('label_not_required')
   if (!file && !file_2 && !check_label.checked) {
     alert('The shipping label is missing! Please attach a pdf file and try again! 无夹带档案！请夹带档案或者勾选无夹带档案栏，然后再试一遍。')
   } else {
     loader.style.display = '';
-    GetSelected()
+    GetSelected(numberOfFile)
   }
 };
 function sortTable(n) {
@@ -404,6 +432,41 @@ const newIndex = (string) => {
     return `00${string}`
   } return string
 }
+
+
+//Req = 11; SP = 12; AM = 1; China = 0
+const record_container = async (count, collection, sp_box_number, file_code, numberOfFile) => {
+  const ref_number = sp_box_number;
+  const sub_number = file_code;
+  const status_from = 1;
+  const status_to = 2;
+  const qty_to = count;
+  const qty_from = count;
+  const action = `Client Confirmed SP Boxes (Acct: ${accountName})`;
+  const action_notes = `${collection}${numberOfFile} file(s)`;
+  const type = 12;
+  const date = new Date().toISOString().split('T')[0];
+  const response = await fetch(`/api/record/record_create_client`, {
+    method: 'POST',
+    body: JSON.stringify({
+      ref_number,
+      sub_number,
+      status_to,
+      status_from,
+      qty_from,
+      qty_to,
+      action,
+      action_notes,
+      type,
+      date
+    }),
+    headers: {
+        'Content-Type': 'application/json'
+    }
+  });
+};
+
+
 
 init();
 pallet_info();

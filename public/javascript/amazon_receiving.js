@@ -577,10 +577,9 @@ if (localStorage.getItem('amazon_mode') == 'Q') {
     document.getElementById('badge').click();
 }
 
-
-var allContainerArr = [];
-var emptyArr = [];
 function removeEmptyContainer() {
+    var allContainerArr = [];
+    var emptyArr = [];
     fetch(`/api/item/allItemAdmin`, {
         method: 'GET'
       }).then(function (response) {
@@ -598,20 +597,31 @@ function removeEmptyContainer() {
           }).then(function (response) {
             return response.json();
           }).then(function (data) {
+            const testAMArr = [];
+            const testOtherArr = [];
             for (let i = 0; i < data.length; i++) {
                 const container = data[i];
                 if(!allContainerArr.includes(container.id)) {
                     if ([0,2].includes(container.type)) {
+                        emptyArr.push(container.id);
+                        testOtherArr.push(container.container_number);
+                    } else if (parseInt(container.cost) == 0 && container.type == 1 && container.bill_storage && !container.shipped_date) {
+                        testAMArr.push(container.container_number);
                         emptyArr.push(container.id)
-                    // } else if (parseInt(container.cost) == 0 && container.type == 1 && container.bill_storage && container.shipped_date) {
-                    //     emptyArr.push(container.id)
                     }
                 }; //cost == 0 means the empty box has been recently billed and ready to get reset
             };
+            console.log(`empty AM boxes ${testAMArr.length}: ` + testAMArr);
+            console.log(`other empty boxes ${testOtherArr.length}: ` + testOtherArr)
             if (!emptyArr.length) {
                 alert('No empty container was found in the database')
             } else {
-                removeEmpty(emptyArr);
+                const code = prompt('passcode to confirm the deletion');
+                if (code == '0523') {
+                    removeEmpty(emptyArr);
+                } else {
+                    alert('invalid passcode. action aborted')
+                }
             }
           })
       });
