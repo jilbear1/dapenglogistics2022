@@ -250,7 +250,8 @@ const evt_trigger = (item_number, int, container_id, item_id, ev) => {
     const masterTotalBox = totalPallet*pallet_ratio;
     const itemsPerPallet = merging_ratio*qty_ans*pallet_ratio;
     const unitsPerPallet = qty_ans*pallet_ratio;
-    const masterRemainder = Math.floor(((int/(merging_ratio*qty_ans*pallet_ratio)) - totalPallet)*itemsPerPallet);
+    //const masterRemainder = Math.floor(((int/(merging_ratio*qty_ans*pallet_ratio)) - totalPallet)*itemsPerPallet);
+    const masterRemainder = int - (totalPallet*itemsPerPallet);
     skuOldMap.set(item_id, masterRemainder);
     palletCount+=totalPallet;
     //100/4 = 25
