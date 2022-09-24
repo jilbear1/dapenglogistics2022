@@ -8,12 +8,12 @@
             word-wrap: break-word;
             display: block;
             line-height: 1em;
-            max-height: 2em;
+            max-height: 1em;
         "
     >{{description}}</h3>
   </div>
   <h6>{{account.name}}</h6>
-  <h2 class="card-text">{{sku}}</h2>
+  {{!-- <h2 class="card-text">{{sku}}</h2> --}}
   <h1 class="card-text" style="font-size:250%"><b><big
       >{{order}}/{{batch.total_box}}</big></b></h1>
   <div class="inline">{{length}}
@@ -23,8 +23,9 @@
     {{width}},
     {{weight}}KG,
     {{qty_per_box}}PCS</div>
-  <div class="col-5 align-self-center">
-    <small>made in China</small>
+  {{!-- <div class="col-6 align-self-center"> --}}
+    <small>{{sku}} - made in china</small>
+    <div class="col-8 align-self-center">
     <img
       class="rounded"
       src="http://bwipjs-api.metafloor.com/?bcid=code128&text={{box_number}}"
