@@ -2374,6 +2374,11 @@ router.get('/dq_handle_admin/:code&:xc_box&:detailarr', withAuth, async (req, re
     console.log(err);
     res.status(500).json(err);
   }
-})
+});
+
+//test page
+router.get('/test', (req, res) => {
+  res.render('test');
+});
 
 module.exports = router
