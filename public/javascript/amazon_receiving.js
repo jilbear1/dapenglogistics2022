@@ -491,6 +491,7 @@ function modeChange() {
       document.getElementById("badge").classList.remove('bg-danger');
     }
 };
+var totalSkuCount = 0;
 var quickContainerObj = new Object();
 function quickReceiving() {
     const promises = [];
@@ -501,6 +502,7 @@ function quickReceiving() {
         }).then(function (response) {
             return response.json();
         }).then(function (data) {
+            totalSkuCount = 0;
             quickContainerObj.user_id = data.user_id;
             quickContainerObj.account_id = data.account_id;
             quickContainerObj.accountname = data.account.name;
@@ -514,6 +516,7 @@ function quickReceiving() {
         })
     } else if (scannedBox.length > 4 && !scannedBox.includes('-')){
         if (quickContainerObj.user_id) {
+            totalSkuCount++;
             quickContainerObj.cost++;
             quickContainerObj.item_number = scannedBox;
             promises.push(updateCost(quickContainerObj.cost, quickContainerObj.container_id));
@@ -523,7 +526,9 @@ function quickReceiving() {
                 scanned_item.value = null;
                 const newsku = document.createElement('div');
                 inserted_item.prepend(newsku);
-                newsku.innerHTML = `Insert <b>${scannedBox}</b> into <b>${quickContainerObj.container_number}</b>`
+                newsku.innerHTML = `Insert <b>${scannedBox}</b> into <b>${quickContainerObj.container_number}</b>`;
+                document.getElementById('counter').innerText = totalSkuCount;
+                success();
             }).catch((e) => {console.log(e)})
         } else {
             alert('You need to scan the existed amazon box first!');
@@ -532,6 +537,11 @@ function quickReceiving() {
 
     }
 };
+function success() {
+    var audio = new Audio('../media/success.mp3');
+    audio.play();
+};
+
 var timer = null;
 function delay(fn){
     clearTimeout(timer);
