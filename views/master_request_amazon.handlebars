@@ -1,0 +1,89 @@
+
+<p class="uk-heading-line uk-text-right uk-margin-small-right"><span>所在页面 <span class="uk-text-bold uk-label uk-label-success">出货通知（转运货物）</span></span></p>
+{{!-- notes --}}
+<div id="modal-notes" uk-modal>
+    <div class="uk-modal-dialog">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <div class="uk-modal-header text-center">
+            <h2 class="uk-modal-title">备注留言</h2>
+        </div>
+        <div class="uk-modal-body">
+           <textarea class="form-control" id="notes" placeholder="如有特别指示 请在此留言..." rows="10"></textarea>
+        </div>
+        <div class="uk-modal-footer uk-text-right">
+            <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel 取消</button>
+            <button class="uk-button uk-button-primary uk-modal-close" type="button">Save 暂存</button>
+        </div>
+    </div>
+</div>
+{{!-- /notes --}}
+{{!-- file --}}
+<div id="modal-files" uk-modal>
+    <div class="uk-modal-dialog">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <div class="uk-modal-header text-center">
+            <h2 class="uk-modal-title">选择夹带档案（.pdf, .zip)</h2>
+            <input class="form-check-input me-2" type="checkbox" value="" id="label_not_required" onclick="clear_file()"/>
+            <label class="form-check-label text-danger" for="label_not_required"><small><u>No file to attach 无夹带档案</u></small></label>
+        </div>
+
+
+        <div class="uk-modal-body">
+            <input type="file" class="mt-2 custom-file-input" id="label" accept=".pdf, .doc, .docx, .zip, .rar" onclick="second_file()">
+            <input type="file" class="mt-2 custom-file-input" id="label_2" accept=".pdf, .doc, .docx, .zip, .rar" style="display: none;">
+        </div>
+        <div class="uk-modal-footer uk-text-right">
+            <input type="text" class="form-control mb-3 border-warning" id="amazon_ref" placeholder="若有特别指示，请在“附注留言”区留言" aria-describedby="basic-addon1" style="display: none;" disabled>
+            <button class="uk-button uk-button-default uk-modal-close" type="button" onclick="clear_file()">Clear 清除</button>
+            <button class="uk-button uk-button-primary uk-modal-close" type="button" onclick="check_amazon()">Save 暂存</button>
+        </div>
+    </div>
+</div>
+{{!-- file --}}
+<nav class="uk-navbar-container uk-navbar-transparent" uk-navbar>
+    <div class="uk-navbar-center">
+        <div class="uk-navbar-item">
+               {{!-- <a href="/dq_chinabox" class="btn btn-outline-primary btn-sm shadow-sm rounded" uk-tooltip="China Box">跨海货物</a>
+                <button href="/dq_container" class="btn btn-outline-secondary btn-sm shadow-sm rounded" disabled uk-tooltip="Amazon/Walmart Container">美国转运货物</button>
+                <a href="/dq_sku" class="btn btn-outline-primary btn-sm shadow-sm rounded" uk-tooltip="Container Items">转运货品(SKUs)</a> --}}
+        </div>
+
+        <div class="uk-navbar-item">
+            {{!-- <a class="btn btn-sm btn-outline-danger" id='file_btn' href="#modal-files" uk-toggle uk-tooltip=".pdf, .zip, .rar">夹带档案</a> --}}
+            <a class="btn btn-sm btn-outline-success" href="#modal-notes" uk-toggle uk-tooltip="Notes">备注</a>
+            <a class="btn btn-sm btn-outline-danger" id='file_btn' href="#modal-files" uk-toggle uk-tooltip=".pdf, .zip, .rar">夹带档案</a>
+        </div>
+
+        <a id="js-modal-confirm" class="btn btn-primary shadow-sm" value="Get Selected" onclick="validation_request(event)" uk-icon="arrow-right" uk-tooltip="Complete Request">完成出货通知</a>
+    </div>
+</nav>
+
+<div class="container mt-2" id="container">
+            <table class="table table-hover shadow-sm table-striped containerTable" id="containerTable" >
+                <thead>
+                    <tr>
+                        <th onclick="location.reload()" uk-tooltip="可多项目复选"><b>勾选</b></th>
+                        <th><b>子用户名</b></th>
+                        <th><b>箱码</b></th>
+                        <th><b>相关SKUs</b></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {{#each containers as |container|}}
+                    {{> req_container container }}
+                {{else}}
+                <h3 class="text-center">NO CONTAINER WAS FOUND!</h3>
+                {{/each}}
+                </tbody>
+            </table>
+    <footer class="row">
+        <a href="#js-modal-confirm" class="btn btn-sm shadow-sm btn-outline-primary col align-self-center">Back to The Top</a>
+    </footer>
+</div>
+
+<script>
+    $(document).ready( function () {
+    $('#containerTable').DataTable();
+} );
+</script>
+<script src="javascript/master_req_amazon.js"></script>
