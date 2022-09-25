@@ -2377,6 +2377,62 @@ router.get('/dq_handle_admin/:code&:xc_box&:detailarr', withAuth, async (req, re
 });
 
 /////new request_amazon
+router.get('/master_request_amazon', withAuth, async (req, res) => {
+  try {
+    const containerData = await Item.findAll({
+      where: {
+        user_id: req.session.user_id
+      },
+      order: [
+        ['item_number', 'ASC']
+      ],
+      attributes: [
+        'id',
+        'user_id',
+        'account_id',
+        'container_id',
+        'item_number',
+        'qty_per_sku'
+      ],
+      include:[
+        {
+          model: Container,
+          where: {
+            status: 1,
+            type: 1
+          },
+          attributes: [
+            'container_number',
+            'location'
+          ]
+        },
+        {
+          model: User,
+          attributes: [
+            'name'
+          ]
+        },
+        {
+          model: Account,
+          attributes: [
+            'name'
+          ]
+        }
+      ]
+    });
+    const pre_containers = containerData.map(container => container.get({ plain: true }));
+    const requestsBatch = pre_containers.reduce(function (r, a) {
+      r[a.container_id] = r[a.container_id] || [];
+      r[a.container_id].push(a);
+      return r;
+    }, Object.create(null));
+    const containers = Object.values(requestsBatch);
+    res.render('master_request_amazon', {containers, loggedIn: true, admin: req.session.admin, name: req.session.name, accountId: req.params.id});
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+});
 router.get('/master_request_amazon/:account_id', withAuth, async (req, res) => {
   try {
     const containerData = await Item.findAll({
@@ -2403,7 +2459,8 @@ router.get('/master_request_amazon/:account_id', withAuth, async (req, res) => {
             type: 1
           },
           attributes: [
-            'container_number'
+            'container_number',
+            'location'
           ]
         },
         {

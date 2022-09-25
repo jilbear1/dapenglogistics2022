@@ -16,7 +16,7 @@
         </div>
     </div>
 </div>
-{{!-- /notes --}}
+
 {{!-- file --}}
 <div id="modal-files" uk-modal>
     <div class="uk-modal-dialog">
@@ -39,7 +39,7 @@
         </div>
     </div>
 </div>
-{{!-- file --}}
+{{!-- nav --}}
 <nav class="uk-navbar-container uk-navbar-transparent" uk-navbar>
     <div class="uk-navbar-center">
         <div class="uk-navbar-item">
@@ -57,7 +57,13 @@
         <a id="js-modal-confirm" class="btn btn-primary shadow-sm" value="Get Selected" onclick="validation_request(event)" uk-icon="arrow-right" uk-tooltip="Complete Request">完成出货通知</a>
     </div>
 </nav>
-
+{{!-- loader --}}
+<div id="loader" style="display: none;">
+    <h1 class="text-center">Uploading...</h1>
+    <h3 class="text-center">上传中，请耐心等候</h3>
+    <div class="loader container"></div>
+</div>
+{{!-- table --}}
 <div class="container mt-2" id="container">
             <table class="table table-hover shadow-sm table-striped containerTable" id="containerTable" >
                 <thead>
