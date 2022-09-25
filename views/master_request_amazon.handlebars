@@ -43,9 +43,7 @@
 <nav class="uk-navbar-container uk-navbar-transparent" uk-navbar>
     <div class="uk-navbar-center">
         <div class="uk-navbar-item">
-               {{!-- <a href="/dq_chinabox" class="btn btn-outline-primary btn-sm shadow-sm rounded" uk-tooltip="China Box">跨海货物</a>
-                <button href="/dq_container" class="btn btn-outline-secondary btn-sm shadow-sm rounded" disabled uk-tooltip="Amazon/Walmart Container">美国转运货物</button>
-                <a href="/dq_sku" class="btn btn-outline-primary btn-sm shadow-sm rounded" uk-tooltip="Container Items">转运货品(SKUs)</a> --}}
+            <a onclick="history.back()" uk-icon="icon: arrow-left" class="rounded-circle bg-success text-white" uk-tooltip="back to the previous page"></a>
         </div>
 
         <div class="uk-navbar-item">
@@ -71,7 +69,7 @@
                         <th onclick="location.reload()" uk-tooltip="可多项目复选"><b>勾选</b></th>
                         <th><b>子用户名</b></th>
                         <th><b>箱码</b></th>
-                        <th><b>相关SKUs</b></th>
+                        <th><b>相关SKUs</b> (请在右方自行调整出货数量)</th>
                     </tr>
                 </thead>
                 <tbody>

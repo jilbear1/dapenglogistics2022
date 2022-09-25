@@ -2427,7 +2427,7 @@ router.get('/master_request_amazon', withAuth, async (req, res) => {
       return r;
     }, Object.create(null));
     const containers = Object.values(requestsBatch);
-    res.render('master_request_amazon', {containers, loggedIn: true, admin: req.session.admin, name: req.session.name, accountId: req.params.id});
+    res.render('master_request_amazon', {containers, loggedIn: true, admin: req.session.admin, name: req.session.name});
   } catch (err) {
     console.log(err);
     res.status(500).json(err);

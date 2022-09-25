@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="css/loader.css">
 <div class="uk-overflow-auto">
-<p class="uk-heading-line uk-text-right uk-margin-small-right"><span>所在页面 <span class="uk-text-bold uk-label uk-label-success">出货通知（转运货物）</span></span></p>
+     <p class="uk-heading-line uk-text-right uk-margin-small-right"><span>所在页面 <span class="uk-text-bold uk-label uk-label-success">出货通知（转运货物）</span></span></p>
 
 {{!-- notes --}}
 <div id="modal-notes" uk-modal>
@@ -42,10 +42,9 @@
     </div>
 </div>
 
-
-
 <nav class="uk-navbar-container" uk-navbar>
     <div class="uk-navbar-center">
+         <a class="btn btn-light btn-sm shadow-sm border-primary" href="/master_request_amazon/{{accountId}}" uk-tooltip="新版美国内地转运货物出货页面" uk-icon="sign-in">亚马逊出货 <span class="badge badge-secondary bg-primary">简易版</span></a>
         <div class="uk-navbar-item">
             <a class="btn btn-white border-warning btn-sm shadow-sm" href="/amazon/{{accountId}}" uk-icon="icon: home" uk-tooltip="Personal Homepage"></a>
             <a class="btn btn-light btn-sm shadow-sm" href="/request/{{accountId}}" uk-tooltip="中国跨海货物">海外货物</a>
