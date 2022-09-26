@@ -1,0 +1,10 @@
+<tr scope="row">
+    <td><input class="uk-checkbox" type="checkbox" onclick="focusListener(event)"></td>
+    <td id="{{0.account_id}}">{{0.account.name}}</td>
+    <td class="text-primary" id="{{0.container_id}}_{{0.container.location}}">{{0.container.container_number}}</td>
+    <td>
+        {{#each this as |sku|}}
+            {{> req_eachsku sku }}
+        {{/each}}
+    </td>
+</tr>
