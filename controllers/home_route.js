@@ -2490,6 +2490,62 @@ router.get('/master_request_amazon/:account_id', withAuth, async (req, res) => {
     res.status(500).json(err);
   }
 });
+router.get('/master_request_amazon_sku/:account_id', withAuth, async (req, res) => {
+  try {
+    const itemData = await Item.findAll({
+      where: {
+        user_id: req.session.user_id,
+        account_id: req.params.account_id
+      },
+      order: [
+        ['account_id', 'ASC']
+      ],
+      attributes: [
+        'id',
+        'user_id',
+        'account_id',
+        'container_id',
+        'item_number',
+        'qty_per_sku'
+      ],
+      include:[
+        {
+          model: Container,
+          where: {
+            status: 1,
+            type: 1
+          },
+          attributes: [
+            'container_number'
+          ]
+        },
+        {
+          model: User,
+          attributes: [
+            'name'
+          ]
+        },
+        {
+          model: Account,
+          attributes: [
+            'name'
+          ]
+        }
+      ]
+    });
+    const pre_items = itemData.map(item => item.get({ plain: true }));
+    const requestsBatch = pre_items.reduce(function (r, a) {
+      r[a.item_number] = r[a.item_number] || [];
+      r[a.item_number].push(a);
+      return r;
+    }, Object.create(null));
+    const items = Object.values(requestsBatch);
+    res.render('master_request_amazon_sku', {items, loggedIn: true, china: false, amazon: false, admin: req.session.admin, name: req.session.name, accountId: req.params.id});
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+});
 //test page
 router.get('/test', (req, res) => {
   res.render('test');
