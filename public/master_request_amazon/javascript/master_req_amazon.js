@@ -407,7 +407,7 @@ const focusListener = (event) => {
       if (element.length>1) {
         const item = document.createElement('div');
         item.className = "row justify-content-between";
-        item.innerHTML = `<div class="col-4">${element.trim()}</div> <div class="col-4"><input type="number" value=${element.trim().split("(#")[1].split(")")[0]} class="inputCollection uk-input uk-form-width-small uk-form-small text-danger" onkeyup="checkSKU(event, '${element.trim().split("(#")[1].split(")")[0]}', '${containerNumber.innerText}_${element.trim().split("(#")[0]}')" id="${containerNumber.innerText}_${element.trim().split("(#")[0]}*${containerNumber.id}"></div>`;
+        item.innerHTML = `<div class="col-4">${element.trim()}</div> <div class="col-4"><input type="number" value=${element.trim().split("(#")[1].split(")")[0]} class="inputCollection uk-input uk-form-width-small uk-form-small text-danger" onkeyup="checkSKU(event, '${element.trim().split("(#")[1].split(")")[0]}', '${containerNumber.innerText}_${element.trim().split("(#")[0]}')" id="${containerNumber.innerText}_${element.trim().split("(#")[0]}*${containerNumber.id}" placeholder="0"></div>`;
         reqBoxMap.set(`${containerNumber.innerText}_${element.trim().split("(#")[0]}`, parseInt(element.trim().split("(#")[1].split(")")[0]));
         amBoxMap.set(`${containerNumber.innerText}_${element.trim().split("(#")[0]}`, 0);
         skuCol.prepend(item);
