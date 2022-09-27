@@ -1,4 +1,4 @@
-console.log(location.href, 'req_amazon_confirmation sku_qty js client');
+console.log(location.href, 'req_amazon_confirmation sku_qty js');
 const today = new Date().toLocaleDateString("en-US");
 const locationAddress = location.href.split('/');
 const account_id = locationAddress[locationAddress.length-1];
