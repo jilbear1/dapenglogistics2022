@@ -14,11 +14,11 @@ dress.init(
             primaryKey: true,
             autoIncrement: true,
         },
-        Return_ID: {
+        return_num: {
             type: DataTypes.STRING,
             allowNull: true
         },
-        dress_id: {
+        dress_num: {
             type: DataTypes.STRING,
             allowNull: false
         },
@@ -26,7 +26,18 @@ dress.init(
             type: DataTypes.STRING,
             allowNull: true
         },
-
+        dress_sku: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        return_sku: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        amazon_sku: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
 //time data
         date_added: {
             type: DataTypes.STRING,
@@ -41,12 +52,12 @@ dress.init(
             type: DataTypes.BIGINT,
             allowNull: true
          },
-        searchitem: {
+        search_item: {
             type: DataTypes.STRING,
             allowNull: true
          },
 // attributes data
-        Condition: {
+        condition: {
             type: DataTypes.STRING,
             allowNull: false
         },
@@ -62,67 +73,66 @@ dress.init(
             type: DataTypes.TEXT('tiny'),
             allowNull: true
         },
-        volume: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        cost: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-
 // personal data
-        First_Name: {
+        first_name: {
             type: DataTypes.STRING,
             allowNull: true,
         },
-        Last_Name: {
+        last_name: {
             type: DataTypes.STRING,
             allowNull: true,
         },
-        Address: {
+        address: {
             type: DataTypes.STRING,
             allowNull: true
         },
-        City: {
+        city: {
             type: DataTypes.STRING,
             allowNull: true
         },
-        State: {
+        state: {
             type: DataTypes.STRING,
             allowNull: true
         },
-        Zip_Code: {
+        zipcode: {
             type: DataTypes.INTEGER,
             allowNull: true
         },
 // foreign key data
-        Client_Name: {
+        user_name: {
           type: DataTypes.STRING,
           references: {
             model: 'user',
             key: 'name'
            },
         },
-        account: {
+        account_name: {
             type: DataTypes.STRING,
             references: {
               model: 'account',
               key: 'name'
              },
-          }
-        client_id: {
-            type: DataTypes.INTEGER,
-            references: {
-              model: 'account',
-              key: 'ID'
-             },
-          }
-        account_id: {
+          },
+        user_id: {
             type: DataTypes.INTEGER,
             references: {
               model: 'user',
-              key: 'ID'
+              key: 'id'
+             },
+          },
+        account_id: {
+            type: DataTypes.INTEGER,
+            references: {
+              model: 'account',
+              key: 'id'
+             },
+          },
+        container_id: {
+            type: DataTypes.INTEGER,
+            references: {
+              model: 'container',
+              key: 'id'
+             
              },
           }
     },
