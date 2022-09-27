@@ -2,10 +2,10 @@ const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/connection');
 
 
-class dress extends Model {}
+class Detail extends Model {}
 
 
-dress.init(
+Detail.init(
     {
 // general info
         id: {
@@ -35,6 +35,14 @@ dress.init(
             allowNull: true
         },
         amazon_sku: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        user_name: {
+            type: DataTypes.STRING,
+            allowNull: true
+          },
+        account_name: {
             type: DataTypes.STRING,
             allowNull: true
         },
@@ -70,7 +78,7 @@ dress.init(
             allowNull: false
         },
         description: {
-            type: DataTypes.TEXT('tiny'),
+            type: DataTypes.TEXT('long'),
             allowNull: true
         },
 // personal data
@@ -98,50 +106,48 @@ dress.init(
             type: DataTypes.INTEGER,
             allowNull: true
         },
-// foreign key data
-        user_name: {
-          type: DataTypes.STRING,
-          references: {
-            model: 'user',
-            key: 'name'
-           },
+        phone: {
+            type: DataTypes.INTEGER,
+            allowNull: true
         },
-        account_name: {
-            type: DataTypes.STRING,
-            references: {
-              model: 'account',
-              key: 'name'
-             },
-          },
+// foreign key data
         user_id: {
             type: DataTypes.INTEGER,
             references: {
               model: 'user',
               key: 'id'
-             },
+            },
           },
         account_id: {
             type: DataTypes.INTEGER,
             references: {
               model: 'account',
               key: 'id'
-             },
+            },
           },
         container_id: {
             type: DataTypes.INTEGER,
             references: {
               model: 'container',
               key: 'id'
-             
-             },
-          }
+
+            },
+        },
+        item_id: {
+            type: DataTypes.INTEGER,
+            references: {
+              model: 'item',
+              key: 'id'
+
+            },
+        }
     },
     {
       sequelize,
       freezeTableName: true,
       underscored: true,
-      modelName: 'dress'
+      modelName: 'detail'
     }
   );
 
-  module.exports = dress;
+  module.exports = Detail;

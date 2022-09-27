@@ -6,7 +6,7 @@ const Container = require('./container');
 const Item = require('./item');
 const Document = require('./document');
 const Record = require('./record');
-const Dress = require('./dress');
+const Detail = require('./detail');
 
 //Level 1: User
 User.hasMany(Document, {
@@ -30,7 +30,7 @@ User.hasMany(Container, {
 User.hasMany(Item, {
     foreignKey: "user_id"
 });
-User.hasMany(Dress, {
+User.hasMany(Detail, {
     foreignKey: "user_id"
 });
 
@@ -47,7 +47,7 @@ Account.hasMany(Container, {
 Account.hasMany(Item, {
     foreignKey: "account_id"
 });
-Account.hasMany(Dress, {
+Account.hasMany(Detail, {
     foreignKey: "account_id"
 });
 
@@ -58,12 +58,12 @@ Batch.hasMany(Box, {
 Container.hasMany(Item, {
     foreignKey: "container_id"
 });
-Container.hasMany(Dress, {
+Container.hasMany(Detail, {
     foreignKey: "container_id"
 });
 
 //Level 4: {Item}
-Item.hasMany(Dress, {
+Item.hasMany(Detail, {
     foreignKey: "item_id"
 });
 
@@ -89,7 +89,7 @@ Container.belongsTo(User, {
 Item.belongsTo(User, {
     foreignKey: "user_id"
 });
-Dress.belongsTo(User, {
+Detail.belongsTo(User, {
     foreignKey: "user_id"
 });
 /////////////////
@@ -105,7 +105,7 @@ Container.belongsTo(Account, {
 Item.belongsTo(Account, {
     foreignKey: "account_id"
 });
-Dress.belongsTo(Account, {
+Detail.belongsTo(Account, {
     foreignKey: "account_id"
 });
 /////////////////
@@ -115,10 +115,13 @@ Box.belongsTo(Batch, {
 Item.belongsTo(Container, {
     foreignKey: "container_id"
 });
+Detail.belongsTo(Container, {
+    foreignKey: "container_id"
+});
 /////////////////
-Dress.belongsTo(Item, {
+Detail.belongsTo(Item, {
     foreignKey: "item_id"
 });
 
 
-module.exports = {User, Document, Record, Account, Batch, Box, Container, Item, Document};
+module.exports = {User, Document, Record, Account, Batch, Box, Container, Item, Detail};
