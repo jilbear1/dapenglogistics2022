@@ -1,10 +1,7 @@
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/connection');
 
-
 class Detail extends Model {}
-
-
 Detail.init(
     {
 // general info
@@ -148,6 +145,5 @@ Detail.init(
       underscored: true,
       modelName: 'detail'
     }
-  );
-
-  module.exports = Detail;
+);
+module.exports = Detail;
