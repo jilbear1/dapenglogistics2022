@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const { route } = require('.');
 const sequelize = require('../config/connection');
-const {User, Account, Batch, Box, Container, Item} = require('../models');
+const {User, Account, Batch, Box, Container, Item, Detail} = require('../models');
 const {withAuth, adminAuth} = require('../utils/auth');
 const { uploadFile, getFile} = require('../utils/s3');
 const {getFile_admin} = require('../utils/s3_file');
@@ -2541,6 +2541,65 @@ router.get('/master_request_amazon_sku/:account_id', withAuth, async (req, res) 
     }, Object.create(null));
     const items = Object.values(requestsBatch);
     res.render('master_request_amazon_sku', {items, loggedIn: true, china: false, amazon: false, admin: req.session.admin, name: req.session.name, accountId: req.params.id});
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+});
+
+
+router.get('/dress', withAuth, async (req, res) => {
+  try {
+    const detailData = await Detail.findAll({
+      where: {
+        user_id: req.session.user_id,
+      },
+        attributes: [
+          'id',
+          'return_num',
+          'dress_num',
+          'tracking_num',
+          'dress_sku',
+          'return_sku',
+          'amazon_sku',
+          'user_name',
+          'account_name',
+          'date_added',
+          'status',
+          'billed',
+          'search_item',
+          'condition',
+          'color',
+          'size',
+          'description',
+          'first_name',
+          'last_name',
+          'address',
+          'city',
+          'state',
+          'zipcode',
+          'user_id',
+          'account_id',
+          'container_id',
+          'item_id'
+        ],
+          include: [
+            {
+          model: Account,
+          attributes: [
+            'name'
+          ]
+            }
+          ]
+      })
+    const details = detailData.map(detail => detail.get({ plain: true }));
+    res.render('dress', {
+      details,
+      loggedIn: true,
+      accountId: req.params.id,
+      admin: req.session.admin,
+      name: req.session.name
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json(err);

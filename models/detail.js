@@ -20,7 +20,7 @@ Detail.init(
         },
         dress_num: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         tracking_num: {
             type: DataTypes.STRING,
