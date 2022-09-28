@@ -23,11 +23,7 @@
                 {{#each details as |detail|}}
                     {{> detail-data detail }}
                 {{else}}
-                    {{#if admin}}
-                        <h3 class="text-center uk-text-bold">Loading admin files...</h3>
-                    {{else}}
                         <h3 class="text-center">No special item is found</h3>
-                    {{/if}}
                 {{/each}}
             </tbody>
         </table>
@@ -39,6 +35,3 @@
     } );
 </script>
 {{!-- <script src="javascript/detail.js"></script> --}}
-{{#if admin}}
-<script src="javascript/admin_redirect.js"></script>
-{{/if}}
