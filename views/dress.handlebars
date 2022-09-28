@@ -1,24 +1,27 @@
 <link rel="stylesheet" href="css/table.css">
 <link rel="stylesheet" href="css/loader_2.css">
 <div class="uk-overflow-auto">
-    <p class="uk-heading-line uk-text-right uk-margin-small-right"><span>所在页面 <span class="uk-text-bold uk-label uk-label-info">库存（特殊物件）</span></span></p>
+    <p class="uk-heading-line uk-text-right uk-margin-small-right"><span>所在页面 <span class="uk-text-bold uk-label uk-label-info">库存总揽（特殊物件）</span></span></p>
     <div class="loader" id="loader" style="display: none"></div>
     <div class="container">
         <table class="uk-table uk-table-small uk-table-divider shadow-sm" id="detailTable">
             <thead>
                 <tr>
-                    <th>子用户</th>
-                    <th>箱码</th>
-                    <th>SKU</th>
-                    <th>数量</th>
-                    <th>货品描述</th>
-                    <th>日期</th>
-                    <th>状态</th>
+                    <th></th>
+                    <th>Dress SKU</th>
+                    <th>Return #</th>
+                    <th>Tracking #</th>
+                    <th>Name</th>
+                    <th>Condition</th>
+                    <th>Color</th>
+                    <th>Size</th>
+                    <th>Date</th>
+                    <th>Description</th>
                 </tr>
             </thead>
             <tbody>
                 {{#each details as |detail|}}
-                {{!-- {{> detail-data detail }} --}}
+                    {{> detail-data detail }}
                 {{else}}
                     {{#if admin}}
                         <h3 class="text-center uk-text-bold">Loading admin files...</h3>
