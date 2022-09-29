@@ -15,9 +15,9 @@
    <div class="uk-modal-dialog">
       <button class="uk-modal-close-default" type="button" uk-close></button>
       <form class="p-3">
-                <ul>
+         <h3 class="text-center">Dress SKU: {{#if dress_sku}}{{dress_sku}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</h3>
+                <ul class="py-2">
                     <li>Account: {{#if account_name}}{{account_name}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
-                    <li>Dress SKU: {{#if dress_sku}}{{dress_sku}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
                     <li>Return #: {{#if return_num}}{{return_num}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
                     <li>Tacking #: {{#if tracking_num}}{{tracking_num}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
                     <li>Date Added: {{#if date_added}}{{date_added}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>

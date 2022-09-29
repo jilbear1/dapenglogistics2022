@@ -381,7 +381,8 @@ async function loadingItems(data) {
 
 
 function printable() {
-    console.log(totalItem);
+    const oldSize = document.getElementById('pre-shipN').style.fontSize;
+    document.getElementById('pre-shipN').style.fontSize = '200%';
     const hideables = [
         document.getElementById('assignFunction'),
         document.getElementById('notesFunction'),
@@ -396,7 +397,7 @@ function printable() {
     hideables.forEach(i => i.style.display = '');
     masterCheck();
     printCheck = true;
-    // console.log("printable check: "+ printCheck);
+    document.getElementById('pre-shipN').style.fontSize = oldSize;
 }
 function error() {
     var audio = new Audio('../media/wrong.mp3');
@@ -411,7 +412,6 @@ function masterCheck () {
         document.getElementById('order_pre-check').style.display = 'none'
         document.getElementById('fake').style.display = '';
     }
-    // console.log("master check: " + printCheck);
 };
 var skuQtyMap = new Map();
 var tdSkuArr = [];
