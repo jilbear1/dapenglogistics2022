@@ -355,10 +355,54 @@ router.get('/amazon', withAuth, async (req, res) => {
           ]
             }
           ]
-      })
+    });
+    const detailData = await Detail.findAll({
+      where: {
+        user_id: req.session.user_id,
+      },
+        attributes: [
+          'id',
+          'return_num',
+          'dress_num',
+          'tracking_num',
+          'dress_sku',
+          'return_sku',
+          'amazon_sku',
+          'user_name',
+          'account_name',
+          'date_added',
+          'status',
+          'billed',
+          'search_item',
+          'condition',
+          'color',
+          'size',
+          'description',
+          'first_name',
+          'last_name',
+          'address',
+          'city',
+          'state',
+          'zipcode',
+          'user_id',
+          'account_id',
+          'container_id',
+          'item_id'
+        ],
+          include: [
+            {
+          model: Account,
+          attributes: [
+            'name'
+          ]
+            }
+          ]
+    });
     const containers = containerData.map(container => container.get({ plain: true }));
+    const details = detailData.map(detail => detail.get({ plain: true }));
     res.render('master_home_amazon', {
       containers,
+      details,
       loggedIn: true,
       accountId: req.params.id,
       admin: req.session.admin,
@@ -1571,10 +1615,55 @@ router.get('/amazon/:id', withAuth, async (req, res) => {
           ]
             }
           ]
-      })
+    })
+    const detailData = await Detail.findAll({
+        where: {
+          user_id: req.session.user_id,
+          account_id: req.params.id
+        },
+          attributes: [
+            'id',
+            'return_num',
+            'dress_num',
+            'tracking_num',
+            'dress_sku',
+            'return_sku',
+            'amazon_sku',
+            'user_name',
+            'account_name',
+            'date_added',
+            'status',
+            'billed',
+            'search_item',
+            'condition',
+            'color',
+            'size',
+            'description',
+            'first_name',
+            'last_name',
+            'address',
+            'city',
+            'state',
+            'zipcode',
+            'user_id',
+            'account_id',
+            'container_id',
+            'item_id'
+          ],
+            include: [
+              {
+            model: Account,
+            attributes: [
+              'name'
+            ]
+              }
+            ]
+    });
     const containers = containerData.map(container => container.get({ plain: true }));
+    const details = detailData.map(detail => detail.get({ plain: true }));
     res.render('master_home_amazon', {
       containers,
+      details,
       loggedIn: true,
       accountId: req.params.id,
       admin: req.session.admin,

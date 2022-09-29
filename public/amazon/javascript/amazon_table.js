@@ -54,7 +54,11 @@ function allItem() {
         skuCount = skuCount + item.qty_per_sku;
         const singleSKU = document.createElement('div');
         const singleQty = document.createElement('div');
-        singleSKU.innerHTML = item.item_number;
+        if(document.getElementById(`detail_${item.id}`)){
+          singleSKU.innerHTML = `${item.item_number} <a class="text-primary" uk-icon="icon: bookmark" href="#detail_${item.id}" uk-toggle></a>`;
+        } else {
+          singleSKU.innerHTML = item.item_number;
+        }
         singleQty.innerHTML = item.qty_per_sku;
         sku.appendChild(singleSKU);
         qty.appendChild(singleQty)
