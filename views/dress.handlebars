@@ -8,6 +8,7 @@
             <thead>
                 <tr>
                     <th></th>
+                    {{#if admin}}
                     <th>Dress SKU</th>
                     <th>Return #</th>
                     <th>Tracking #</th>
@@ -17,6 +18,17 @@
                     <th>Size</th>
                     <th>Date</th>
                     <th>Description</th>
+                    {{else}}
+                    <th>礼服序号</th>
+                    <th>退货号码</th>
+                    <th>邮寄单号</th>
+                    <th>姓名</th>
+                    <th>状态</th>
+                    <th>颜色</th>
+                    <th>尺寸</th>
+                    <th>收货时间</th>
+                    <th>备注</th>
+                    {{/if}}
                 </tr>
             </thead>
             <tbody>

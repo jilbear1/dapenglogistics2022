@@ -10,31 +10,30 @@
    <td>{{date_added}}</td>
    <td>{{description}}</td>
 </tr>
-
  <div id="detail_{{id}}" uk-modal>
    <div class="uk-modal-dialog">
       <button class="uk-modal-close-default" type="button" uk-close></button>
       <form class="p-3">
          <h3 class="text-center">Dress SKU: {{#if dress_sku}}{{dress_sku}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</h3>
                 <ul class="py-2">
-                    <li>Account: {{#if account_name}}{{account_name}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
-                    <li>Return #: {{#if return_num}}{{return_num}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
-                    <li>Tacking #: {{#if tracking_num}}{{tracking_num}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
-                    <li>Date Added: {{#if date_added}}{{date_added}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>子用户: {{#if account.name}}{{account.name}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>退货号码: {{#if return_num}}{{return_num}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>邮寄单号: {{#if tracking_num}}{{tracking_num}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>收货时间: {{#if date_added}}{{date_added}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
                     <hr>
-                    <li>Name: {{#if last_name}}{{last_name}}, {{first_name}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
-                    <li>Address: {{#if address}}{{address}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
-                    <li>City: {{#if city}}{{city}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
-                    <li>State: {{#if state}}{{state}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
-                    <li>Zip: {{#if zipcode}}{{zipcode}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
-                    <li>Phone: {{#if phone}}{{phone}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>名字: {{#if last_name}}{{last_name}}, {{first_name}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>地址: {{#if address}}{{address}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>城市: {{#if city}}{{city}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>州: {{#if state}}{{state}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>邮寄编号: {{#if zipcode}}{{zipcode}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>联系电话: {{#if phone}}{{phone}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
                     <hr>
-                    <li>Amazon SKU: {{#if amazon_sku}}{{amazon_sku}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
-                    <li>Condition: {{#if condition}}{{condition}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
-                    <li>Color: {{#if color}}{{color}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
-                    <li>Size: {{#if size}}{{size}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
-                    <li>Description: {{#if description}}{{description}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
-                    <li>Status: {{#if status}}{{status}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>亚马逊SKU: {{#if amazon_sku}}{{amazon_sku}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>状态: {{#if condition}}{{condition}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>颜色: {{#if color}}{{color}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>尺寸: {{#if size}}{{size}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>备注: {{#if description}}{{description}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>删除/保留: {{#if status}}{{status}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
                 </ul>
    </form>
    </div>
