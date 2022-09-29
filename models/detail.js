@@ -107,6 +107,14 @@ Detail.init(
             type: DataTypes.INTEGER,
             allowNull: true
         },
+        container_id: {
+            type: DataTypes.INTEGER,
+            allowNull: true
+        },
+        item_id: {
+            type: DataTypes.INTEGER,
+            allowNull: true
+        },
 // foreign key data
         user_id: {
             type: DataTypes.INTEGER,
@@ -121,23 +129,7 @@ Detail.init(
               model: 'account',
               key: 'id'
             },
-          },
-        container_id: {
-            type: DataTypes.INTEGER,
-            references: {
-              model: 'container',
-              key: 'id'
-
-            },
-        },
-        item_id: {
-            type: DataTypes.INTEGER,
-            references: {
-              model: 'item',
-              key: 'id'
-
-            },
-        }
+          }
     },
     {
       sequelize,
