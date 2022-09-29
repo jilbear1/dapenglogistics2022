@@ -27,4 +27,15 @@
       </form>
    </div>
 </div>
+{{else}}
+   {{#if return_sku}}
+      <div id="detail_{{return_sku}}" uk-modal>
+         <div class="uk-modal-dialog">
+            <button class="uk-modal-close-default" type="button" uk-close></button>
+            <form class="p-3">
+               <h3 class="text-center">The details of returned items display here.</h3>
+            </form>
+         </div>
+      </div>
+   {{/if}}
 {{/if}}
