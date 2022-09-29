@@ -32,11 +32,19 @@
                 </tr>
             </thead>
             <tbody>
-                {{#each details as |detail|}}
-                    {{> reference_dress-data detail }}
-                {{else}}
+                {{#if admin}}
+                    {{#each details as |detail|}}
+                        {{> reference_dress-data_admin detail}}
+                    {{else}}
                         <h3 class="text-center">No special item is found</h3>
-                {{/each}}
+                    {{/each}}
+                {{else}}
+                    {{#each details as |detail|}}
+                        {{> reference_dress-data detail}}
+                    {{else}}
+                        <h3 class="text-center">没有找到任何库存物件</h3>
+                    {{/each}}
+                {{/if}}
             </tbody>
         </table>
     </div>

@@ -1,0 +1,40 @@
+<tr>
+   <td><a class="text-primary" uk-icon="plus-circle" href="#detail_{{id}}" uk-toggle></a></td>
+   <td>{{dress_sku}}</td>
+   <td>{{return_num}}</a></td>
+   <td>{{tracking_num}}</td>
+   <td>{{first_name}} {{last_name}}</td>
+   <td>{{condition}}</td>
+   <td>{{color}}</td>
+   <td>{{size}}</td>
+   <td>{{date_added}}</td>
+   <td>{{description}}</td>
+</tr>
+ <div id="detail_{{id}}" uk-modal>
+   <div class="uk-modal-dialog">
+      <button class="uk-modal-close-default" type="button" uk-close></button>
+      <form class="p-3">
+         <h3 class="text-center">Dress SKU: {{#if dress_sku}}{{dress_sku}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</h3>
+                <ul class="py-2">
+                    <li>Account: {{#if account.name}}{{account.name}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>Return #: {{#if return_num}}{{return_num}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>Tracking #: {{#if tracking_num}}{{tracking_num}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>Date Added: {{#if date_added}}{{date_added}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <hr>
+                    <li>Name: {{#if last_name}}{{last_name}}, {{first_name}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>Address: {{#if address}}{{address}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>City: {{#if city}}{{city}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>State: {{#if state}}{{state}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>Zip Code: {{#if zipcode}}{{zipcode}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>Contact #: {{#if phone}}{{phone}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <hr>
+                    <li>Amazon SKU: {{#if amazon_sku}}{{amazon_sku}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>Condition: {{#if condition}}{{condition}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>Color: {{#if color}}{{color}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>Size: {{#if size}}{{size}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>Description: {{#if description}}{{description}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>Status: {{#if status}}{{status}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                </ul>
+   </form>
+   </div>
+</div>
