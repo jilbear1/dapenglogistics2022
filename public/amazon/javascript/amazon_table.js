@@ -54,10 +54,8 @@ function allItem() {
         skuCount = skuCount + item.qty_per_sku;
         const singleSKU = document.createElement('div');
         const singleQty = document.createElement('div');
-        if (document.getElementById(`detail_${item.id}`)){
-          singleSKU.innerHTML = `${item.item_number} <a class="text-primary" uk-icon="icon: bookmark" href="#detail_${item.id}" uk-toggle></a>`;
-        } else if (document.getElementById(`detail_${item.container_id}_${item.item_number}`)){
-          singleSKU.innerHTML = `${item.item_number} <a class="text-primary" uk-icon="icon: bookmark" href="#detail_${item.container_id}_${item.item_number}" uk-toggle></a>`;
+        if (document.getElementById(`detail_${item.item_number}`)){
+          singleSKU.innerHTML = `${item.item_number} <a class="text-primary" uk-icon="icon: bookmark" href="#detail_${item.item_number}" uk-toggle></a>`;
         } else {
           singleSKU.innerHTML = item.item_number;
         }
