@@ -86,6 +86,13 @@
 </div>
 </div>
 
+<div id="modal_collections">
+    {{#each details as |detail|}}
+        {{> reference_modal-data detail }}
+    {{else}}
+    {{/each}}
+</div>
+
 <script>
     $(document).ready( function () {
     $('#skuTable').DataTable();

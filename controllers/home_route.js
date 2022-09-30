@@ -2709,6 +2709,50 @@ router.get('/master_request_amazon_sku/:account_id', withAuth, async (req, res) 
         }
       ]
     });
+    const detailData = await Detail.findAll({
+      where: {
+        user_id: req.session.user_id,
+        account_id: req.params.account_id
+      },
+        attributes: [
+          'id',
+          'return_num',
+          'dress_num',
+          'tracking_num',
+          'dress_sku',
+          'return_sku',
+          'amazon_sku',
+          'user_name',
+          'account_name',
+          'date_added',
+          'status',
+          'billed',
+          'search_item',
+          'condition',
+          'color',
+          'size',
+          'description',
+          'first_name',
+          'last_name',
+          'address',
+          'city',
+          'state',
+          'zipcode',
+          'user_id',
+          'account_id',
+          'container_id',
+          'item_id'
+        ],
+          include: [
+            {
+          model: Account,
+          attributes: [
+            'name'
+          ]
+            }
+          ]
+    });
+    const details = detailData.map(detail => detail.get({ plain: true }));
     const pre_items = itemData.map(item => item.get({ plain: true }));
     const requestsBatch = pre_items.reduce(function (r, a) {
       r[a.item_number] = r[a.item_number] || [];
@@ -2716,7 +2760,7 @@ router.get('/master_request_amazon_sku/:account_id', withAuth, async (req, res) 
       return r;
     }, Object.create(null));
     const items = Object.values(requestsBatch);
-    res.render('master_request_amazon_sku', {items, loggedIn: true, china: false, amazon: false, admin: req.session.admin, name: req.session.name, accountId: req.params.id});
+    res.render('master_request_amazon_sku', {items, details, loggedIn: true, china: false, amazon: false, admin: req.session.admin, name: req.session.name, accountId: req.params.id});
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
