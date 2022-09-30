@@ -590,3 +590,19 @@ function GetSelected(event) {
   }
 
 };
+
+
+
+var aTagArr = document.getElementsByClassName('aTagCollection');
+const collectionFilter = () => {
+  aTagArr = document.getElementsByClassName('aTagCollection');
+  for (let i = 0; i < aTagArr.length; i++) {
+    const href = aTagArr[i].href.split('#')[1];
+    if (document.getElementById(href)) {
+      aTagArr[i].style.display = '';
+    } else {
+      aTagArr[i].remove();
+    }
+  }
+};
+setInterval(collectionFilter, 100);

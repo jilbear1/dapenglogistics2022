@@ -1,7 +1,7 @@
 <tr scope="row">
     <td><input class="uk-checkbox" type="checkbox"></td>
     <td id="{{0.account_id}}">{{0.account.name}}</td>
-    <td class="text-primary" id="{{0.id}}">{{0.item_number}} <a class="text-primary aTagCollection" uk-icon="icon: bookmark" href="#detail_{{0.item_number}}" uk-toggle></a></td>
+    <td class="text-primary" id="{{0.id}}">{{0.item_number}} <a class="text-primary aTagCollection" uk-icon="icon: bookmark" href="#detail_{{0.item_number}}" style="display: none" uk-toggle></a></td>
     <td>
         {{#each this as |container|}}
             {{> req_eachcontainer container }}
