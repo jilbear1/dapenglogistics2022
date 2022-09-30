@@ -267,6 +267,72 @@ router.get('/allItem', withAuth, async (req, res) => {
 
 });
 
+router.get('/allItemPerItemNumber/:item_number', withAuth, async (req, res) => {
+  try {
+    const itemData = await Item.findAll({
+      where: {
+        user_id: req.session.user_id,
+        item_number: req.params.item_number
+      },
+      order: [
+        ['item_number', 'ASC']
+      ],
+      attributes: [
+        'id',
+        'item_number',
+        'qty_per_sku',
+        'user_id',
+        'account_id',
+        'container_id'
+      ],
+      include: [
+        {
+          model: Container,
+          attributes: [
+            'id',
+            's3',
+            'notes',
+            'id',
+            'container_number',
+            'description',
+            'cost',
+            'requested_date',
+            'received_date',
+            'shipped_date',
+            'type',
+            'length',
+            'width',
+            'height',
+            'weight',
+            'volume',
+            'status',
+            'location',
+            'file',
+            'file_2',
+            'fba',
+            'bill_received',
+            'bill_storage',
+            'bill_shipped'
+          ]
+        },
+        {
+          model: Account,
+          attributes: [
+            'name',
+            'id'
+          ]
+        }
+      ]
+    });
+    const items = itemData.map(i => i.get({ plain: true }));
+    res.json(items);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+
+});
+
 router.get('/allItemPerClient/:user_id', withAuth, async (req, res) => {
   try {
     const itemData = await Item.findAll({

@@ -2674,7 +2674,7 @@ router.get('/master_request_amazon_sku/:account_id', withAuth, async (req, res) 
         account_id: req.params.account_id
       },
       order: [
-        ['account_id', 'ASC']
+        ['qty_per_sku', 'DESC']
       ],
       attributes: [
         'id',
@@ -2773,7 +2773,7 @@ router.get('/master_request_amazon_sku/', withAuth, async (req, res) => {
         user_id: req.session.user_id
       },
       order: [
-        ['account_id', 'ASC']
+        ['qty_per_sku', 'DESC']
       ],
       attributes: [
         'id',

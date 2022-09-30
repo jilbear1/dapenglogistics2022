@@ -329,13 +329,16 @@ const updateShippedDate = async (id, shipped_date) => {
     headers: {'Content-Type': 'application/json'}
   });
   response.ok?console.log(`updated the ending date to box id: ${id}`):console.log('failed to update');
-}
-
-
-
+};
 /////new functions starts here
 var originalList = new Map();
+const selectedItemArr = [];
 const focusListener = (event) => {
+  const selectedItem = event.target.parentElement.nextSibling.nextSibling.nextSibling.nextSibling.innerText;
+  if (!selectedItemArr.includes(selectedItem)) {
+    selectedItemArr.push(selectedItem);
+    amBoxFetch(selectedItem);
+  };
   const boxCollection = event.target.parentElement.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling;
   const oldContent = boxCollection.innerHTML;
   const oldContentContext = boxCollection.innerText;
@@ -431,52 +434,60 @@ function GetSelected(event) {
   var fba = document.getElementById('amazon_ref').value.trim()
   fba = fba.toUpperCase();
   const notes = document.getElementById('notes').value;
-  var table = document.getElementById("containerTable");
-  var selectedSkus = table.querySelectorAll('.inputCollection');
-  for (var i = 0; i < selectedSkus.length; i++) {
-    const selectedAcccountId = selectedSkus[i].parentElement.parentElement.parentElement.parentElement.getElementsByTagName('td')[1].id;
-    const eachSkuInfo = selectedSkus[i].id;
-    const mapKey = eachSkuInfo.split('*')[0];
-    const container_id = parseInt(eachSkuInfo.split('*')[1].split('_')[0]);
-    const location = eachSkuInfo.split('*')[1].split('_')[1];
-    const item_number = mapKey.split('_')[1];
-    const item_id = parseInt(itemIdMap.get(`${item_number}*${container_id}`));
-    const qty_per_sku = reqBoxMap.get(mapKey);
-    const container_number = mapKey.split('_')[0];
-    masterContainerIdArr.push(container_id);
-    masterAccountIdArr.push(selectedAcccountId);
-    costCount = costCount + qty_per_sku;
-    const master_qty = amBoxMap.get(mapKey);
-    console.log(container_id, item_id, master_qty);
-    /////// EACH master_item obj to update the master box
-    var master_item = new Object();
-    master_item.id = item_id;
-    master_item.qty_per_sku = master_qty;
-    master_item.container_id = container_id;
-    master_item.container_number = container_number;
-    master_item.item_number = item_number;
-    master_item.qty_from = master_qty+qty_per_sku;
-    masterArr.push(master_item);
-    ////// EACH requested obj to insert into a new container
-    var requested_item = new Object();
-    requested_item.item_number = item_number;
-    requested_item.qty_per_sku = qty_per_sku;
-    if (account_id) {
-      requested_item.account_id = account_id
-     } else {
-      requested_item.account_id = masterAccountIdArr[0];
-     };
-    requested_item.description = `${container_number}:${location}`
-    requestedObjArr.push(requested_item);
-    requestedItemIdArr.push(item_id);
+  var table = document.getElementById("skuTable");
+  var allInputs = table.querySelectorAll('.inputCollection');
+  for (var j = 0; j < allInputs.length; j++) {
+    accountName = allInputs[j].parentElement.previousElementSibling.previousElementSibling.innerText;
+    var requestedQty = allInputs[j].value;
+    const item_number = allInputs[j].parentElement.previousElementSibling.innerText;
+    const relatedBoxes = allInputs[j].id;
+    var sourceBoxArr = relatedBoxes.split(', ');
+    costCount += requestedQty;
+    for (var i = 0; i < sourceBoxArr.length; i++) {
+      if(sourceBoxArr[i]){
+        var qty_per_sku = 0;
+        const container_number = sourceBoxArr[i].split('(')[0];
+        const selectedAcccountId = amBoxMap.get(`${container_number}*${item_number}`).account_id;
+        const container_id = amBoxMap.get(`${container_number}*${item_number}`).container_id;
+        const location = amBoxMap.get(`${container_number}*${item_number}`).container.location;
+        const item_id = amBoxMap.get(`${container_number}*${item_number}`).id;
+        const originalQty= parseInt(amBoxMap.get(`${container_number}*${item_number}`).qty_per_sku);
+        masterContainerIdArr.push(container_id);
+        masterAccountIdArr.push(selectedAcccountId);
+        var master_qty;
+        if (requestedQty >= originalQty) {
+          master_qty=0;
+          requestedQty-=originalQty
+          qty_per_sku=originalQty
+        } else {
+          master_qty=originalQty-requestedQty;
+          qty_per_sku=requestedQty;
+          requestedQty=0;
+          sourceBoxArr.splice(i+1, sourceBoxArr.length);
+        };
+        /////// EACH master_item obj to update the master box
+        var master_item = new Object();
+        master_item.id = item_id;
+        master_item.qty_per_sku = master_qty;
+        master_item.container_id = container_id;
+        master_item.container_number = container_number;
+        master_item.item_number = item_number;
+        master_item.qty_from = master_qty+qty_per_sku;
+        masterArr.push(master_item);
+        ////// EACH requested obj to insert into a new container
+        var requested_item = new Object();
+        requested_item.item_number = item_number;
+        requested_item.qty_per_sku = qty_per_sku;
+        requested_item.account_id = masterAccountIdArr[0];
+        requested_item.description = `${container_number}:${location}`
+        requestedObjArr.push(requested_item);
+        requestedItemIdArr.push(item_id);
+      }
+    };
   };
    /////// create ONE new container
    var requestedContainer = new Object();
-   if (account_id) {
-    requestedContainer.account_id = account_id
-   } else {
-    requestedContainer.account_id = masterAccountIdArr[0];
-   }
+   requestedContainer.account_id = masterAccountIdArr[0];
    requestedContainer.cost = costCount;
    requestedContainer.fba = fba;
    requestedContainer.location = 'virtual';
@@ -498,10 +509,19 @@ function GetSelected(event) {
 
 };
 
-
-
-
-
+const amBoxMap = new Map();
+const amBoxFetch = async (item_number) => {
+  await fetch(`/api/item/allItemPerItemNumber/${item_number}`, {
+    method: 'GET'
+  }).then(function (response) {
+    return response.json();
+  }).then(function (data) {
+    for (let i = 0; i < data.length; i++) {
+      const element = data[i];
+      amBoxMap.set(`${element.container.container_number}*${item_number}`, element);
+    }
+  })
+}
 
 ////remove any tag which does not have modal per dataTable page
 var aTagArr = document.getElementsByClassName('aTagCollection');
