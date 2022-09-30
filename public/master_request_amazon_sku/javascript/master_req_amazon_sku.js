@@ -439,12 +439,12 @@ function GetSelected(event) {
   for (var j = 0; j < allInputs.length; j++) {
     accountName = allInputs[j].parentElement.previousElementSibling.previousElementSibling.innerText;
     var requestedQty = allInputs[j].value;
-    const item_number = allInputs[j].parentElement.previousElementSibling.innerText;
+    const item_number = allInputs[j].parentElement.previousElementSibling.innerText.trim();
     const relatedBoxes = allInputs[j].id;
     var sourceBoxArr = relatedBoxes.split(', ');
     costCount += parseInt(requestedQty);
     for (var i = 0; i < sourceBoxArr.length; i++) {
-      if(sourceBoxArr[i]){
+      if(sourceBoxArr[i] && requestedQty>0){
         var qty_per_sku = 0;
         const container_number = sourceBoxArr[i].split('(')[0];
         const selectedAcccountId = amBoxMap.get(`${container_number}*${item_number}`).account_id;
@@ -518,7 +518,8 @@ const amBoxFetch = async (item_number) => {
   }).then(function (data) {
     for (let i = 0; i < data.length; i++) {
       const element = data[i];
-      amBoxMap.set(`${element.container.container_number}*${item_number}`, element);
+      console.log(`fetched data: ${element.item_number} in the box: ${element.container.container_number}`);
+      amBoxMap.set(`${element.container.container_number}*${item_number.trim()}`, element);
     }
   })
 }
