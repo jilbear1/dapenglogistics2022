@@ -1050,9 +1050,10 @@ router.get('/itemValidation/:item_number&:container_id', withAuth, async (req, r
 
 });
 
-router.put(`/rewireClientRequest/:item_id&:container_id`, withAuth, (req, res) => {
+router.put(`/rewireClientRequest/:item_id&:container_id&:parentAccountId`, withAuth, (req, res) => {
   Item.update({
-      container_id: req.params.container_id
+      container_id: req.params.container_id,
+      account_id: req.params.parentAccountId
     },
       {
       where: {

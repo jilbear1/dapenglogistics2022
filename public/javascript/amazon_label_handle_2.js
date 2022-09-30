@@ -721,14 +721,15 @@ const reverseConfirm = (container_id) => {
                 }).then((r) => {
                     return r.json();
                 }).then((d) => {
-                    const parentContainerId = d.id
-                    duplicatationValidator(data[i], parentContainerId, container_id)
+                    const parentContainerId = d.id;
+                    const parentAccountId = d.account_id;
+                    duplicatationValidator(data[i], parentContainerId, container_id, parentAccountId)
                 })
             }
         }).catch((e) => {console.log(e)})
     })
 };
-async function duplicatationValidator(obj, ContainerId, oldContainerId) {
+async function duplicatationValidator(obj, ContainerId, oldContainerId, parentAccountId) {
     await fetch(`/api/item/itemValidation/${obj.item_number}&${ContainerId}`, {
         method: 'GET'
     }).then((response) => {
@@ -740,13 +741,13 @@ async function duplicatationValidator(obj, ContainerId, oldContainerId) {
             const newQty = data.qty_per_sku + obj.qty_per_sku;
             updateExistedItem(data, newQty, oldContainerId)
         } else {
-            reverse_Back_To_Parent_Box(ContainerId, obj.id, oldContainerId)
+            reverse_Back_To_Parent_Box(ContainerId, obj.id, oldContainerId, parentAccountId)
         };
     })
 };
 const repeated = [];
-const reverse_Back_To_Parent_Box = async (container_id, item_id, delete_id) => {
-    const response = await fetch(`/api/item/rewireClientRequest/${item_id}&${container_id}`, {
+const reverse_Back_To_Parent_Box = async (container_id, item_id, delete_id, parentAccountId) => {
+    const response = await fetch(`/api/item/rewireClientRequest/${item_id}&${container_id}&${parentAccountId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
