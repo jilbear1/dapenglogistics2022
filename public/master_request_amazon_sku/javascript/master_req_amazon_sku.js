@@ -150,17 +150,6 @@ async function removeZeroItem(data) {
     headers: {'Content-Type': 'application/json'}
   });
 };
-function selectAll(id) {
-  const eachContainer = document.getElementById((`container_${id}`));
-  const checkbox = eachContainer.getElementsByTagName('input');
-  const singleQty = eachContainer.querySelectorAll('.itemQ');
-  if (checkbox[0].checked) {
-    for (let i = 0; i < singleQty.length; i++) {
-      const div = singleQty[i];
-      div.setAttribute('class','text-danger itemQ');
-    }
-  }
-};
 ////// request init & pre check ////////
 var accountName;
 
@@ -181,42 +170,6 @@ function clear_noFile_radio() {
   if (no_file.checked) {
     document.getElementById('amazon_ref').value = null;
     no_file.checked = false;
-  }
-};
-function sortTable(n) {
-  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-  table = document.getElementById("myTable");
-  switching = true;
-  dir = "asc";
-  while (switching) {
-    switching = false;
-    rows = table.rows;
-    for (i = 1; i < (rows.length - 1); i++) {
-      shouldSwitch = false;
-      x = rows[i].getElementsByTagName("TD")[n];
-      y = rows[i + 1].getElementsByTagName("TD")[n];
-      if (dir == "asc") {
-        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-          shouldSwitch = true;
-          break;
-        }
-      } else if (dir == "desc") {
-        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-          shouldSwitch = true;
-          break;
-        }
-      }
-    }
-    if (shouldSwitch) {
-      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-      switching = true;
-      switchcount ++;
-    } else {
-      if (switchcount == 0 && dir == "asc") {
-        dir = "desc";
-        switching = true;
-      }
-    }
   }
 };
 function second_file() {
@@ -342,7 +295,7 @@ const record_container = async (count, collection, container_number, file_code, 
   });
 };
 
-
+///cap function when all selected
 const shipped_date_labeling = (requestedObjArrD, requestedContainerD) => {
   const shipped_date = new Date().toLocaleDateString("en-US");
   fetch(`/api/item/emptyContainerSearch/${JSON.stringify(masterContainerIdArr)}`, {
@@ -382,62 +335,31 @@ const updateShippedDate = async (id, shipped_date) => {
 
 /////new functions starts here
 var originalList = new Map();
-var amBoxMap = new Map();
-var reqBoxMap = new Map();
-var selectedContainerArr = [];
 const focusListener = (event) => {
-  ////trigger item id mapping (use if statement and arr to reduce repeated work) for later use
-  const selectedContainerId = event.target.parentElement.parentElement.getElementsByTagName('td')[2].id.split('_')[0];
-  if (!selectedContainerArr.includes(selectedContainerId)) {
-    selectedContainerArr.push(selectedContainerId);
-    itemIdFetch(selectedContainerId);
-  };
-  ////// actual action
-  const skuCol = event.target.parentElement.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling;
-  const containerNumber = event.target.parentElement.nextSibling.nextSibling.nextSibling.nextSibling
-  var skuColContentArr;
-  skuCol.innerText.includes(',')?skuColContentArr=(skuCol.innerText).split(","):skuColContentArr=[];
-  if (skuColContentArr.length < 1) {
-    skuCol.innerHTML = '';
-    skuCol.innerHTML =  originalList.get(containerNumber.innerHTML);
+  const boxCollection = event.target.parentElement.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling;
+  const oldContent = boxCollection.innerHTML;
+  const oldContentContext = boxCollection.innerText;
+  if (!boxCollection.innerText.includes('AM')) {
+    boxCollection.innerHTML = originalList.get(boxCollection.getElementsByTagName('input')[0].id);
   } else {
-    originalList.set(containerNumber.innerHTML, skuCol.innerHTML);
-    skuCol.innerHTML = '';
-    skuColContentArr.forEach(element => {
-      if (element.length>1) {
-        const item = document.createElement('div');
-        item.className = "row justify-content-between";
-        item.innerHTML = `<div class="col-4">${element.trim()}</div> <div class="col-4"><input type="number" value=${element.trim().split("(#")[1].split(")")[0]} class="inputCollection uk-input uk-form-width-small uk-form-small text-danger" onkeyup="checkSKU(event, '${element.trim().split("(#")[1].split(")")[0]}', '${containerNumber.innerText}_${element.trim().split("(#")[0]}')" id="${containerNumber.innerText}_${element.trim().split("(#")[0]}*${containerNumber.id}" placeholder="0"></div>`;
-        reqBoxMap.set(`${containerNumber.innerText}_${element.trim().split("(#")[0]}`, parseInt(element.trim().split("(#")[1].split(")")[0]));
-        amBoxMap.set(`${containerNumber.innerText}_${element.trim().split("(#")[0]}`, 0);
-        skuCol.prepend(item);
-      }
-    });
+    const containerArr = boxCollection.innerText.split(', ');
+    var totalCount = 0;
+    for (let i = 0; i < containerArr.length; i++) {
+      const element = containerArr[i];
+      const qty_per_sku = parseInt(element.split('(')[1].split(')')[0]);
+      const container_number = element.split('(')[0];
+      totalCount += qty_per_sku
+    };
+    boxCollection.innerHTML = `<input type="number" value=${totalCount} id="${oldContentContext}" class="inputCollection uk-input uk-form-width-small uk-form-small text-danger" onkeyup="checkSKU(event, ${totalCount})" placeholder="0">`
+    originalList.set(oldContentContext, oldContent);
   }
 };
-const itemIdMap = new Map();
-const itemIdFetch = async (container_id) => {
-  await fetch(`/api/item/findAllPerContainer/${container_id}`, {
-    method: 'GET'
-  }).then(function (response) {
-    return response.json();
-  }).then(function (data) {
-    for (let i = 0; i < data.length; i++) {
-      const element = data[i];
-      itemIdMap.set(`${element.item_number}*${container_id}`, element.id);
-    }
-  })
-}
-const checkSKU = (event, number, mapKey) => {
+const checkSKU = (event, number) => {
   if (parseInt(event.target.value)<=parseInt(number) && parseInt(event.target.value)>0) {
     event.target.className = "uk-input inputCollection uk-form-width-small uk-form-small text-danger";
-    amBoxMap.set(mapKey, parseInt(number) - parseInt(event.target.value));
-    reqBoxMap.set(mapKey, parseInt(event.target.value));
   } else {
     event.target.value = null;
     event.target.className = "uk-input uk-form-width-small uk-form-small";
-    amBoxMap.set(mapKey, parseInt(number));
-    reqBoxMap.set(mapKey, 0);
   }
 };
 ///1. submition btn pressed
@@ -455,37 +377,23 @@ function validation_request(event) {
 function preCheckPage(file, file_2, event) {
   var fileName, fileName_2;
   var confirmationArr = [];
-  var noRepeatArr = [];
   const notes = document.getElementById('notes').value;
-  var table = document.getElementById("containerTable");
-  var selectedSkus = table.querySelectorAll('.inputCollection');
-  for (var i = 0; i < selectedSkus.length; i++) {
-    accountName = selectedSkus[i].parentElement.parentElement.parentElement.parentElement.getElementsByTagName('td')[1].innerText;
+  var table = document.getElementById("skuTable");
+  var allInputs = table.querySelectorAll('.inputCollection')
+  for (var i = 0; i < allInputs.length; i++) {
+    accountName = allInputs[i].parentElement.previousElementSibling.previousElementSibling.innerText;
     var eachBox;
-    const eachSkuInfo = selectedSkus[i].id;
-    const mapKey = eachSkuInfo.split('*')[0];
-    // const container_id = parseInt(eachSkuInfo.split('*')[1]);
-    // const item_id = parseInt(eachSkuInfo[1]);
-    const item_number = mapKey.split('_')[1];
-    const qty_per_sku = reqBoxMap.get(mapKey);
-    const container_number = mapKey.split('_')[0];
-    if (!noRepeatArr.includes(container_number)) {
-      noRepeatArr.push(container_number);
+    const qty_per_sku = allInputs[i].value;
+    const item_number = allInputs[i].parentElement.previousElementSibling.innerText;
+    const relatedBoxes = allInputs[i].id;
+    const relatedBoxesArr = relatedBoxes.split(', ');
       eachBox = `<tr>
-      <td class='text-primary'><b>${container_number}</b><td>
-      <td>${item_number}<td>
+      <td class='text-primary'><b>${item_number}</b><td>
       <td>${qty_per_sku}<td>
       </tr>`;
-    } else {
-      eachBox = `<tr>
-      <td><td>
-      <td>${item_number}<td>
-      <td>${qty_per_sku}<td>
-      </tr>`;
-    }
-      confirmationArr.push(eachBox)
+      confirmationArr.push(eachBox);
   };
-  if (selectedSkus.length) {
+  if (allInputs.length) {
     confirmationArr = confirmationArr.join('');
       if (file) {
         fileName = file.name
@@ -500,8 +408,7 @@ function preCheckPage(file, file_2, event) {
       UIkit.modal.confirm(`<small class='text-primary' uk-tooltip="title: This page is a pre-check step before proceeding the confirmation. Please review your request order. If there is any input error, simply click “Cancel” and correct it. Otherwise, click “OK” to continue; pos: right">此页为检查页面，若发现输入/选择错误，请按“Cancel”并更改；若所有输入皆正确，请按“OK”完成通知</small><table class="uk-table uk-table-small uk-table-divider">
       <thead>
         <tr>
-        <th>箱码/ SKU/ 数量</th>
-        <th></th>
+        <th>SKU/ 数量</th>
         <th></th>
         </tr>
       </thead>
@@ -593,6 +500,10 @@ function GetSelected(event) {
 
 
 
+
+
+
+////remove any tag which does not have modal per dataTable page
 var aTagArr = document.getElementsByClassName('aTagCollection');
 const collectionFilter = () => {
   aTagArr = document.getElementsByClassName('aTagCollection');
