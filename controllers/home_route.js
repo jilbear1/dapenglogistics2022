@@ -2509,6 +2509,49 @@ router.get('/master_request_amazon', withAuth, async (req, res) => {
         }
       ]
     });
+    const detailData = await Detail.findAll({
+      where: {
+        user_id: req.session.user_id
+      },
+        attributes: [
+          'id',
+          'return_num',
+          'dress_num',
+          'tracking_num',
+          'dress_sku',
+          'return_sku',
+          'amazon_sku',
+          'user_name',
+          'account_name',
+          'date_added',
+          'status',
+          'billed',
+          'search_item',
+          'condition',
+          'color',
+          'size',
+          'description',
+          'first_name',
+          'last_name',
+          'address',
+          'city',
+          'state',
+          'zipcode',
+          'user_id',
+          'account_id',
+          'container_id',
+          'item_id'
+        ],
+          include: [
+            {
+          model: Account,
+          attributes: [
+            'name'
+          ]
+            }
+          ]
+    });
+    const details = detailData.map(detail => detail.get({ plain: true }));
     const pre_containers = containerData.map(container => container.get({ plain: true }));
     const requestsBatch = pre_containers.reduce(function (r, a) {
       r[a.container_id] = r[a.container_id] || [];
@@ -2516,7 +2559,7 @@ router.get('/master_request_amazon', withAuth, async (req, res) => {
       return r;
     }, Object.create(null));
     const containers = Object.values(requestsBatch);
-    res.render('master_request_amazon', {containers, loggedIn: true, admin: req.session.admin, name: req.session.name});
+    res.render('master_request_amazon', {containers, details, loggedIn: true, admin: req.session.admin, name: req.session.name});
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
@@ -2566,14 +2609,58 @@ router.get('/master_request_amazon/:account_id', withAuth, async (req, res) => {
         }
       ]
     });
+    const detailData = await Detail.findAll({
+      where: {
+        user_id: req.session.user_id,
+        account_id: req.params.account_id
+      },
+        attributes: [
+          'id',
+          'return_num',
+          'dress_num',
+          'tracking_num',
+          'dress_sku',
+          'return_sku',
+          'amazon_sku',
+          'user_name',
+          'account_name',
+          'date_added',
+          'status',
+          'billed',
+          'search_item',
+          'condition',
+          'color',
+          'size',
+          'description',
+          'first_name',
+          'last_name',
+          'address',
+          'city',
+          'state',
+          'zipcode',
+          'user_id',
+          'account_id',
+          'container_id',
+          'item_id'
+        ],
+          include: [
+            {
+          model: Account,
+          attributes: [
+            'name'
+          ]
+            }
+          ]
+    });
     const pre_containers = containerData.map(container => container.get({ plain: true }));
+    const details = detailData.map(detail => detail.get({ plain: true }));
     const requestsBatch = pre_containers.reduce(function (r, a) {
       r[a.container_id] = r[a.container_id] || [];
       r[a.container_id].push(a);
       return r;
     }, Object.create(null));
     const containers = Object.values(requestsBatch);
-    res.render('master_request_amazon', {containers, loggedIn: true, admin: req.session.admin, name: req.session.name, accountId: req.params.id});
+    res.render('master_request_amazon', {containers, details, loggedIn: true, admin: req.session.admin, name: req.session.name, accountId: req.params.id});
   } catch (err) {
     console.log(err);
     res.status(500).json(err);

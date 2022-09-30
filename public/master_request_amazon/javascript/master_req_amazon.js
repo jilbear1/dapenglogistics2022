@@ -1,6 +1,6 @@
 console.log(location.href, 'master_req_amazon js');
 const locationAddress = location.href.split('/');
-const account_id = locationAddress[locationAddress.length-1].replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
+// const account_id = locationAddress[locationAddress.length-1].replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
 const loader = document.getElementById('loader');
 const containerTable = document.getElementById('myTable');
 var containerMap = new Map();
@@ -24,7 +24,6 @@ async function createContainer(requestedObjArr, requestedContainer) {
       body: JSON.stringify(requestedContainer),
       headers: { 'Content-Type': 'application/json' }
     });
-
     if (response.ok) {
      console.log("amazon box inserted", `S3 = ${requestedContainer.s3}`);
      findContainerId(requestedContainer.container_number, requestedContainer.s3, requestedObjArr);
@@ -342,7 +341,6 @@ const record_container = async (count, collection, container_number, file_code, 
   });
 };
 
-
 const shipped_date_labeling = (requestedObjArrD, requestedContainerD) => {
   const shipped_date = new Date().toLocaleDateString("en-US");
   fetch(`/api/item/emptyContainerSearch/${JSON.stringify(masterContainerIdArr)}`, {
@@ -394,7 +392,7 @@ const focusListener = (event) => {
   };
   ////// actual action
   const skuCol = event.target.parentElement.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling;
-  const containerNumber = event.target.parentElement.nextSibling.nextSibling.nextSibling.nextSibling
+  const containerNumber = event.target.parentElement.nextSibling.nextSibling.nextSibling.nextSibling;
   var skuColContentArr;
   skuCol.innerText.includes(',')?skuColContentArr=(skuCol.innerText).split(","):skuColContentArr=[];
   if (skuColContentArr.length < 1) {
@@ -407,7 +405,11 @@ const focusListener = (event) => {
       if (element.length>1) {
         const item = document.createElement('div');
         item.className = "row justify-content-between";
-        item.innerHTML = `<div class="col-4">${element.trim()}</div> <div class="col-4"><input type="number" value=${element.trim().split("(#")[1].split(")")[0]} class="inputCollection uk-input uk-form-width-small uk-form-small text-danger" onkeyup="checkSKU(event, '${element.trim().split("(#")[1].split(")")[0]}', '${containerNumber.innerText}_${element.trim().split("(#")[0]}')" id="${containerNumber.innerText}_${element.trim().split("(#")[0]}*${containerNumber.id}" placeholder="0"></div>`;
+        if(document.getElementById(`detail_${element.trim().split("(#")[0]}`)){
+          item.innerHTML = `<div class="col-4">${element.trim()}<a class="text-primary" uk-icon="icon: bookmark" href="#detail_${element.trim().split("(#")[0]}" uk-toggle></a></div> <div class="col-4"><input type="number" value=${element.trim().split("(#")[1].split(")")[0]} class="inputCollection uk-input uk-form-width-small uk-form-small text-danger" onkeyup="checkSKU(event, '${element.trim().split("(#")[1].split(")")[0]}', '${containerNumber.innerText}_${element.trim().split("(#")[0]}')" id="${containerNumber.innerText}_${element.trim().split("(#")[0]}*${containerNumber.id}" placeholder="0"></div>`;
+        } else {
+          item.innerHTML = `<div class="col-4">${element.trim()}</div> <div class="col-4"><input type="number" value=${element.trim().split("(#")[1].split(")")[0]} class="inputCollection uk-input uk-form-width-small uk-form-small text-danger" onkeyup="checkSKU(event, '${element.trim().split("(#")[1].split(")")[0]}', '${containerNumber.innerText}_${element.trim().split("(#")[0]}')" id="${containerNumber.innerText}_${element.trim().split("(#")[0]}*${containerNumber.id}" placeholder="0"></div>`;
+        }
         reqBoxMap.set(`${containerNumber.innerText}_${element.trim().split("(#")[0]}`, parseInt(element.trim().split("(#")[1].split(")")[0]));
         amBoxMap.set(`${containerNumber.innerText}_${element.trim().split("(#")[0]}`, 0);
         skuCol.prepend(item);
@@ -554,22 +556,14 @@ function GetSelected(event) {
     var requested_item = new Object();
     requested_item.item_number = item_number;
     requested_item.qty_per_sku = qty_per_sku;
-    if (account_id) {
-      requested_item.account_id = account_id
-     } else {
-      requested_item.account_id = masterAccountIdArr[0];
-     };
+    requested_item.account_id = masterAccountIdArr[0];
     requested_item.description = `${container_number}:${location}`
     requestedObjArr.push(requested_item);
     requestedItemIdArr.push(item_id);
   };
    /////// create ONE new container
    var requestedContainer = new Object();
-   if (account_id) {
-    requestedContainer.account_id = account_id
-   } else {
-    requestedContainer.account_id = masterAccountIdArr[0];
-   }
+   requestedContainer.account_id = masterAccountIdArr[0];
    requestedContainer.cost = costCount;
    requestedContainer.fba = fba;
    requestedContainer.location = 'virtual';
