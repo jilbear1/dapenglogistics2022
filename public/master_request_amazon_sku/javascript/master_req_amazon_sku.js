@@ -442,7 +442,7 @@ function GetSelected(event) {
     const item_number = allInputs[j].parentElement.previousElementSibling.innerText;
     const relatedBoxes = allInputs[j].id;
     var sourceBoxArr = relatedBoxes.split(', ');
-    costCount += requestedQty;
+    costCount += parseInt(requestedQty);
     for (var i = 0; i < sourceBoxArr.length; i++) {
       if(sourceBoxArr[i]){
         var qty_per_sku = 0;
