@@ -44,7 +44,19 @@
 <nav class="uk-navbar-container uk-navbar-transparent" uk-navbar>
     <div class="uk-navbar-center">
         <div class="uk-navbar-item">
-            <a onclick="history.back()" uk-icon="icon: arrow-left" class="rounded-circle bg-success text-white" uk-tooltip="back to the previous page"></a>
+            <div class="uk-navbar-item">
+                <a class="btn btn-white border-warning btn-sm shadow-sm" href="/amazon/{{accountId}}" uk-icon="icon: home" uk-tooltip="Personal Homepage"></a>
+                <a class="btn btn-light btn-sm shadow-sm" href="/request/{{accountId}}" uk-tooltip="中国跨海货物">海外货物</a>
+                <button class="btn btn-secondary btn-sm shadow-sm" type="button" uk-tooltip="美国内地转运货物">亚马逊/其他货物</button>
+                <div uk-dropdown>
+                    <ul class="uk-nav uk-dropdown-nav">
+                        <li><a href="/master_request_amazon_sku/{{accountId}}">以物件（SKU）来出货</a></li>
+                        <li class="uk-active"><a href="/master_request_amazon/{{accountId}}">以库存箱子来出货（目前模式）</a></li>
+                        <li><a href="/request_amazon/{{accountId}}">旧版</a></li>
+                    </ul>
+                </div>
+                <a class="btn btn-light btn-sm shadow-sm" href="/request_amazon_confirmation/{{accountId}}" uk-tooltip="转运货物标签确认">货物确认</a>
+            </div>
         </div>
 
         <div class="uk-navbar-item">
@@ -70,7 +82,7 @@
                         <th onclick="location.reload()" uk-tooltip="可多项目复选"><b>勾选</b></th>
                         <th><b>子用户名</b></th>
                         <th><b>箱码</b></th>
-                        <th><b>相关SKUs</b> (请在右方自行调整出货数量)</th>
+                        <th><b>相关SKUs</b> (请在右方自行调整每箱的物件出货数量)</th>
                     </tr>
                 </thead>
                 <tbody>

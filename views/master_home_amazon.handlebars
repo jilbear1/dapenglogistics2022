@@ -25,11 +25,11 @@
             {{#if accountId}}
             <a class="btn btn-light btn-sm shadow-sm" href="/account/{{accountId}}" uk-tooltip="中国跨海货物">海外货物</a>
             <a class="btn btn-primary btn-sm shadow-sm" href="/amazon/{{accountId}}" uk-tooltip="美国内地转运货物">亚马逊/其他货物</a>
-            <a class="btn btn-warning btn-sm shadow-sm" href="/request_amazon/{{accountId}}" uk-tooltip="Ship-out" >单位出货页面</a>
+            <a class="btn btn-warning btn-sm shadow-sm" href="/master_request_amazon_sku/{{accountId}}" uk-tooltip="Ship-out" >单位出货页面</a>
             {{else}}
             <a class="btn btn-light btn-sm shadow-sm" href="/master" uk-tooltip="中国跨海货物">海外货物</a>
             <a class="btn btn-primary btn-sm shadow-sm" href="/amazon/{{accountId}}" uk-tooltip="美国内地转运货物">亚马逊/其他货物</a>
-            <a class="btn btn-outline-warning btn-sm shadow-sm" href="/request_amazon/{{accountId}}" uk-tooltip="Ship-out" >综合出货页面</a>
+            <a class="btn btn-outline-warning btn-sm shadow-sm" href="/master_request_amazon_sku/{{accountId}}" uk-tooltip="Ship-out" >综合出货页面</a>
             {{/if}}
             </div>
 

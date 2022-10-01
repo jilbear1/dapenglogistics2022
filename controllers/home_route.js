@@ -2660,7 +2660,7 @@ router.get('/master_request_amazon/:account_id', withAuth, async (req, res) => {
       return r;
     }, Object.create(null));
     const containers = Object.values(requestsBatch);
-    res.render('master_request_amazon', {containers, details, loggedIn: true, admin: req.session.admin, name: req.session.name, accountId: req.params.id});
+    res.render('master_request_amazon', {containers, details, loggedIn: true, admin: req.session.admin, name: req.session.name, accountId: req.params.account_id});
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
@@ -2760,7 +2760,7 @@ router.get('/master_request_amazon_sku/:account_id', withAuth, async (req, res) 
       return r;
     }, Object.create(null));
     const items = Object.values(requestsBatch);
-    res.render('master_request_amazon_sku', {items, details, loggedIn: true, china: false, amazon: false, admin: req.session.admin, name: req.session.name, accountId: req.params.id});
+    res.render('master_request_amazon_sku', {items, details, loggedIn: true, china: false, amazon: false, admin: req.session.admin, name: req.session.name, accountId: req.params.account_id});
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
@@ -2858,7 +2858,7 @@ router.get('/master_request_amazon_sku/', withAuth, async (req, res) => {
       return r;
     }, Object.create(null));
     const items = Object.values(requestsBatch);
-    res.render('master_request_amazon_sku', {items, details, loggedIn: true, china: false, amazon: false, admin: req.session.admin, name: req.session.name, accountId: req.params.id});
+    res.render('master_request_amazon_sku', {items, details, loggedIn: true, china: false, amazon: false, admin: req.session.admin, name: req.session.name});
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
