@@ -4,8 +4,18 @@
 {{else}}
 <p class="uk-heading-line uk-text-right uk-margin-small-right"><span>所在页面 <span class="uk-text-bold uk-label">{{name}}的主面板</span></span></p>
 <div class="uk-flex uk-flex-center@m uk-flex-right@l uk-margin-small-right mb-2">
-  <button class="badge bg-info shadow-sm" uk-toggle="target: #modal-skuSearch" onclick="skuListing()" uk-tooltip="只限美国转运货物">SKU查询</button>
-  {{!-- <a href="/master" class="badge bg-warning shadow-sm" uk-tooltip="此页面乘载大量资料，可能会降低使用速度与品质!">总库存浏览页</a> --}}
+  <ul class="uk-subnav uk-subnav-divider" uk-margin>
+    <li class="uk-active">
+        <ol>
+          <li class="breadcrumb-item active">挂单总数: <span id="pending_c"></span> </li>
+          <li class="breadcrumb-item active">库存量: <span id="inventory_c"></span></li>
+        </ol>
+    </li>
+    <li><a uk-toggle="target: #modal-skuSearch" onclick="skuListing()" uk-tooltip="只限美国转运货物">SKU查询</a></li>
+    {{#if detailAuth}}
+    <li><a href="/dress">货物细目专区</a></li>
+    {{/if}}
+  </ul>
 </div>
 {{!-- modal- for sku search ***********************--}}
 {{!-- search form --}}
@@ -121,14 +131,6 @@
 {{!-- modal- for sku search ***********************--}}
 
 <div class="container">
-  <nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item active">挂单总数: <span id="pending_c"></span> </li>
-      <li class="breadcrumb-item active">库存量: <span id="inventory_c"></span></li>
-    </ol>
-  </nav>
-
-
   <div class="form-check">
   <input class="form-check-input" type="radio" name="account_checkbox" id="account_search" onclick="account_show()" checked>
   <label class="form-check-label" for="accountSearch">

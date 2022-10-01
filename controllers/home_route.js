@@ -51,6 +51,17 @@ router.get('/', withAuth, async (req, res) => {
         ["name", "ASC"],
       ],
     });
+    const detailData = await Detail.findAll({
+      where: {
+        user_id: req.session.user_id,
+      },
+        attributes: [
+          'id'
+        ]
+    });
+    var detailAuth = false;
+    const details = detailData.map(detail => detail.get({ plain: true }));
+    details.length>0?detailAuth=true:detailAuth=false;
     var pre_accounts = accountData.map(account => account.get({ plain: true }));
     var pre_accountsTwo = accountDataTwo.map(account => account.get({ plain: true }));
     var accounts = [];
@@ -84,7 +95,8 @@ router.get('/', withAuth, async (req, res) => {
       accounts,
       loggedIn: true,
       admin: req.session.admin,
-      name: req.session.name
+      name: req.session.name,
+      detailAuth
     });
   } catch (err) {
     console.log(err);
@@ -2959,7 +2971,8 @@ router.get('/dress', withAuth, async (req, res) => {
       loggedIn: true,
       accountId: req.params.id,
       admin: req.session.admin,
-      name: req.session.name
+      name: req.session.name,
+      dress: true
     });
   } catch (err) {
     console.log(err);

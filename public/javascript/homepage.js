@@ -15,7 +15,7 @@ const init = () => {
   Promise.all(inventory_promises).then(() => {
     var inventoryCount = receivedCount + requestedCount;
     pending_count.innerHTML = pendingCount;
-    inventory_count.innerHTML = `${inventoryCount} (${requestedCount} requested)`
+    inventory_count.innerHTML = `${inventoryCount} (出货通知: ${requestedCount} )`
 }).catch((e) => {console.log(e)})
 }
 const allBox = async () => {
