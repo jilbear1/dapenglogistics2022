@@ -2877,7 +2877,7 @@ router.get('/master_request_amazon_sku/', withAuth, async (req, res) => {
   }
 });
 
-router.get('/dress', withAuth, async (req, res) => {
+router.get('/detail', withAuth, async (req, res) => {
   try {
     var detailData;
     if (req.session.admin) {
@@ -2966,7 +2966,7 @@ router.get('/dress', withAuth, async (req, res) => {
     }
 
     const details = detailData.map(detail => detail.get({ plain: true }));
-    res.render('dress', {
+    res.render('detail', {
       details,
       loggedIn: true,
       accountId: req.params.id,

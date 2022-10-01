@@ -109,7 +109,9 @@
 
 <script>
     $(document).ready( function () {
-    $('#skuTable').DataTable();
+    $('#skuTable').DataTable({
+        "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "全部"]],
+     });
 } );
 </script>
 <script src="javascript/master_req_amazon_sku.js"></script>

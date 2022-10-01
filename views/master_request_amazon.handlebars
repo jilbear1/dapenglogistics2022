@@ -109,7 +109,9 @@
 
 <script>
     $(document).ready( function () {
-    $('#containerTable').DataTable();
+    $('#containerTable').DataTable({
+        "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "全部"]],
+     });
 } );
 </script>
 <script src="javascript/master_req_amazon.js"></script>

@@ -52,7 +52,9 @@
 </div>
 <script>
     $(document).ready( function () {
-     $('#detailTable').DataTable();
+     $('#detailTable').DataTable({
+        "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "全部"]],
+     });
     } );
 </script>
 {{else}}
