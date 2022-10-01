@@ -44,8 +44,9 @@
     <div class="uk-navbar-center">
         <div class="uk-navbar-item">
             <div class="uk-navbar-item">
-                <a class="btn btn-white border-warning btn-sm shadow-sm" href="/amazon/{{accountId}}" uk-icon="icon: home" uk-tooltip="Personal Homepage"></a>
+                <a class="btn btn-white border-warning btn-sm shadow-sm" href="/amazon/{{accountId}}" uk-icon="icon: home" uk-tooltip="Homepage"></a>
                 <a class="btn btn-light btn-sm shadow-sm" href="/request/{{accountId}}" uk-tooltip="中国跨海货物">海外货物</a>
+                <div class="border border-info rounded p-2">
                 <button class="btn btn-secondary btn-sm shadow-sm" type="button" uk-tooltip="美国内地转运货物">亚马逊/其他货物</button>
                 <div uk-dropdown>
                     <ul class="uk-nav uk-dropdown-nav">
@@ -55,6 +56,7 @@
                     </ul>
                 </div>
                 <a class="btn btn-light btn-sm shadow-sm" href="/request_amazon_confirmation/{{accountId}}" uk-tooltip="转运货物标签确认">货物确认</a>
+                </div>
             </div>
         </div>
 

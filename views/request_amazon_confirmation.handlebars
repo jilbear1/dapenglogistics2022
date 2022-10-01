@@ -47,10 +47,12 @@
     <div class="uk-navbar-center">
         <div class="uk-navbar-item">
             <button id="ind" class="btn btn-white border-primary text-primary btn-sm shadow-sm" onclick='palletSwitch(event)' uk-tooltip="托盘模式 = 允许选择单一托盘内的所有货箱 * 全相连模式 = 系统自动选择单一出货通知内的所有货箱 * 自由选择模式 = 允许复选个别货箱">自由选择模式</button>
-            <a class="btn btn-white border-warning btn-sm shadow-sm" href="/amazon/{{accountId}}" uk-icon="icon: home" uk-tooltip="Personal Homepage"></a>
+            <a class="btn btn-white border-warning btn-sm shadow-sm" href="/amazon/{{accountId}}" uk-icon="icon: home" uk-tooltip="Homepage"></a>
             <a class="btn btn-light btn-sm shadow-sm" href="/request/{{accountId}}" uk-tooltip="中国跨海货物">海外货物</a>
+            <div class="border border-info rounded p-2">
             <a class="btn btn-light btn-sm shadow-sm" href="/master_request_amazon_sku/{{accountId}}" uk-tooltip="美国内地转运货物">亚马逊/其他货物</a>
             <a class="btn btn-secondary btn-sm shadow-sm" href="/request_amazon_confirmation/{{accountId}}" uk-tooltip="转运货物标签确认">货物确认</a>
+            </div>
         </div>
 
         <div class="uk-navbar-item">
