@@ -2917,6 +2917,13 @@ router.get('/detail', withAuth, async (req, res) => {
           attributes: [
             'name'
           ]
+            },
+            {
+              model: User,
+              attributes: [
+                'username',
+                'name'
+              ]
             }
           ]
       })
