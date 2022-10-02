@@ -60,7 +60,8 @@ const imageFetch = async (id) => {
             }
            }
         })
-    }
+    };
+    // next(id);
 };
 const bigger = (event) => {
     if (event.target.style.height == '400px'){
@@ -88,3 +89,29 @@ UIkit.notification({
     pos: 'top-right',
     timeout: 3000
 });
+
+// const group = document.querySelectorAll('.modalGroup');
+// const next = (id) => {
+//     for (let i = 0; i < group.length; i++) {
+//         const element = group[i].id.split('_')[1];
+//         if (element == id) {
+//             const aTag = document.getElementById(`jumper${id}`).getElementsByTagName('a')[1];
+//             const aTag_2 = document.getElementById(`jumper${id}`).getElementsByTagName('a')[0];
+//             if (!group[i++]) {
+//                 aTag.href = `#detail_${group[0].id.split('_')[1]}`;
+//                 imageFetch(group[0].id.split('_')[1]);
+//             } else {
+//                 aTag.href = `#detail_${group[i++].id.split('_')[1]}`;
+//                 imageFetch(group[i++].id.split('_')[1]);
+//             }
+//             if (!group[i--]) {
+//                 aTag_2.href = `#detail_${group[group.length--].id.split('_')[1]}`;
+//                 imageFetch(group[group.length--].id.split('_')[1]);
+//             } else {
+//                 aTag_2.href = `#detail_${group[i--].id.split('_')[1]}`;
+//                 imageFetch(group[i--].id.split('_')[1]);
+//             }
+//             break;
+//         }
+//     }
+// }

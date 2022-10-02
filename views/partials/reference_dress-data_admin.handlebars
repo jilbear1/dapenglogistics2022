@@ -11,11 +11,15 @@
    <td>{{date_added}}</td>
    <td>{{description}}</td>
 </tr>
- <div id="detail_{{id}}" uk-modal>
+ <div id="detail_{{id}}" class="modalGroup" uk-modal>
    <div class="uk-modal-dialog">
       <button class="uk-modal-close-default" type="button" uk-close></button>
       <form class="p-3">
          <h3 class="text-center">Dress SKU: {{#if dress_sku}}{{dress_sku}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</h3>
+            {{!-- <div class="text-center" id="jumper{{id}}">
+               <a uk-toggle uk-icon="chevron-double-left" class="uk-button"></a>
+               <a uk-toggle uk-icon="chevron-double-right" class="uk-button"></a>
+            </div> --}}
          <div class="uk-margin text-center" uk-margin>
                   <div uk-form-custom="target: true">
                      <input type="file" id="detailImages{{id}}" accept="image/*, .pdf" multiple>
