@@ -33,7 +33,33 @@ router.post('/upload', upload.single('file'), async (req, res) => {
         res.status(500).json(err);
     }
 });
-
+router.post('/uploadDetailImage', upload.single('file'), async (req, res) => {
+    var status=0;
+    req.session.admin?status=0:status=1;
+    console.log(status);
+    try {
+        const file = req.file;
+        const ref = req.body.ref;
+        const id = req.body.user_id;
+        const result = await uploadFile_admin(file);
+        await unlinkFile(file.path);
+        const key = result.Key;
+        Document.create({
+            file: key,
+            date: new Date().valueOf(),
+            references: ref,
+            user_id:id,
+            status: status
+        },
+        )
+        .then(() => {
+            res.send({imagePath: `/image/${key}`})
+        })
+    } catch (err) {
+        console.log(err);
+        res.status(500).json(err);
+    }
+});
 router.get('/validation/:reference', async (req, res) => {
     try {
         const documentData = await Document.findOne({
@@ -48,6 +74,30 @@ router.get('/validation/:reference', async (req, res) => {
             ],
           });
           const data = documentData.get({plain: true});
+          res.json(data);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json(err);
+    }
+});
+
+router.get('/getDetailImages/:detail_id', async (req, res) => {
+    try {
+        const documentData = await Document.findAll({
+            where: {
+              references: req.params.detail_id,
+            },
+            attributes: [
+              'id',
+              'references',
+              'file',
+              'status'
+            ],
+          });
+          var data = null;
+          if (documentData) {
+            data = documentData.map(image => image.get({ plain: true }));
+          }
           res.json(data);
     } catch (err) {
         console.log(err);

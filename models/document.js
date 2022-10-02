@@ -17,11 +17,11 @@ Document.init(
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 0
-        },// doc type: 0(general) 1(tracking) 2(supplmental)
+        },// doc type: 0(detail image) 1(sku label image)
         status: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            defaultValue: 0
+            defaultValue: 0 //0 = admin, 1 = client
         },
         tracking: {
             type: DataTypes.STRING,

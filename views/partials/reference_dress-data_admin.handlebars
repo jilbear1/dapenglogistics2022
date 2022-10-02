@@ -1,5 +1,5 @@
 <tr>
-   <td><a class="text-primary" uk-icon="plus-circle" href="#detail_{{id}}" uk-toggle></a></td>
+   <td><a class="text-primary" uk-icon="plus-circle" href="#detail_{{id}}" onclick="imageFetch({{id}})" uk-toggle></a></td>
    <td>{{user.name}}</td>
    <td>{{dress_sku}}</td>
    <td>{{return_num}}</a></td>
@@ -16,6 +16,17 @@
       <button class="uk-modal-close-default" type="button" uk-close></button>
       <form class="p-3">
          <h3 class="text-center">Dress SKU: {{#if dress_sku}}{{dress_sku}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</h3>
+         <div class="uk-margin text-center" uk-margin>
+                  <div uk-form-custom="target: true">
+                     <input type="file" id="detailImages{{id}}" accept="image/*, .pdf" multiple>
+                     <input class="uk-input uk-form-width-medium" type="text" placeholder="Select file(s)" disabled>
+                  </div>
+                  <a class="uk-button uk-button-default" id="uploadBtn{{id}}" onclick="trigger({{id}}, {{user_id}})" uk-icon="cloud-upload"></a>
+                  <a class="uk-button uk-button-secondary" id="fake{{id}}" type="button" disabled style="display: none;">
+                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                     Loading...
+                  </a>
+         </div>
                 <ul class="py-2">
                     <li>Account: {{#if account.name}}{{account.name}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
                     <li>Return #: {{#if return_num}}{{return_num}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
@@ -35,7 +46,9 @@
                     <li>Size: {{#if size}}{{size}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
                     <li>Description: {{#if description}}{{description}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
                     <li>Status: {{#if status}}{{status}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <hr>
+                     <li id="image{{id}}" class="p-3"></li>
                 </ul>
-   </form>
+      </form>
    </div>
 </div>
