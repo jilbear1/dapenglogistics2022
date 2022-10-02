@@ -105,11 +105,21 @@ router.get('/getDetailImages/:detail_id', async (req, res) => {
 });
 router.delete('/remove/:id', withAuth, async (req, res) => {
     try {
-        const action = await Document.destroy({
-            where: {
-                id: req.params.id
-            }
-        });
+        var action;
+        if(req.session.admin) {
+            action = await Document.destroy({
+                where: {
+                    id: req.params.id
+                }
+            });
+        } else {
+            action = await Document.destroy({
+                where: {
+                    status: 1,
+                    id: req.params.id
+                }
+            });
+        }
         if (action) {
             res.json(action)
         } else {

@@ -48,6 +48,8 @@ const imageFetch = async (id) => {
             for (let i = 0; i < data.length; i++) {
                 const imageURL = data[i].file;
                 const image = document.createElement('img');
+                const div = document.createElement('span');
+                const span = document.createElement('a');
                 image.src = `/image/${imageURL}`;
                 if(data[i].status==1){
                     image.className = "img-thumbnail rounded float-left border border-success";
@@ -56,7 +58,13 @@ const imageFetch = async (id) => {
                 }
                 image.style.height = '130px'
                 image.setAttribute('onclick', `bigger(event)`);
-                document.getElementById(`image${id}`).appendChild(image);
+                span.setAttribute('uk-icon', 'trash');
+                span.className = 'text-danger rounded-circle border border-outline-danger';
+                span.style.display = 'none';
+                span.setAttribute('onclick', `removeImage(${data[i].id}, event)`);
+                div.appendChild(image);
+                div.appendChild(span)
+                document.getElementById(`image${id}`).appendChild(div);
             }
            }
         })
@@ -65,12 +73,26 @@ const imageFetch = async (id) => {
 };
 const bigger = (event) => {
     if (event.target.style.height == '400px'){
-        event.target.style.height = '130px'
+        event.target.style.height = '130px';
+        event.target.nextSibling.style.display = 'none';
     } else {
         event.target.style.height = '400px';
+        event.target.nextSibling.style.display = ''
     }
 };
-
+const removeImage = async (id, evt) => {
+    const response = await fetch(`/api/document/remove/${id}`, {
+        method: 'delete',
+        headers: { 'Content-Type': 'application/json' }
+    });
+    if (response.ok) {
+        location.reload();
+        // evt.target.parentElement.parentElement.querySelector('img').remove();
+        // evt.target.parentElement.parentElement.querySelector('a').remove();
+    } else {
+        alert('您没有删除此照片的权限')
+    }
+}
 
 if (location.href.split('detail_')[1] == 'dress') {
     document.getElementsByTagName('td').length<1?location.href = '/detail_return':document.getElementById('detail_dress_btn').className='border border-primary p-2'
