@@ -1,0 +1,49 @@
+<tr>
+   <td><a class="text-primary" uk-icon="plus-circle" href="#detail_{{id}}" uk-toggle onclick="imageFetch({{id}})"></a></td>
+   <td>{{return_sku}}</td>
+   <td>{{return_num}}</a></td>
+   <td>{{tracking_num}}</td>
+   <td>{{first_name}} {{last_name}}</td>
+   <td>{{condition}}</td>
+   <td>{{amazon_sku}}</td>
+   <td>{{date_added}}</td>
+</tr>
+ <div id="detail_{{id}}" uk-modal>
+   <div class="uk-modal-dialog">
+      <button class="uk-modal-close-default" type="button" uk-close></button>
+      <form class="p-3">
+         <h3 class="text-center">退货序号: {{#if return_sku}}{{return_sku}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</h3>
+           <div class="uk-margin text-center" uk-margin>
+                  <div uk-form-custom="target: true">
+                     <input type="file" id="detailImages{{id}}" accept="image/*, .pdf">
+                     <input class="uk-input uk-form-width-medium" type="text" placeholder="选择照片" disabled>
+                  </div>
+                  <a class="uk-button uk-button-default" id="uploadBtn{{id}}" onclick="trigger({{id}}, {{user_id}})" uk-icon="cloud-upload">上传</a>
+                  <a class="uk-button uk-button-secondary" id="fake{{id}}" type="button" disabled style="display: none;">
+                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                     上传中...
+                  </a>
+         </div>
+                <ul class="py-2">
+                    <li>子用户: {{#if account.name}}{{account.name}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>退货号码: {{#if return_num}}{{return_num}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>邮寄单号: {{#if tracking_num}}{{tracking_num}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>收货时间: {{#if date_added}}{{date_added}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <hr>
+                    <li>名字: {{#if last_name}}{{last_name}}, {{first_name}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>地址: {{#if address}}{{address}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>城市: {{#if city}}{{city}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>州: {{#if state}}{{state}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>邮寄编号: {{#if zipcode}}{{zipcode}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>联系电话: {{#if phone}}{{phone}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <hr>
+                    <li>亚马逊SKU: {{#if amazon_sku}}{{amazon_sku}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>状态: {{#if condition}}{{condition}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>备注: {{#if description}}{{description}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                    <li>删除/保留: {{#if status}}{{status}}{{else}}<span class="text-secondary">Not Available</span>{{/if}}</li>
+                     <hr>
+                     <li id="image{{id}}" class="p-3"></li>
+                </ul>
+   </form>
+   </div>
+</div>

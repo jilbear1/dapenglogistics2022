@@ -69,3 +69,22 @@ const bigger = (event) => {
         event.target.style.height = '400px';
     }
 };
+
+
+if (location.href.split('detail_')[1] == 'dress') {
+    document.getElementsByTagName('td').length<1?location.href = '/detail_return':document.getElementById('detail_dress_btn').className='border border-primary p-2'
+} else if (location.href.split('detail_')[1] == 'return') {
+    document.getElementsByTagName('td').length<1?location.href = '/detail_dress':document.getElementById('detail_return_btn').className='border border-primary p-2'
+};
+var message;
+if(location.href.split('detail_')[1] == 'dress'){
+    message="礼服清单页面 (Dress Page)";
+} else {
+    message="退货清单页面 (Return Page)"
+}
+UIkit.notification({
+    message: message,
+    status: 'primary',
+    pos: 'top-right',
+    timeout: 3000
+});

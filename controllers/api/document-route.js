@@ -80,7 +80,6 @@ router.get('/validation/:reference', async (req, res) => {
         res.status(500).json(err);
     }
 });
-
 router.get('/getDetailImages/:detail_id', async (req, res) => {
     try {
         const documentData = await Document.findAll({
@@ -104,7 +103,6 @@ router.get('/getDetailImages/:detail_id', async (req, res) => {
         res.status(500).json(err);
     }
 });
-
 router.delete('/remove/:id', withAuth, async (req, res) => {
     try {
         const action = await Document.destroy({

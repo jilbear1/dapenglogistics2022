@@ -2877,11 +2877,16 @@ router.get('/master_request_amazon_sku/', withAuth, async (req, res) => {
   }
 });
 
-router.get('/detail', withAuth, async (req, res) => {
+router.get('/detail_dress', withAuth, async (req, res) => {
   try {
     var detailData;
     if (req.session.admin) {
       detailData = await Detail.findAll({
+        where: {
+          dress_sku: {
+            [Op.ne]: null
+          }
+        },
         attributes: [
           'id',
           'return_num',
@@ -2931,6 +2936,9 @@ router.get('/detail', withAuth, async (req, res) => {
       detailData = await Detail.findAll({
         where: {
           user_id: req.session.user_id,
+          dress_sku: {
+            [Op.ne]: null
+          }
         },
           attributes: [
             'id',
@@ -2979,7 +2987,126 @@ router.get('/detail', withAuth, async (req, res) => {
       accountId: req.params.id,
       admin: req.session.admin,
       name: req.session.name,
-      dress: true
+      dress: true,
+      return: false
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+});
+router.get('/detail_return', withAuth, async (req, res) => {
+  try {
+    var detailData;
+    if (req.session.admin) {
+      detailData = await Detail.findAll({
+        where: {
+          return_sku: {
+            [Op.ne]: null
+          }
+        },
+        attributes: [
+          'id',
+          'return_num',
+          'dress_num',
+          'tracking_num',
+          'dress_sku',
+          'return_sku',
+          'amazon_sku',
+          'user_name',
+          'account_name',
+          'date_added',
+          'status',
+          'billed',
+          'search_item',
+          'condition',
+          'color',
+          'size',
+          'description',
+          'first_name',
+          'last_name',
+          'address',
+          'city',
+          'state',
+          'zipcode',
+          'user_id',
+          'account_id',
+          'container_id',
+          'item_id'
+        ],
+          include: [
+            {
+          model: Account,
+          attributes: [
+            'name'
+          ]
+            },
+            {
+              model: User,
+              attributes: [
+                'username',
+                'name'
+              ]
+            }
+          ]
+      })
+    } else {
+      detailData = await Detail.findAll({
+        where: {
+          user_id: req.session.user_id,
+          return_sku: {
+            [Op.ne]: null
+          }
+        },
+          attributes: [
+            'id',
+            'return_num',
+            'dress_num',
+            'tracking_num',
+            'dress_sku',
+            'return_sku',
+            'amazon_sku',
+            'user_name',
+            'account_name',
+            'date_added',
+            'status',
+            'billed',
+            'search_item',
+            'condition',
+            'color',
+            'size',
+            'description',
+            'first_name',
+            'last_name',
+            'address',
+            'city',
+            'state',
+            'zipcode',
+            'user_id',
+            'account_id',
+            'container_id',
+            'item_id'
+          ],
+            include: [
+              {
+            model: Account,
+            attributes: [
+              'name'
+            ]
+              }
+            ]
+        })
+    }
+
+    const details = detailData.map(detail => detail.get({ plain: true }));
+    res.render('detail', {
+      details,
+      loggedIn: true,
+      accountId: req.params.id,
+      admin: req.session.admin,
+      name: req.session.name,
+      dress: false,
+      return: true
     });
   } catch (err) {
     console.log(err);

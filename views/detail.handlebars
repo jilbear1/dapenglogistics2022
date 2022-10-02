@@ -1,8 +1,14 @@
 <link rel="stylesheet" href="css/table.css">
 <link rel="stylesheet" href="css/loader_2.css">
 <div class="uk-overflow-auto">
-    <p class="uk-heading-line uk-text-right uk-margin-small-right"><span>所在页面 <span class="uk-text-bold uk-label uk-label-info">库存总揽（特殊物件）</span></span></p>
+    <p class="uk-heading-line uk-text-right uk-margin-small-right">{{#if admin}}<span>Current Page <span class="uk-text-bold uk-label uk-label-info">Item Details</span></span>{{else}}<span>所在页面 <span class="uk-text-bold uk-label uk-label-info">库存总揽（特殊物件）</span></span>{{/if}}</p>
     <div class="loader" id="loader" style="display: none"></div>
+    <div class="uk-flex uk-flex-center@m uk-flex-center@l uk-margin-small-center mb-2">
+        <ul class="uk-subnav uk-subnav-divider" uk-margin>
+            <li><a href="/detail_dress" id="detail_dress_btn">{{#if admin}}Dress Page{{else}}礼服清单{{/if}}</a></li>
+            <li><a href="/detail_return" id="detail_return_btn">{{#if admin}}Return Page{{else}}退货清单{{/if}}</a></li>
+         </ul>
+    </div>
     {{#if dress}}
     <div class="container">
         <table class="table shadow-sm table-hover table-striped" id="detailTable">
@@ -59,6 +65,57 @@
     } );
 </script>
 {{else}}
-{{!-- return detail here --}}
+    {{#if return}}
+    <div class="container">
+        <table class="table shadow-sm table-hover table-striped" id="detailTable">
+            <thead>
+                <tr>
+                    <th></th>
+                    {{#if admin}}
+                    <th>User</th>
+                    <th>Return SKU</th>
+                    <th>Return #</th>
+                    <th>Tracking #</th>
+                    <th>Name</th>
+                    <th>Condition</th>
+                    <th>Amazon SKU</th>
+                    <th>Date</th>
+                    {{else}}
+                    <th>退货序号</th>
+                    <th>退货号码</th>
+                    <th>邮寄单号</th>
+                    <th>姓名</th>
+                    <th>状态</th>
+                    <th>亚马逊SKU</th>
+                    <th>收货时间</th>
+                    {{/if}}
+                </tr>
+            </thead>
+            <tbody>
+                {{#if admin}}
+                    {{#each details as |detail|}}
+                        {{> reference_return-data_admin detail}}
+                    {{else}}
+                        <h3 class="text-center">No special item is found</h3>
+                    {{/each}}
+                {{else}}
+                    {{#each details as |detail|}}
+                        {{> reference_return-data detail}}
+                    {{else}}
+                        <h3 class="text-center">没有找到任何库存物件</h3>
+                    {{/each}}
+                {{/if}}
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    $(document).ready( function () {
+     $('#detailTable').DataTable({
+        "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "全部"]],
+     });
+    } );
+</script>
+    {{/if}}
 {{/if}}
 <script src="javascript/detail.js"></script>
