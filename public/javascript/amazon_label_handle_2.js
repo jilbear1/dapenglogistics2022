@@ -630,14 +630,14 @@ function itemCreate(sp) {
     promises.push(loadingItems(item))
 };
 async function loadingItems(data) {
-    finishlineIndex++;
     const response = await fetch('/api/item/new', {
         method: 'post',
         body: JSON.stringify(data),
         headers: {'Content-Type': 'application/json'}
     });
     if (response.ok) {
-        console.log('finished new item insert');
+        finishlineIndex++;
+        console.log('finished new item insert: ' + finishlineIndex + ' item(s)');
         beforeRefresh();
     }
 };
@@ -679,7 +679,10 @@ var boxCreateIndex = 0;
 var finishlineIndex = 0;
 const beforeRefresh = () => {
  if (boxCreateIndex == finishlineIndex) {
+    console.log('all tasks done. ready to refresh');
     location.reload();
+ } else {
+    console.log(`${boxCreateIndex} Boxes Created and ${finishlineIndex} Items Inserted`);
  }
 }
 
