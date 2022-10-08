@@ -379,7 +379,6 @@ async function loadingItems(data) {
 //     document.getElementById(sku).setAttribute('id', input);
 // }
 
-
 function printable() {
     const oldSize = document.getElementById('pre-shipN').style.fontSize;
     document.getElementById('pre-shipN').style.fontSize = '200%';
@@ -567,11 +566,28 @@ const skuFilter = (input, n) => {
     oldsku?index=oldsku.indexOf(input):index=-1;
     if (index>-1 && filterAuthFunction() && newsku[index]) {
         imgAttach(newsku[index], n);
+        filter_record(input, newsku[index])
         return newsku[index]
     } else {
         return input
     }
 };
+const filterRecordArr = [];
+const skuRecordList =  document.getElementById('skurecord')
+const filter_record = (oldsku, newsku) => {
+    const skuSet = `${oldsku}-${newsku}`;
+    if (!filterRecordArr.includes(skuSet)) {
+        filterRecordArr.push(skuSet);
+        const list = document.createElement('li');
+        list.className = 'text-primary';
+        list.id = skuSet
+        list.innerHTML = `${oldsku} --->  ${newsku} (1)`;
+        skuRecordList.append(list);
+    } else {
+        const changingCount = parseInt(document.getElementById(skuSet).innerHTML.split('(')[1].split(')')[0])+1;
+        document.getElementById(skuSet).innerHTML = `${oldsku} --->  ${newsku} (${changingCount})`;
+    }
+}
 const imgAttach = async (number,n) => {
     skuChecker = false
     await fetch(`/api/document/validation/${number}`, {
