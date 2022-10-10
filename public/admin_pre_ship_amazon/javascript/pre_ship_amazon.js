@@ -383,6 +383,7 @@ function printable() {
     const oldSize = document.getElementById('pre-shipN').style.fontSize;
     document.getElementById('pre-shipN').style.fontSize = '200%';
     const hideables = [
+        document.getElementById("labChangeHx"),
         document.getElementById('assignFunction'),
         document.getElementById('notesFunction'),
         document.getElementById('topline'),
