@@ -640,7 +640,8 @@ const printImage = () => {
         document.getElementById('assignFunction'),
         document.getElementById('notesFunction'),
         document.getElementById('topline'),
-        document.getElementById('creator_form')
+        document.getElementById('creator_form'),
+        document.getElementById("labChangeHx")
     ];
     document.getElementById('image_placeholder').style.display = '';
     hideables.forEach(i => i.style.display = 'none')
