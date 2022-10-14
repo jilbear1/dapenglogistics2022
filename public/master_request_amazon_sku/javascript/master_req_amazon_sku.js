@@ -383,7 +383,7 @@ function preCheckPage(file, file_2, event) {
   const notes = document.getElementById('notes').value;
   var table = document.getElementById("skuTable");
   var allInputs = table.querySelectorAll('.inputCollection');
-  var relatedBoxesArr = "<samp>";
+  var relatedBoxesArr = `<div class="container">`;
   for (var i = 0; i < allInputs.length; i++) {
     accountName = allInputs[i].parentElement.previousElementSibling.previousElementSibling.innerText;
     var eachBox, eachRelatedBox;
@@ -399,7 +399,7 @@ function preCheckPage(file, file_2, event) {
         const singleBoxQty = parseInt(singleBoxNumber.split("(")[1].split(")")[0]);
         qtyTracker-=singleBoxQty;
         eachRelatedBox =`
-          ${singleBoxNumber.split("(")[0]},
+          <samp>${singleBoxNumber.split("(")[0]}</samp>,
           `;
         relatedBoxesArr+=eachRelatedBox;
       }
@@ -441,7 +441,7 @@ function preCheckPage(file, file_2, event) {
         <hr>
         <b>档案:</b> <u>${fileName}</u> & <u>${fileName_2}</u>
         <hr>
-        <b>所使用的货箱:</b> ${relatedBoxesArr}</samp>
+        <b>所使用的货箱:</b> ${relatedBoxesArr}</div>
         `
       ).then(function () {
         loader.style.display = '';
