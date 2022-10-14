@@ -382,19 +382,35 @@ function preCheckPage(file, file_2, event) {
   var confirmationArr = [];
   const notes = document.getElementById('notes').value;
   var table = document.getElementById("skuTable");
-  var allInputs = table.querySelectorAll('.inputCollection')
+  var allInputs = table.querySelectorAll('.inputCollection');
+  var relatedBoxesArr = "<samp>";
   for (var i = 0; i < allInputs.length; i++) {
     accountName = allInputs[i].parentElement.previousElementSibling.previousElementSibling.innerText;
-    var eachBox;
+    var eachBox, eachRelatedBox;
     const qty_per_sku = allInputs[i].value;
     const item_number = allInputs[i].parentElement.previousElementSibling.innerText;
     const relatedBoxes = allInputs[i].id;
-    const relatedBoxesArr = relatedBoxes.split(', ');
-      eachBox = `<tr>
+    const boxNumberArr = relatedBoxes.split(', ');
+    var qtyTracker = parseInt(qty_per_sku);
+    for (let b = 0; b < boxNumberArr.length; b++) {
+      if (qtyTracker > 0) {
+        const singleBoxNumber = boxNumberArr[b];
+        console.log(singleBoxNumber);
+        const singleBoxQty = parseInt(singleBoxNumber.split("(")[1].split(")")[0]);
+        qtyTracker-=singleBoxQty;
+        eachRelatedBox =`
+          ${singleBoxNumber.split("(")[0]},
+          `;
+        relatedBoxesArr+=eachRelatedBox;
+      }
+    }
+    eachBox = `
+      <tr>
       <td class='text-primary'><b>${item_number}</b><td>
       <td>${qty_per_sku}<td>
-      </tr>`;
-      confirmationArr.push(eachBox);
+      </tr>
+    `;
+    confirmationArr.push(eachBox);
   };
   if (allInputs.length) {
     confirmationArr = confirmationArr.join('');
@@ -408,17 +424,26 @@ function preCheckPage(file, file_2, event) {
       } else {
         fileName_2 = `no file`
       };
-      UIkit.modal.confirm(`<small class='text-primary' uk-tooltip="title: This page is a pre-check step before proceeding the confirmation. Please review your request order. If there is any input error, simply click “Cancel” and correct it. Otherwise, click “OK” to continue; pos: right">此页为检查页面，若发现输入/选择错误，请按“Cancel”并更改；若所有输入皆正确，请按“OK”完成通知</small><table class="uk-table uk-table-small uk-table-divider">
-      <thead>
-        <tr>
-        <th>SKU/ 数量</th>
-        <th></th>
-        </tr>
-      </thead>
-      <tbody>
-      ${confirmationArr}
-      </tbody>
-      </table><hr><b>附注留言</b>: ${notes}<hr><b>档案:</b> <u>${fileName}</u> & <u>${fileName_2}</u>`).then(function () {
+      UIkit.modal.confirm(
+        `<small class='text-primary' uk-tooltip="title: This page is a pre-check step before proceeding the confirmation. Please review your request order. If there is any input error, simply click “Cancel” and correct it. Otherwise, click “OK” to continue; pos: right">此页为检查页面，若发现输入/选择错误，请按“Cancel”并更改；若所有输入皆正确，请按“OK”完成通知</small><table class="uk-table uk-table-small uk-table-divider">
+        <thead>
+          <tr>
+          <th>SKU/ 数量</th>
+          <th></th>
+          </tr>
+        </thead>
+        <tbody>
+        ${confirmationArr}
+        </tbody>
+        </table>
+        <hr>
+        <b>附注留言</b>: ${notes}
+        <hr>
+        <b>档案:</b> <u>${fileName}</u> & <u>${fileName_2}</u>
+        <hr>
+        <b>所使用的货箱:</b> ${relatedBoxesArr}</samp>
+        `
+      ).then(function () {
         loader.style.display = '';
         GetSelected(event)
     }, function () {
