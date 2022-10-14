@@ -502,6 +502,7 @@ const record_itemRemove = async (itemData) => {
   const sub_number = itemData.container_number;
   const status_from = 1;
   const status_to = 99;
+  const qty_from = itemData.qty_from;
   const qty_to = 0;
   const type = 1;
   const date = new Date().toISOString().split('T')[0];
@@ -513,6 +514,7 @@ const record_itemRemove = async (itemData) => {
       sub_number,
       status_from,
       status_to,
+      qty_from,
       qty_to,
       type,
       date,
