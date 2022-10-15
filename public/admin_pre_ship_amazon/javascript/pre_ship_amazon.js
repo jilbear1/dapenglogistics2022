@@ -609,6 +609,7 @@ const imgAttach = async (number,n) => {
                     const image = document.createElement('img');
                     image.src = `/image/${d.file}`;
                     image.style.pageBreakAfter='always';
+                    image.style.paddingTop = marginvalue();
                     document.getElementById('image_placeholder').appendChild(image);
                 }
             } else {
@@ -616,12 +617,22 @@ const imgAttach = async (number,n) => {
                 const image = document.createElement('img');
                 image.src = `/image/${d.file}`;
                 image.style.pageBreakAfter='always';
+                image.style.paddingTop = marginvalue();
                 document.getElementById('image_placeholder').appendChild(image);
             }
         } else {
             document.getElementById('alert').innerHTML = `<h3>NO IMAGE ATTACHED WITH THIS SKU CHANGE: ${number}</h3>`;
         };
       })
+};
+function marginvalue() {
+    const image_container = document.getElementById("image_placeholder");
+    const images = image_container.getElementsByTagName("img");
+    if (images.length>0){
+        return "25px";
+    } else {
+        return null;
+    };
 };
 const allowCheckBox = document.getElementById('allowFilter');
 const filterAuthFunction = () => {
