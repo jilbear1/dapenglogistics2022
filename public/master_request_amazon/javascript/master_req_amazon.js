@@ -430,15 +430,15 @@ function preCheckPage(file, file_2, event) {
     if (!noRepeatArr.includes(container_number)) {
       noRepeatArr.push(container_number);
       eachBox = `<tr>
-      <td class='text-primary'><b>${container_number}</b><td>
-      <td>${item_number}<td>
-      <td>${qty_per_sku}<td>
+      <td class='text-primary'><b>${container_number}</b></td>
+      <td>${item_number}</td>
+      <td>${qty_per_sku}</td>
       </tr>`;
     } else {
       eachBox = `<tr>
-      <td><td>
-      <td>${item_number}<td>
-      <td>${qty_per_sku}<td>
+      <td></td>
+      <td>${item_number}</td>
+      <td>${qty_per_sku}</td>
       </tr>`;
     }
       confirmationArr.push(eachBox)

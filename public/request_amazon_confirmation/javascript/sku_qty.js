@@ -186,7 +186,6 @@ function getRandomColor() {
   }
   return color;
 }
-
 function GetSelected(numberOfFile) {
   if (selectBoxId.length) {
     document.getElementById('js-modal-confirm').innerHTML = '<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>';
@@ -340,10 +339,78 @@ function validation_request() {
   if (!file && !file_2 && !check_label.checked) {
     alert('The shipping label is missing! Please attach a pdf file and try again! 无夹带档案！请夹带档案或者勾选无夹带档案栏，然后再试一遍。')
   } else {
-    loader.style.display = '';
-    GetSelected(numberOfFile)
+    preCheckPage(file, file_2, numberOfFile)
   }
 };
+const preCheckPage = (file, file_2, numberOfFile) => {
+  var fileName, fileName_2;
+  var confirmationArr = [];
+  const notes = document.getElementById('notes').value;
+  var table = document.getElementById("myTable");
+  var allInputs = table.getElementsByTagName('input');
+  var checkboxCount = 0;
+  for (var i = 0; i < allInputs.length; i++) {
+    if(allInputs[i].checked) {
+      checkboxCount++;
+      const firstTd = allInputs[i].parentElement;
+      accountName = firstTd.nextElementSibling.innerText;
+      var eachBox;
+      var spSKU = "<ul>";
+      var qty_per_sku = "<ul>";
+      const spBoxNumber = firstTd.nextElementSibling.nextElementSibling.innerText;
+      const spSKUArr = firstTd.nextElementSibling.nextElementSibling.nextElementSibling.innerText.split("\n");
+      spSKUArr.forEach(i => spSKU+=`<li>${i}</li>`);
+      const qty_per_skuArr = firstTd.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.innerText.split("\n");
+      qty_per_skuArr.forEach(j => qty_per_sku+= `<li>${j}</li>`)
+      eachBox = `
+        <tr>
+        <td class='text-primary'><b>${spBoxNumber}</b><td>
+        <td>${spSKU}</ul></td>
+        <td>${qty_per_sku}</ul></td>
+        </tr>
+      `;
+      confirmationArr.push(eachBox);
+    }
+  };
+  if (checkboxCount>0) {
+    confirmationArr = confirmationArr.join('');
+      if (file) {
+        fileName = file.name
+      } else {
+        fileName = `no file`
+      };
+      if (file_2) {
+        fileName_2 = file_2.name
+      } else {
+        fileName_2 = `no file`
+      };
+      UIkit.modal.confirm(
+        `<small class='text-primary' uk-tooltip="title: This page is a pre-check step before proceeding the confirmation. Please review your request order. If there is any input error, simply click “Cancel” and correct it. Otherwise, click “OK” to continue; pos: right">此页为检查页面，若发现输入/选择错误，请按“Cancel”并更改；若所有输入皆正确，请按“OK”完成通知</small><table class="uk-table uk-table-small uk-table-divider">
+        <thead>
+          <tr>
+          <th>出货箱码/SKU/物件数</th>
+          </tr>
+        </thead>
+        <tbody>
+        ${confirmationArr}
+        </tbody>
+        </table>
+        <hr>
+        <b>附注留言</b>: ${notes}
+        <hr>
+        <b>档案:</b> <u>${fileName}</u> & <u>${fileName_2}</u>
+        `
+      ).then(function () {
+        loader.style.display = '';
+        GetSelected(numberOfFile)
+    }, function () {
+        console.log('Rejected.')
+    });
+  } else {
+    alert('您需要选择至少一个货箱')
+  }
+};
+
 function sortTable(n) {
   var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
   table = document.getElementById("myTable");

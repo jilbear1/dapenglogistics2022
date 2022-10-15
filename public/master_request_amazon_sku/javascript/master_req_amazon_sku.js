@@ -408,8 +408,8 @@ function preCheckPage(file, file_2, event) {
     }
     eachBox = `
       <tr>
-      <td class='text-primary'><b>${item_number}</b><td>
-      <td>${qty_per_sku}<td>
+      <td class='text-primary'><b>${item_number}</b></td>
+      <td>${qty_per_sku}</td>
       </tr>
     `;
     confirmationArr.push(eachBox);

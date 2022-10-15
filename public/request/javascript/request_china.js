@@ -61,9 +61,9 @@ function validation_request() {
       if (checkBoxes[i].checked) {
       var row = checkBoxes[i].parentNode.parentNode;
       var eachBox = `<tr>
-      <td class='text-primary'>${row.cells[2].innerHTML}<td>
-      <td>${row.cells[3].innerHTML}<td>
-      <td>${row.cells[7].innerHTML}<td>
+      <td class='text-primary'>${row.cells[2].innerHTML}</td>
+      <td>${row.cells[3].innerHTML}</td>
+      <td>${row.cells[7].innerHTML}</td>
       </tr>`;
       confirmationArr.push(eachBox)
       }
