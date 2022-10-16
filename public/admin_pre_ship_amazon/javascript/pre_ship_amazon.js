@@ -20,6 +20,12 @@ var skuArr = [];
 var printCheck = false;
 var skuChecker = false;
 var getXCchecker = false;
+//record keeping system - <variable init>
+ var targetdSpRecord = new Object; //single
+ var targetedSkuRecordArr = []; // mutiple
+ var targetedSkuRecord = new Object; // mutiple
+ var targetedExchangeRecord = new Object; // mutiple
+//record keeping system - </variable init>
 if (!localStorage.getItem('sp_number')) {
     localStorage.setItem('sp_number', 0)
 } else {
@@ -313,8 +319,8 @@ const getXC = async () => {
             getXCchecker = true;
             xcQtyCount = parseInt(data.qty_of_fee);
             console.log(xcQtyCount);
-        };
-        console.log(getXCchecker);
+        }
+        console.log("already have an existed addtional charge associated with this request: " + getXCchecker);
     })
 };
 function findContainerId(c_number) {
@@ -367,18 +373,6 @@ async function loadingItems(data) {
         console.log(data.item_number);
     }
 };
-
-//helper functions
-// function idChanger(sku) {
-//     const input = document.getElementById(sku).innerHTML;
-//     skuQtyMap.set(input, skuQtyMap.get(sku));
-//     skuQtyMap.delete(sku);
-//     tdSkuArr.filter(i => i != sku);
-//     tdSkuArr.push(input);
-//     document.getElementById(sku).setAttribute('onkeyup', `idChanger(${input})`);
-//     document.getElementById(sku).setAttribute('id', input);
-// }
-
 function printable() {
     const oldSize = document.getElementById('pre-shipN').style.fontSize;
     document.getElementById('pre-shipN').style.fontSize = '200%';
@@ -679,6 +673,7 @@ const id_and_barcode_generator = () => {
     var instance = container_id + makeid(3) + ans;
     pre_shipN.innerHTML = `SP${instance}`;
     document.getElementById('image').src = `http://bwipjs-api.metafloor.com/?bcid=code128&text=SP${instance}`;
+    targetdSpRecord.ref_number = `SP${instance}`;
 }
 
 function removeItem() {
@@ -738,6 +733,11 @@ function alter() {
     width.value = 0;
     document.getElementById('creator_form').setAttribute('class', 'shadow p-2 py-3 mt-2 rounded border border-danger bg-warning');
     masterCheck ();
+    targetdSpRecord.ref_number = `TEMP${container_id}`;
+    targetdSpRecord.action = `Admin Creating TEMP Container(for Acct: ${targetdSpRecord.action.split("Acct: ")[1].split(")")[0]})`;
+    targetdSpRecord.type = 131;
+    console.log("Sys. Record (updated):");
+    console.log(targetdSpRecord);
 };
 function deleteConfirm() {
     const id = container_id;
@@ -750,8 +750,186 @@ function deleteConfirm() {
         alert('Incorrect passcode!')
     }
 };
-
+const reqBoxInfoFetcher = async (targetedId, targetedObject) => {
+    await fetch(`/api/container/container/${targetedId}`, {
+        method: 'GET'
+    }).then(function (response) {
+        return response.json();
+    }).then(function (data) {
+        const boxInfo = data[0];
+        targetedObject.sub_number = `${boxInfo.container_number} (${targetedId})`;
+        targetedObject.user_id = boxInfo.user_id;
+        targetedObject.action = `Admin Creating SP Container(for Acct: ${boxInfo.account.name})`;
+        targetedObject.status_to = 1;
+        targetedObject.date = new Date().toISOString().split('T')[0];
+        targetedObject.qty_to = 0;
+        targetedObject.type = 121;
+        console.log("Sys. Record:");
+        console.log(targetdSpRecord);
+    })
+};
 id_and_barcode_generator();
 supplemental();
 getXC();
 filterLoader(10);
+reqBoxInfoFetcher(container_id, targetdSpRecord);
+
+/////////record keeping/////////
+
+// const record_container = async (containerData, itemCollection, count) => {
+//     const ref_number = containerData.container_number;
+//     const user_id = containerData.user_id
+//     const status_to = 1;
+//     const qty_to = count;
+//     const date = new Date().toISOString().split('T')[0];
+//     const action = `Admin Creating Container(for Acct: ${account})`;
+//     const action_notes = itemCollection;
+//     const type = 1;
+//     const response = await fetch(`/api/record/record_create`, {
+//       method: 'POST',
+//       body: JSON.stringify({
+//           user_id,
+//           ref_number,
+//           status_to,
+//           qty_to,
+//           date,
+//           action,
+//           action_notes,
+//           type
+//       }),
+//       headers: {
+//           'Content-Type': 'application/json'
+//       }
+//     });
+//     if (response.ok) {
+//         console.log('record container fetched!');
+//     }
+// };
+// const record_container_refill = async (containerData) => {
+//     const ref_number = containerData.container_number;
+//     const user_id = containerData.user_id;
+//     const status_from = 1;
+//     const status_to = 1;
+//     const qty_to = 1;
+//     const date = new Date().toISOString().split('T')[0];
+//     const action = `Admin Refill Container(for Acct: ${containerData.accountname})`;
+//     const action_notes = `Collection: ${containerData.item_number}(1)`;
+//     const type = 1;
+//     const response = await fetch(`/api/record/record_create`, {
+//       method: 'POST',
+//       body: JSON.stringify({
+//           user_id,
+//           ref_number,
+//           status_from,
+//           status_to,
+//           qty_to,
+//           date,
+//           action,
+//           action_notes,
+//           type
+//       }),
+//       headers: {
+//           'Content-Type': 'application/json'
+//       }
+//     });
+//     if (response.ok) {
+//         console.log('record container fetched! (refill mode)');
+//     }
+// };
+// const record_item = async (itemData) => {
+//     var account;
+//     if (newAccount.name) {
+//         account = newAccount.name
+//     } else {
+//        account = acctIdName.get(itemData.account_id)
+//     };
+//     const ref_number = itemData.item_number;
+//     const user_id = itemData.user_id;
+//     const qty_to = itemData.qty_per_sku;
+//     const date = new Date().toISOString().split('T')[0];
+//     const action = `Admin Creating Item(for Acct: ${account})`
+//     const sub_number = amazon_box.container_number;
+//     const type = 1;
+//     const status_to = 1;
+//     const response = await fetch(`/api/record/record_create`, {
+//       method: 'POST',
+//       body: JSON.stringify({
+//           user_id,
+//           qty_to,
+//           status_to,
+//           ref_number,
+//           date,
+//           action,
+//           sub_number,
+//           type
+//       }),
+//       headers: {
+//           'Content-Type': 'application/json'
+//       }
+//     });
+//     if (response.ok) {
+//         console.log('record item fetched!');
+//     }
+// };
+// const record_item_refill = async (itemData, newQty) => {
+//     const ref_number = itemData.item_number;
+//     const sub_number = itemData.container_number;
+//     const user_id = itemData.user_id;
+//     const qty_from = newQty -1;
+//     const qty_to = newQty;
+//     const date = new Date().toISOString().split('T')[0];
+//     const action = `Admin Refill Old Item(for Acct: ${itemData.accountname})`;
+//     const status_from = 1;
+//     const type = 1;
+//     const status_to = 1;
+//     const response = await fetch(`/api/record/record_create`, {
+//       method: 'POST',
+//       body: JSON.stringify({
+//           user_id,
+//           qty_from,
+//           qty_to,
+//           status_to,
+//           status_from,
+//           ref_number,
+//           date,
+//           action,
+//           sub_number,
+//           type
+//       }),
+//       headers: {
+//           'Content-Type': 'application/json'
+//       }
+//     });
+//     if (response.ok) {
+//         console.log('record item fetched! (refill mode)');
+//     }
+// };
+// const record_item_recreate = async (itemData) => {
+//     const ref_number = itemData.item_number;
+//     const sub_number = itemData.container_number;
+//     const user_id = itemData.user_id;
+//     const qty_to = 1;
+//     const date = new Date().toISOString().split('T')[0];
+//     const action = `Admin Refill New Item(for Acct: ${itemData.accountname})`
+//     const type = 1;
+//     const status_to = 1;
+//     const response = await fetch(`/api/record/record_create`, {
+//       method: 'POST',
+//       body: JSON.stringify({
+//           user_id,
+//           qty_to,
+//           status_to,
+//           ref_number,
+//           date,
+//           action,
+//           sub_number,
+//           type
+//       }),
+//       headers: {
+//           'Content-Type': 'application/json'
+//       }
+//     });
+//     if (response.ok) {
+//         console.log('record item fetched!');
+//     }
+// };
