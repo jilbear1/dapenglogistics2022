@@ -22,8 +22,8 @@ var skuChecker = false;
 var getXCchecker = false;
 //record keeping system - <variable init>
  var targetdSpRecord = new Object; //single
- var targetedSkuRecordArr = []; // mutiple
- var targetedSkuRecord = new Object; // mutiple
+//  var targetedSkuRecordArr = []; // mutiple
+//  var targetedSkuRecord = new Object; // mutiple
  var targetedExchangeRecord = new Object; // mutiple
 //record keeping system - </variable init>
 if (!localStorage.getItem('sp_number')) {
@@ -261,7 +261,7 @@ async function boxCreate(data) {
       });
       if (response.ok) {
        console.log("amazon box inserted");
-       xcQtyCount>0?xcCreate(data):console.log('no label change');;
+       xcQtyCount>0?xcCreate(data):console.log('no label change');
        findContainerId(data.container_number);
       } else {
         alert('try again')
@@ -343,15 +343,32 @@ function itemCreate() {
     console.log('itemCreate');
     var rows = newContainerTable.rows;
     for (let i = 1; i < rows.length; i++) {
-        var item = new Object()
+        var item = new Object();
         item.item_number = rows[i].cells[0].innerHTML;
         item.qty_per_sku = parseInt(rows[i].cells[1].innerHTML);
         item.user_id = amazon_box.user_id;
         item.account_id = amazon_box.account_id;
         item.container_id = amazon_box.id;
         item.description = amazon_box.description;
-        promises.push(loadingItems(item))
+        promises.push(loadingItems(item));
+        ///record data below
+        var targetedSkuRecord = new Object;
+        targetedSkuRecord.user_id = amazon_box.user_id;
+        targetedSkuRecord.status_from = 2;
+        targetedSkuRecord.status_to = 1;
+        targetedSkuRecord.qty_to = item.qty_per_sku;
+        targetedSkuRecord.date = new Date().toISOString().split('T')[0];
+        targetedSkuRecord.ref_number = item.item_number;
+        targetedSkuRecord.sub_number = targetdSpRecord.ref_number;
+        targetedSkuRecord.action = `Admin Creating Item to SP (for Acct: ${targetdSpRecord.action.split("Acct: ")[1].split(")")[0]})`;
+        targetedSkuRecord.action_notes = `File 1: ${targetdSpRecord.fileOne}; File 2: ${targetdSpRecord.fileTwo}`;
+        targetedSkuRecord.type = targetdSpRecord.type;
+        targetdSpRecord.qty_to++;
+        targetdSpRecord.collection += `${item.item_number} (${item.qty_per_sku}), `;
+        promises.push(loadingRecord(targetedSkuRecord))
     };
+    targetdSpRecord.action_notes = targetdSpRecord.collection + `File 1: ${targetdSpRecord.fileOne}; File 2: ${targetdSpRecord.fileTwo}`;
+    promises.push(loadingRecord(targetdSpRecord))
     removeItem();
     Promise.all(promises).then(() => {
         console.log('done');
@@ -764,6 +781,9 @@ const reqBoxInfoFetcher = async (targetedId, targetedObject) => {
         targetedObject.date = new Date().toISOString().split('T')[0];
         targetedObject.qty_to = 0;
         targetedObject.type = 121;
+        targetedObject.fileOne = boxInfo.file;
+        targetedObject.fileTwo = boxInfo.file_2;
+        targetedObject.collection = `Collection: `;
         console.log("Sys. Record:");
         console.log(targetdSpRecord);
     })
@@ -776,35 +796,18 @@ reqBoxInfoFetcher(container_id, targetdSpRecord);
 
 /////////record keeping/////////
 
-// const record_container = async (containerData, itemCollection, count) => {
-//     const ref_number = containerData.container_number;
-//     const user_id = containerData.user_id
-//     const status_to = 1;
-//     const qty_to = count;
-//     const date = new Date().toISOString().split('T')[0];
-//     const action = `Admin Creating Container(for Acct: ${account})`;
-//     const action_notes = itemCollection;
-//     const type = 1;
-//     const response = await fetch(`/api/record/record_create`, {
-//       method: 'POST',
-//       body: JSON.stringify({
-//           user_id,
-//           ref_number,
-//           status_to,
-//           qty_to,
-//           date,
-//           action,
-//           action_notes,
-//           type
-//       }),
-//       headers: {
-//           'Content-Type': 'application/json'
-//       }
-//     });
-//     if (response.ok) {
-//         console.log('record container fetched!');
-//     }
-// };
+const loadingRecord = async (data) => {
+    const response = await fetch(`/api/record/record_create`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+          'Content-Type': 'application/json'
+      }
+    });
+    if (response.ok) {
+        console.log('record created');
+    }
+};
 // const record_container_refill = async (containerData) => {
 //     const ref_number = containerData.container_number;
 //     const user_id = containerData.user_id;
@@ -834,41 +837,6 @@ reqBoxInfoFetcher(container_id, targetdSpRecord);
 //     });
 //     if (response.ok) {
 //         console.log('record container fetched! (refill mode)');
-//     }
-// };
-// const record_item = async (itemData) => {
-//     var account;
-//     if (newAccount.name) {
-//         account = newAccount.name
-//     } else {
-//        account = acctIdName.get(itemData.account_id)
-//     };
-//     const ref_number = itemData.item_number;
-//     const user_id = itemData.user_id;
-//     const qty_to = itemData.qty_per_sku;
-//     const date = new Date().toISOString().split('T')[0];
-//     const action = `Admin Creating Item(for Acct: ${account})`
-//     const sub_number = amazon_box.container_number;
-//     const type = 1;
-//     const status_to = 1;
-//     const response = await fetch(`/api/record/record_create`, {
-//       method: 'POST',
-//       body: JSON.stringify({
-//           user_id,
-//           qty_to,
-//           status_to,
-//           ref_number,
-//           date,
-//           action,
-//           sub_number,
-//           type
-//       }),
-//       headers: {
-//           'Content-Type': 'application/json'
-//       }
-//     });
-//     if (response.ok) {
-//         console.log('record item fetched!');
 //     }
 // };
 // const record_item_refill = async (itemData, newQty) => {
