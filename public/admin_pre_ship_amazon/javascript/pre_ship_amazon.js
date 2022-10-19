@@ -21,8 +21,9 @@ var printCheck = false;
 var skuChecker = false;
 var getXCchecker = false;
 //record keeping system - <variable init>
- var targetdSpRecord = new Object; //single
- var targetedExchangeRecord = new Object; // mutiple
+var targetdSpRecord = new Object; //single
+var targetedExchangeRecord = new Object; // mutiple
+targetedExchangeRecord.qty_from = xcQtyCount;
 //record keeping system - </variable init>
 if (!localStorage.getItem('sp_number')) {
     localStorage.setItem('sp_number', 0)
