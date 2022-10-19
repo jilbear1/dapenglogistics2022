@@ -22,8 +22,6 @@ var skuChecker = false;
 var getXCchecker = false;
 //record keeping system - <variable init>
  var targetdSpRecord = new Object; //single
-//  var targetedSkuRecordArr = []; // mutiple
-//  var targetedSkuRecord = new Object; // mutiple
  var targetedExchangeRecord = new Object; // mutiple
 //record keeping system - </variable init>
 if (!localStorage.getItem('sp_number')) {
@@ -268,7 +266,15 @@ async function boxCreate(data) {
    }
 };
 const xcCreate = async (data) => {
+    targetedExchangeRecord.user_id = data.user_id;
+    targetedExchangeRecord.sub_number = `${targetdSpRecord.sub_number}=>${targetdSpRecord.ref_number}`;
+    targetedExchangeRecord.qty_to = xcQtyCount;
+    targetedExchangeRecord.status_from = 4;
+    targetedExchangeRecord.status_to = 4;
+    targetedExchangeRecord.date = new Date().toISOString().split('T')[0];
+    targetedExchangeRecord.type = 401;
     if (getXCchecker) {
+        targetedExchangeRecord.action = `Admin modifying AC charge for label change(for Acct: ${targetdSpRecord.action.split("Acct: ")[1].split(")")[0]})`;
         const newfba = `LR${container_id}`
         const response = await fetch('/api/container/xc_LabelChangeUpdate', {
             method: 'PUT',
@@ -284,6 +290,8 @@ const xcCreate = async (data) => {
         response.ok?console.log('xc_charge updated sucessfully'):console.log('fail to update the xc_chagre');
     } else {
         const ref_code = "AC" + parseInt(String(new Date().valueOf() + Math.floor(1000000000 + Math.random() * 9000000000)).substring(4, 11));
+        targetedExchangeRecord.ref_number = ref_code;
+        targetedExchangeRecord.action = `Admin creating AC charge for label change(for Acct: ${targetdSpRecord.action.split("Acct: ")[1].split(")")[0]})`;
         const response = await fetch('/api/container/xc_LabelChange', {
             method: 'post',
             body: JSON.stringify({
@@ -303,7 +311,19 @@ const xcCreate = async (data) => {
             alert('try again')
        }
     }
+    labelChangeRecord(targetedExchangeRecord);
 };
+
+const labelChangeRecord = (xcRecord) => {
+    const skuRecordList =  document.getElementById('skurecord');
+    const recordTags = skuRecordList.getElementsByTagName('li');
+    xcRecord.action_notes = "Collection: ";
+    for (let i = 0; i < recordTags.length; i++) {
+        const element = recordTags[i].innerText;
+        xcRecord.action_notes+= `${element}, `;
+    }
+    loadingRecord(xcRecord);
+}
 
 const getXC = async () => {
     await fetch(`/api/container/fba/LR${container_id}`, {
@@ -318,6 +338,8 @@ const getXC = async () => {
         if (data) {
             getXCchecker = true;
             xcQtyCount = parseInt(data.qty_of_fee);
+            targetedExchangeRecord.qty_from = xcQtyCount;
+            targetedExchangeRecord.ref_number = data.container_number;
             console.log(xcQtyCount);
         }
         console.log("already have an existed addtional charge associated with this request: " + getXCchecker);
@@ -360,7 +382,7 @@ function itemCreate() {
         targetedSkuRecord.date = new Date().toISOString().split('T')[0];
         targetedSkuRecord.ref_number = item.item_number;
         targetedSkuRecord.sub_number = targetdSpRecord.ref_number;
-        targetedSkuRecord.action = `Admin Creating Item to SP (for Acct: ${targetdSpRecord.action.split("Acct: ")[1].split(")")[0]})`;
+        targetedSkuRecord.action = `Admin Creating Item to ${targetdSpRecord.ref_number} (for Acct: ${targetdSpRecord.action.split("Acct: ")[1].split(")")[0]})`;
         targetedSkuRecord.action_notes = `File 1: ${targetdSpRecord.fileOne}; File 2: ${targetdSpRecord.fileTwo}`;
         targetedSkuRecord.type = targetdSpRecord.type;
         targetdSpRecord.qty_to++;
@@ -585,8 +607,8 @@ const skuFilter = (input, n) => {
     }
 };
 const filterRecordArr = [];
-const skuRecordList =  document.getElementById('skurecord')
 const filter_record = (oldsku, newsku) => {
+    const skuRecordList =  document.getElementById('skurecord')
     const skuSet = `${oldsku}-${newsku}`;
     if (!filterRecordArr.includes(skuSet)) {
         filterRecordArr.push(skuSet);

@@ -36,6 +36,7 @@ router.get('/fba/:key', withAuth, async (req, res) => {
         status: 4
       },
       attributes: [
+        'container_number',
         'id',
         'qty_of_fee',
         'description',
