@@ -797,7 +797,7 @@ const reqBoxInfoFetcher = async (targetedId, targetedObject) => {
         return response.json();
     }).then(function (data) {
         const boxInfo = data[0];
-        targetedObject.sub_number = `${boxInfo.container_number} (${targetedId})`;
+        targetedObject.sub_number = `${boxInfo.container_number} (#${targetedId})`;
         targetedObject.user_id = boxInfo.user_id;
         targetedObject.action = `Admin Creating SP Container(for Acct: ${boxInfo.account.name})`;
         targetedObject.status_to = 1;
