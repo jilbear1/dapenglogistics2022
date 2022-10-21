@@ -818,7 +818,6 @@ filterLoader(10);
 reqBoxInfoFetcher(container_id, targetdSpRecord);
 
 /////////record keeping/////////
-
 const loadingRecord = async (data) => {
     const response = await fetch(`/api/record/record_create`, {
       method: 'POST',
@@ -831,96 +830,3 @@ const loadingRecord = async (data) => {
         console.log('record created');
     }
 };
-// const record_container_refill = async (containerData) => {
-//     const ref_number = containerData.container_number;
-//     const user_id = containerData.user_id;
-//     const status_from = 1;
-//     const status_to = 1;
-//     const qty_to = 1;
-//     const date = new Date().toISOString().split('T')[0];
-//     const action = `Admin Refill Container(for Acct: ${containerData.accountname})`;
-//     const action_notes = `Collection: ${containerData.item_number}(1)`;
-//     const type = 1;
-//     const response = await fetch(`/api/record/record_create`, {
-//       method: 'POST',
-//       body: JSON.stringify({
-//           user_id,
-//           ref_number,
-//           status_from,
-//           status_to,
-//           qty_to,
-//           date,
-//           action,
-//           action_notes,
-//           type
-//       }),
-//       headers: {
-//           'Content-Type': 'application/json'
-//       }
-//     });
-//     if (response.ok) {
-//         console.log('record container fetched! (refill mode)');
-//     }
-// };
-// const record_item_refill = async (itemData, newQty) => {
-//     const ref_number = itemData.item_number;
-//     const sub_number = itemData.container_number;
-//     const user_id = itemData.user_id;
-//     const qty_from = newQty -1;
-//     const qty_to = newQty;
-//     const date = new Date().toISOString().split('T')[0];
-//     const action = `Admin Refill Old Item(for Acct: ${itemData.accountname})`;
-//     const status_from = 1;
-//     const type = 1;
-//     const status_to = 1;
-//     const response = await fetch(`/api/record/record_create`, {
-//       method: 'POST',
-//       body: JSON.stringify({
-//           user_id,
-//           qty_from,
-//           qty_to,
-//           status_to,
-//           status_from,
-//           ref_number,
-//           date,
-//           action,
-//           sub_number,
-//           type
-//       }),
-//       headers: {
-//           'Content-Type': 'application/json'
-//       }
-//     });
-//     if (response.ok) {
-//         console.log('record item fetched! (refill mode)');
-//     }
-// };
-// const record_item_recreate = async (itemData) => {
-//     const ref_number = itemData.item_number;
-//     const sub_number = itemData.container_number;
-//     const user_id = itemData.user_id;
-//     const qty_to = 1;
-//     const date = new Date().toISOString().split('T')[0];
-//     const action = `Admin Refill New Item(for Acct: ${itemData.accountname})`
-//     const type = 1;
-//     const status_to = 1;
-//     const response = await fetch(`/api/record/record_create`, {
-//       method: 'POST',
-//       body: JSON.stringify({
-//           user_id,
-//           qty_to,
-//           status_to,
-//           ref_number,
-//           date,
-//           action,
-//           sub_number,
-//           type
-//       }),
-//       headers: {
-//           'Content-Type': 'application/json'
-//       }
-//     });
-//     if (response.ok) {
-//         console.log('record item fetched!');
-//     }
-// };

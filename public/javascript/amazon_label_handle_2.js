@@ -107,7 +107,7 @@ function drop(ev) {
         skuOldMap.set(data, 0);
         skuOldMap.set(target_id, targetNewQty);
     }
-}
+};
 
 async function updateReqContainer(container_id) {
     const id = container_id;
@@ -213,6 +213,7 @@ var skuNewMap = new Map();//create new item
 var spMap = new Map();//create new relation with item
 const evt_trigger = (item_number, int, container_id, item_id, ev) => {
     ev.preventDefault();
+    reqBoxInfoFetcher(container_id);
     indexCount = 0;
     const parentId = ev.target.parentElement.parentElement.id.split('_')[1];
     int = parseInt(document.getElementById(`qty_${parentId}`).innerHTML);
@@ -518,7 +519,7 @@ const shipment_next = (container_id, user_id, account_id, event) => {
 const piArr=[];
 const piMap = new Map();
 function shippmentCreate(sp_number, foregin_key) {
-    const sp_box = new Object();
+    const sp_box = new Object;
     sp_box.length = length.value.trim()*2.54;
     sp_box.width = width.value.trim()*2.54;
     sp_box.height = height.value.trim()*2.54;
@@ -627,6 +628,8 @@ function itemCreate(sp) {
     item.account_id = sp.account_id;
     item.container_id = sp.id;
     item.description = sp.description;
+    promises.push(loadingRecord(prepareRecord(sp, item, 'sp')));
+    promises.push(loadingRecord(prepareRecord(sp, item, 'sku')));
     promises.push(loadingItems(item))
 };
 async function loadingItems(data) {
@@ -846,4 +849,67 @@ const unlabelShippedDate = async (id, delete_id) => {
           'Content-Type': 'application/json'
       }
     });
+};
+const prepareRecord = (boxData, itemData, recordType) => {
+    var record = new Object;
+    record.user_id = boxData.user_id;
+    record.type = 122;
+    record.date = new Date().toISOString().split('T')[0];
+    if (recordType == "sp") {
+        record.ref_number = boxData.container_number;
+        record.sub_number = `${requestBoxData.container_number} (#${requestBoxData.id})`;
+        // record.status_from = null;
+        record.status_to = 1;
+        // record.qty_from = null;
+        record.qty_to = itemData.qty_per_sku;
+        record.action = `Admin Creating SP Container via Quick Mode (for Acct: ${requestBoxData.account.name})`;
+        boxData.custom_1 != null?record.action_notes = `Collection (P)`:record.action_notes = `Collection`;
+        record.action_notes += `: ${itemData.item_number} (${itemData.qty_per_sku}), File 1: ${requestBoxData.file}; File 2: ${requestBoxData.file_2}`;
+    } else if (recordType == "sku") {
+        record.ref_number = itemData.item_number;
+        record.sub_number = boxData.container_number;
+        record.status_from = 2;
+        record.status_to = 1;
+        // record.qty_from = null;
+        record.qty_to = itemData.qty_per_sku
+        record.action = `Admin Creating Item to ${boxData.container_number}  via Quick Mode (for Acct: ${requestBoxData.account.name})`;
+        record.action_notes = `File 1: ${requestBoxData.file}; File 2: ${requestBoxData.file_2}`;
+    } else {
+        record.type = 402;
+        record.ref_number;
+        record.sub_number;
+        record.status_from;
+        record.status_to;
+        record.qty_from;
+        record.qty_to;
+        record.action;
+        record.action_notes;
+
+    }
+    return record
+
+};
+
+var requestBoxData = new Object;
+const reqBoxInfoFetcher = async (reqBoxId) => {
+    await fetch(`/api/container/container/${reqBoxId}`, {
+        method: 'GET'
+    }).then(function (response) {
+        return response.json();
+    }).then(function (data) {
+        requestBoxData = data[0];
+    })
+};
+/////////record keeping/////////
+const loadingRecord = async (data) => {
+    const response = await fetch(`/api/record/record_create`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+          'Content-Type': 'application/json'
+      }
+    });
+    if (response.ok) {
+        console.log('record created');
+    }
 };
