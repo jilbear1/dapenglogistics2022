@@ -872,7 +872,7 @@ const prepareRecord = (boxData, itemData, recordType) => {
         record.status_to = 1;
         // record.qty_from = null;
         record.qty_to = itemData.qty_per_sku
-        record.action = `Admin Creating Item to ${boxData.container_number}  via Quick Mode (for Acct: ${requestBoxData.account.name})`;
+        record.action = `Admin Creating Item to ${boxData.container_number} via Quick Mode (for Acct: ${requestBoxData.account.name})`;
         record.action_notes = `File 1: ${requestBoxData.file}; File 2: ${requestBoxData.file_2}`;
     } else {
         record.type = 402;
