@@ -15,7 +15,7 @@ function location_update() {
     if (isCharacterALetter(scanned_obj[0]) && !isNaN(scanned_obj[1]) && isCharacterASpeical(scanned_obj) && scanned_obj.length > 3) {
         localStorage.setItem('location', scanned_obj);
         document.getElementById('scanned_obj').value = null;
-    } else if ((scanned_obj.length > 10 && scanned_obj.substring(0,2) == 'SW' && scanned_obj.length < 13) || (scanned_obj[scanned_obj.length-1] == '*' && scanned_obj.length > 5) || (scanned_obj.length > 7 && (scanned_obj.substring(0,2) == 'AM' || scanned_obj.substring(0,2) == 'SP'))) {
+    } else if ((scanned_obj.length > 10 && scanned_obj.substring(0,2) == 'SW' && scanned_obj.length < 16) || (scanned_obj[scanned_obj.length-1] == '*' && scanned_obj.length > 5) || (scanned_obj.length > 7 && (scanned_obj.substring(0,2) == 'AM' || scanned_obj.substring(0,2) == 'SP'))) {
         var locatioin_barcode = localStorage.getItem('location')
         if (!locatioin_barcode) {
             error();
@@ -32,7 +32,7 @@ function location_update() {
                 auto_relocate(scanned_obj, locatioin_barcode)
             }
         }
-    } else if (scanned_obj.length > 12) {
+    } else if (scanned_obj.length > 15) {
         error();
         document.getElementById('scanned_obj').value = null
     }

@@ -401,7 +401,10 @@ function masterCheck () {
 //////get additional charge
 var xcQtyCount = 0;
 var xcExist = false;
-var xcObject = new Object();
+var xcObject = new Object;
+var xcRecord = new Object;
+xcRecord.qty_from = 0;
+xcRecord.collection = "Collection: ";
 const getXC = async (container_id) => {
     await fetch(`/api/container/fba/LR${container_id}`, {
         method: 'GET'
@@ -416,6 +419,8 @@ const getXC = async (container_id) => {
             if (!xcExist) {
                 xcExist = true;
                 xcQtyCount+= parseInt(data.qty_of_fee);
+                xcRecord.qty_from = data.qty_of_fee;
+                xcRecord.ref_number = data.container_number;
                 xcObject.notes = data.notes;
                 xcObject.description = data.description;
                 console.log(`xc qty count (history pulls ${parseInt(data.qty_of_fee)}) associated with this Req: ${xcQtyCount}`);
@@ -510,7 +515,8 @@ const shipment_next = (container_id, user_id, account_id, event) => {
        shippmentCreate(spArr[i], foregin_key)
     };
     update_init();
-    xcQtyCount>0?promises.push(xcGenerator(foregin_key)):console.log('no label change');
+    console.log(`original qty: ${xcRecord.qty_from} | final qty: ${xcQtyCount}`);
+    xcQtyCount>0 && xcRecord.qty_from<xcQtyCount?promises.push(xcGenerator(foregin_key)):console.log('no label change');
     Promise.all(promises).then(() => {
         console.log('done');
     }).catch((e) => {console.log(e)})
@@ -569,9 +575,13 @@ async function boxCreate(data) {
    }
 };
 const xcGenerator = async (data) => {
+    xcRecord.qty_to = xcQtyCount;
+    xcRecord.user_id = data.user_id;
     if (xcExist) {
+        xcRecord.action = `Admin modifying AC charge for label change(for Acct: ${requestBoxData.account.name})`;
         const newfba = `LR${data.container_id}`;
         var itemDescription=JSON.parse(xcObject.description.split('Items: ')[1]);
+        xcRecord.collection+= JSON.stringify(skuRecord.concat(itemDescription));
         const response = await fetch('/api/container/xc_LabelChangeUpdate', {
             method: 'PUT',
             body: JSON.stringify({
@@ -586,6 +596,9 @@ const xcGenerator = async (data) => {
         response.ok?console.log('xc_charge updated sucessfully'):console.log('fail to update the xc_chagre');
     } else {
         const ref_code = "AC" + parseInt(String(new Date().valueOf() + Math.floor(1000000000 + Math.random() * 9000000000)).substring(4, 11));
+        xcRecord.action = `Admin creating AC charge for label change(for Acct: ${requestBoxData.account.name})`;
+        xcRecord.ref_number = ref_code;
+        xcRecord.collection+= JSON.stringify(skuRecord);
         const response = await fetch('/api/container/xc_LabelChange', {
             method: 'post',
             body: JSON.stringify({
@@ -605,6 +618,8 @@ const xcGenerator = async (data) => {
             alert('try again')
        }
     }
+    console.log('init record creating for XC');
+    loadingRecord(prepareRecord(xcRecord, null, 'xc'));
 };
 function findContainerId(sp_object) {
     console.log('getting container_id');
@@ -805,6 +820,7 @@ const unlabelShippedDate = async (id, delete_id) => {
  * Req reverse = 10
  * SP = 12;
  * SP create = 121
+ * SP create (quick mode) = 122
  * SP final confirm = 129;
  * China = 0 (create and request);
  * China Confirm  = -100;
@@ -858,9 +874,7 @@ const prepareRecord = (boxData, itemData, recordType) => {
     if (recordType == "sp") {
         record.ref_number = boxData.container_number;
         record.sub_number = `${requestBoxData.container_number} (#${requestBoxData.id})`;
-        // record.status_from = null;
         record.status_to = 1;
-        // record.qty_from = null;
         record.qty_to = itemData.qty_per_sku;
         record.action = `Admin Creating SP Container via Quick Mode (for Acct: ${requestBoxData.account.name})`;
         boxData.custom_1 != null?record.action_notes = `Collection (P)`:record.action_notes = `Collection`;
@@ -870,21 +884,19 @@ const prepareRecord = (boxData, itemData, recordType) => {
         record.sub_number = boxData.container_number;
         record.status_from = 2;
         record.status_to = 1;
-        // record.qty_from = null;
         record.qty_to = itemData.qty_per_sku
         record.action = `Admin Creating Item to ${boxData.container_number} via Quick Mode (for Acct: ${requestBoxData.account.name})`;
         record.action_notes = `File 1: ${requestBoxData.file}; File 2: ${requestBoxData.file_2}`;
     } else {
         record.type = 402;
-        record.ref_number;
-        record.sub_number;
-        record.status_from;
-        record.status_to;
-        record.qty_from;
-        record.qty_to;
-        record.action;
-        record.action_notes;
-
+        record.ref_number = boxData.ref_number;
+        record.sub_number = `${requestBoxData.container_number} (#${requestBoxData.id}) => SPs)`;
+        record.status_from = 4;
+        record.status_to = 4;
+        record.qty_from = boxData.qty_from;
+        record.qty_to = boxData.qty_to;
+        record.action = boxData.action;
+        record.action_notes = boxData.collection;
     }
     return record
 
