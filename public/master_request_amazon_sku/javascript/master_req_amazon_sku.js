@@ -199,6 +199,7 @@ const record_item = async (itemData, container_number, id) => {
   const type = 11;
   const date = new Date().toISOString().split('T')[0];
   const action = `Client Requesting Item (Acct: ${accountName})`;
+  const action_notes = `Original Box: ${itemData.parentContainer}`;
   const response = await fetch(`/api/record/record_create_client`, {
     method: 'POST',
     body: JSON.stringify({
@@ -209,7 +210,8 @@ const record_item = async (itemData, container_number, id) => {
       status_to,
       date,
       type,
-      action
+      action,
+      action_notes
     }),
     headers: {
         'Content-Type': 'application/json'
@@ -506,7 +508,8 @@ function GetSelected(event) {
         requested_item.item_number = item_number;
         requested_item.qty_per_sku = qty_per_sku;
         requested_item.account_id = masterAccountIdArr[0];
-        requested_item.description = `${container_number}:${location}`
+        requested_item.description = `${container_number}:${location}`;
+        requested_item.parentContainer = container_number; //**pass to record so that original box can be found via sku */
         requestedObjArr.push(requested_item);
         requestedItemIdArr.push(item_id);
       }

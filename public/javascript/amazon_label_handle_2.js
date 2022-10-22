@@ -822,6 +822,7 @@ const unlabelShippedDate = async (id, delete_id) => {
  * SP create = 121
  * SP create (quick mode) = 122
  * SP final confirm = 129;
+ * label change = 401, 402
  * China = 0 (create and request);
  * China Confirm  = -100;
  * Mapping = 50
@@ -835,8 +836,8 @@ const unlabelShippedDate = async (id, delete_id) => {
         const qty_to = data[b].qty_per_sku
         reversePromises.push(record_put_action(user_id, itemNumber, mainBoxNumber, qty_to, accountName, data[b].container_id))
     }
- }
- const record_put_action = async (id, ref, sub, count, accountName, parentBoxId) => {
+}
+const record_put_action = async (id, ref, sub, count, accountName, parentBoxId) => {
     const user_id = id;
     const ref_number = ref;
     const sub_number = sub;
@@ -899,7 +900,6 @@ const prepareRecord = (boxData, itemData, recordType) => {
         record.action_notes = boxData.collection;
     }
     return record
-
 };
 
 var requestBoxData = new Object;
