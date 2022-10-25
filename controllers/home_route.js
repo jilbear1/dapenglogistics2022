@@ -3114,8 +3114,27 @@ router.get('/detail_return', withAuth, async (req, res) => {
   }
 });
 //test page
-router.get('/test', (req, res) => {
-  res.render('test');
+router.get('/records', withAuth, async (req, res) => {
+  try {
+    const userData = await User.findAll({
+      attributes: [
+        "name",
+        "id"
+      ],
+      order: [
+        ["name", "ASC"],
+      ]
+    })
+    const users = userData.map(user => user.get({ plain: true }));
+    res.render('record_LandingPage', {
+      users,
+      loggedIn: true,
+      admin: req.session.admin
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
 });
 
 module.exports = router

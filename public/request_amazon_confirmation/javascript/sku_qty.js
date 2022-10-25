@@ -78,6 +78,7 @@ const init = () => {
         document.getElementById('noSign').style.display = '';
       }
     })
+    document.getElementById('loader2').remove();
 };
 var selectBoxId = [];
 function siblingTracker (tracking) {

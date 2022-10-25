@@ -1,0 +1,31 @@
+{{#if admin}}
+<div class="container">
+    <div class="leading text-center">Record Landing Page</div>
+    <form class="mt-3">
+        <div class="row justify-content-md-center">
+            <div class="col-3">
+                <select class="form-select" aria-label="userSelection">
+                    <option>Select Client</option>
+                    {{#each users as |user|}}
+                        {{>userOption user}}
+                        {{else}}
+                            <h1>NO USER WAS FOUND!</h1>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="col-3">
+                <div class="input-group mb-2">
+                    <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="SP Box Number">
+                </div>
+            </div>
+            <div class="col-3">
+                <button type="submit" class="btn btn-primary mb-2">Search</button>
+            </div>
+        </div>
+    </form>
+</div>
+</script>
+<script src="javascript/records_LandingPage.js"></script>
+{{else}}
+<script src="javascript/client_redirect.js"></script>
+{{/if}}
