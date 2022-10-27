@@ -1,0 +1,21 @@
+<div class="container">
+    <table class="skuTable table table-hover shadow-sm table-striped" id="skuTable">
+       <thead>
+            <tr>
+                <th><b>User</b></th>
+                <th><b>Main Box Number</b></th>
+                <th>Previous Box</th>
+                <th>Activity</th>
+                <th>Notes</th>
+                <th>Action Type</th>
+            </tr>
+        </thead>
+        <tbody>
+                {{#each records as |record|}}
+                    {{> record_content record }}
+                {{else}}
+                <h3 class="text-center">NO RECORD WAS FOUND!</h3>
+                {{/each}}
+        </tbody>
+</table>
+</div>

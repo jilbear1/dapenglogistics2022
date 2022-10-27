@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const { route } = require('.');
 const sequelize = require('../config/connection');
-const {User, Account, Batch, Box, Container, Item, Detail} = require('../models');
+const {User, Account, Batch, Box, Container, Item, Detail, Record} = require('../models');
 const {withAuth, adminAuth} = require('../utils/auth');
 const { uploadFile, getFile} = require('../utils/s3');
 const {getFile_admin} = require('../utils/s3_file');
@@ -3136,5 +3136,57 @@ router.get('/records', withAuth, async (req, res) => {
     res.status(500).json(error);
   }
 });
+router.get('/records/:sp', withAuth, async (req, res) => {
+  try {
+    const spNumberOnly = req.params.sp.toUpperCase().split('SP')[1];
+    const spSegment = spNumberOnly.substring(0,4);
+    if (req.session.admin){
+      const recordData = await Record.findAll({
+        where: {
+          [Op.or]: [{ref_number: req.params.sp},{sub_number: req.params.sp}],
+          [Op.or]:[
+            {ref_number:{[Op.like]: '%' + spSegment + '%'}},
+            {sub_number:{[Op.like]: '%' + spSegment + '%'}}
+          ]
+        },
+        attributes: [
+          "user_id",
+          "ref_number",
+          "sub_number",
+          "qty_from",
+          "qty_to",
+          "status_from",
+          "status_to",
+          "action",
+          "action_notes",
+          "date",
+          "type",
+          "id"
+        ],
+        include:[
+          {
+            model: User,
+            attributes: [
+              'name'
+            ]
+          }
+        ],
+        order: [
+          ["type", "ASC"],
+        ]
+      })
+      const records = recordData.map(record => record.get({ plain: true }));
+      res.render('record_ContentPage', {
+        records,
+        loggedIn: true,
+        admin: req.session.admin
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
+
 
 module.exports = router
