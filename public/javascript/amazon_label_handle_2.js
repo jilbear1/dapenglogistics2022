@@ -699,6 +699,7 @@ const updateItem = async (item_id) => {
 var boxCreateIndex = 0;
 var finishlineIndex = 0;
 const beforeRefresh = () => {
+    console.log(`tasks: #${boxCreateIndex}, completed: #${finishlineIndex}`);
  if (boxCreateIndex == finishlineIndex) {
     console.log('all tasks done. ready to refresh');
     location.reload();
