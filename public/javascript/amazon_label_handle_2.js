@@ -64,7 +64,7 @@ const removeItems = async (removeables, container_id, itemsArr, itemQMap) => {
             const qty_per_sku = itemQMap.get(item_number);
             update_promises.push(mergeExistedItem(container_id, item_number, qty_per_sku))
         };
-        Promise.all(promises).then(() => {
+        Promise.all(update_promises).then(() => {
             location.reload();
         }).catch((e) => {console.log(e)})
     }
@@ -498,7 +498,8 @@ const sync = (ev) => {
 function error() {
     var audio = new Audio('../media/wrong.mp3');
     audio.play();
-  };
+};
+
 const shipment_next = (container_id, user_id, account_id, event) => {
     if (event) {
         event.preventDefault();
@@ -577,6 +578,7 @@ async function boxCreate(data) {
 const xcGenerator = async (data) => {
     xcRecord.qty_to = xcQtyCount;
     xcRecord.user_id = data.user_id;
+    boxCreateIndex++;
     if (xcExist) {
         xcRecord.action = `Admin modifying AC charge for label change(for Acct: ${requestBoxData.account.name})`;
         const newfba = `LR${data.container_id}`;
@@ -593,7 +595,7 @@ const xcGenerator = async (data) => {
             }),
             headers: { 'Content-Type': 'application/json' }
         });
-        response.ok?console.log('xc_charge updated sucessfully'):console.log('fail to update the xc_chagre');
+        response.ok?finishlineIndex++:console.log('fail to update the xc_chagre');
     } else {
         const ref_code = "AC" + parseInt(String(new Date().valueOf() + Math.floor(1000000000 + Math.random() * 9000000000)).substring(4, 11));
         xcRecord.action = `Admin creating AC charge for label change(for Acct: ${requestBoxData.account.name})`;
@@ -614,6 +616,7 @@ const xcGenerator = async (data) => {
           });
           if (response.ok) {
            console.log("new xc_charge is inserted");
+           finishlineIndex++
           } else {
             alert('try again')
        }
@@ -914,6 +917,7 @@ const reqBoxInfoFetcher = async (reqBoxId) => {
 };
 /////////record keeping/////////
 const loadingRecord = async (data) => {
+    boxCreateIndex++;
     const response = await fetch(`/api/record/record_create`, {
       method: 'POST',
       body: JSON.stringify(data),
@@ -922,6 +926,7 @@ const loadingRecord = async (data) => {
       }
     });
     if (response.ok) {
+        finishlineIndex++;
         console.log('record created');
     }
 };
