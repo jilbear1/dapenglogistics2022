@@ -3126,7 +3126,7 @@ router.get('/records', withAuth, async (req, res) => {
       ]
     })
     const users = userData.map(user => user.get({ plain: true }));
-    res.render('record_LandingPage', {
+    res.render('record_ContentPage', {
       users,
       loggedIn: true,
       admin: req.session.admin
@@ -3139,11 +3139,14 @@ router.get('/records', withAuth, async (req, res) => {
 router.get('/records/:sp', withAuth, async (req, res) => {
   try {
     var spSegment = req.params.sp;
-    if (req.params.sp.substring(0,2) == "SP" && req.params.sp.length > 5) {
+    if (req.params.sp.toUpperCase().substring(0,2) == "SP" && req.params.sp.length > 5) {
       const spNumberOnly = req.params.sp.toUpperCase().split('SP')[1];
       spSegment = spNumberOnly.substring(0,4);
-    } else if (req.params.sp.substring(0,4) == "TEMP" && req.params.sp.length > 4) {
+    } else if (req.params.sp.toUpperCase().substring(0,4) == "TEMP" && req.params.sp.length > 4) {
       const spNumberOnly = req.params.sp.toUpperCase().split('TEMP')[1];
+      spSegment = spNumberOnly;
+    } else if (req.params.sp.toUpperCase().substring(0,3) == "REQ" && req.params.sp.includes("#")) {
+      const spNumberOnly = req.params.sp.toUpperCase().split('(#')[1].split(")")[0];
       spSegment = spNumberOnly;
     }
     if (req.session.admin){
@@ -3152,7 +3155,8 @@ router.get('/records/:sp', withAuth, async (req, res) => {
           [Op.or]: [{ref_number: req.params.sp},{sub_number: req.params.sp}],
           [Op.or]:[
             {ref_number:{[Op.like]: '%' + spSegment + '%'}},
-            {sub_number:{[Op.like]: '%' + spSegment + '%'}}
+            {sub_number:{[Op.like]: '%' + spSegment + '%'}},
+            {action_notes:{[Op.like]: '%' + spSegment + '%'}}
           ]
         },
         attributes: [
@@ -3167,7 +3171,8 @@ router.get('/records/:sp', withAuth, async (req, res) => {
           "action_notes",
           "date",
           "type",
-          "id"
+          "id",
+          "created_at"
         ],
         include:[
           {
@@ -3189,7 +3194,6 @@ router.get('/records/:sp', withAuth, async (req, res) => {
       const finalConfirmRecords = records.filter(i => i.type == 129);
       const xcRecords = records.filter(i => i.type == 401 || i.type == 402);
       res.render('record_ContentPage', {
-        records,
         handleRecords,
         requestRecords,
         inventoryRecords,

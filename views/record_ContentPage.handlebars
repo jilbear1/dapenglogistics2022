@@ -1,21 +1,109 @@
-<div class="container">
-    <table class="skuTable table table-hover shadow-sm table-striped" id="skuTable">
-       <thead>
-            <tr>
-                <th><b>User</b></th>
-                <th><b>Main Box Number</b></th>
-                <th>Previous Box</th>
-                <th>Activity</th>
-                <th>Notes</th>
-                <th>Action Type</th>
-            </tr>
-        </thead>
-        <tbody>
-                {{#each records as |record|}}
-                    {{> record_content record }}
-                {{else}}
-                <h3 class="text-center">NO RECORD WAS FOUND!</h3>
-                {{/each}}
-        </tbody>
-</table>
+<div class="container mt-2">
+    <div class="row justify-content-md-center">
+        <div class="col-md-auto">
+            <div class="input-group mb-2">
+                <input type="text" class="form-control" id="keyWordSearch" placeholder="key word search">
+            </div>
+        </div>
+        <div class="col-md-auto">
+            <button onclick="searchBtn()" class="btn btn-primary mb-2">Search</button>
+        </div>
+    </div>
 </div>
+
+<div class="container mt-2">
+    <div class="row">
+        <div class="col-md-2">
+            <table class="table table-hover shadow-sm table-striped">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Inventory Queue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each inventoryRecords as |record|}}
+                        {{> record_content record }}
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-2">
+            <table class="table table-hover shadow-sm table-striped">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Request Queue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each requestRecords as |record|}}
+                        {{> record_content record }}
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-2">
+            <table class="table table-hover shadow-sm table-striped">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Handling Queue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each handleRecords as |record|}}
+                        {{> record_content record }}
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-2">
+            <table class="table table-hover shadow-sm table-striped">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Client Confirmation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each initialConfirmRecords as |record|}}
+                        {{> record_content record }}
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-2">
+            <table class="table table-hover shadow-sm table-striped">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Admin Confirmation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each finalConfirmRecords as |record|}}
+                        {{> record_content record }}
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-2">
+            <table class="table table-hover shadow-sm table-striped">
+                <thead class="border border-info">
+                    <tr>
+                        <th></th>
+                        <th>Label Change</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each xcRecords as |record|}}
+                        {{> record_content record }}
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="javascript/records_LandingPage.js"></script>
