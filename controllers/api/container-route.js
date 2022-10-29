@@ -187,6 +187,27 @@ router.get('/amazon_container/:key', withAuth, async (req, res) => {
     }
 });
 
+router.get('/boxDataUsingNumber/:key', withAuth, async (req, res) => {
+  try {
+    const singleContainer = await Container.findOne({
+      where: {
+        container_number: req.params.key
+      },
+      attributes:['status']
+
+    });
+      if (singleContainer) {
+        const data = singleContainer.get({plain: true});
+        res.json(data);
+      } else {
+        res.status(404);
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
+});
+
 router.get('/allContainerAdmin', withAuth, async (req, res) => {
   try {
     const containerData = await Container.findAll({

@@ -3189,9 +3189,9 @@ router.get('/records/:sp', withAuth, async (req, res) => {
       const records = recordData.map(record => record.get({ plain: true }));
       const handleRecords = records.filter(i => i.type == 121 || i.type == 122 || i.type == 131);
       const requestRecords = records.filter(i => i.type == 11);
-      const inventoryRecords = records.filter(i => i.type == 1);
+      const inventoryRecords = records.filter(i => i.type == 1 || i.type == 0);
       const initialConfirmRecords = records.filter(i => i.type == 12);
-      const finalConfirmRecords = records.filter(i => i.type == 129);
+      const finalConfirmRecords = records.filter(i => i.type == 129 || i.type == -100);
       const xcRecords = records.filter(i => i.type == 401 || i.type == 402);
       res.render('record_ContentPage', {
         handleRecords,

@@ -827,4 +827,26 @@ router.get('/dq_count', withAuth, async(req, res) => {
   }
 });
 
+router.get('/boxDataUsingNumber/:key', withAuth, async (req, res) => {
+  try {
+  const boxData = await Box.findOne({
+    where: {
+      box_number: req.params.key
+    },
+    attributes: [
+      'status'
+    ]
+  });
+    if (boxData) {
+      const box = boxData.get({plain: true});
+      res.json(box);
+    } else {
+      res.status(404);
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+});
+
 module.exports = router;
