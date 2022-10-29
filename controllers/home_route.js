@@ -3116,18 +3116,7 @@ router.get('/detail_return', withAuth, async (req, res) => {
 //test page
 router.get('/records', withAuth, async (req, res) => {
   try {
-    const userData = await User.findAll({
-      attributes: [
-        "name",
-        "id"
-      ],
-      order: [
-        ["name", "ASC"],
-      ]
-    })
-    const users = userData.map(user => user.get({ plain: true }));
     res.render('record_ContentPage', {
-      users,
       loggedIn: true,
       admin: req.session.admin
     });
@@ -3193,16 +3182,16 @@ router.get('/records/:sp', withAuth, async (req, res) => {
       const initialConfirmRecords = records.filter(i => i.type == 12);
       const finalConfirmRecords = records.filter(i => i.type == 129 || i.type == -100);
       const xcRecords = records.filter(i => i.type == 401 || i.type == 402);
-      res.render('record_ContentPage', {
-        handleRecords,
-        requestRecords,
-        inventoryRecords,
-        initialConfirmRecords,
-        finalConfirmRecords,
-        xcRecords,
-        loggedIn: true,
-        admin: req.session.admin
-      });
+        res.render('record_ContentPage', {
+          handleRecords,
+          requestRecords,
+          inventoryRecords,
+          initialConfirmRecords,
+          finalConfirmRecords,
+          xcRecords,
+          loggedIn: true,
+          admin: req.session.admin
+        });
     }
   } catch (error) {
     console.log(error);

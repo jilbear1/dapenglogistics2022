@@ -6,7 +6,7 @@ if (targetedNumber.includes("%")) {
 };
 const searchBtn = () => {
     const input = document.getElementById("keyWordSearch").value;
-    input == null?alert('Cannot search with an empty input!'):location.replace(`../records/${input}`);
+    input.length < 1?alert('Cannot search with an empty input!'):location.replace(`../records/${input}`);
 };
 const target_data = (target_number) => {
     var isSP = false;
@@ -62,4 +62,9 @@ const message = (key, isSP) => {
         timeout: 60000
     });
 };
-target_data(targetedNumber);
+targetedNumber.length>0?target_data(targetedNumber):UIkit.notification({
+    message: `Record Page`,
+    status: 'primary',
+    pos: 'top-right',
+    timeout: 3000
+});
