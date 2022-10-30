@@ -88,7 +88,7 @@ const statementGenerator = () => {
     var reqTime ="<samp>Not Available</samp>";
     var ccTime ="<samp>Not Confirmed Yet</samp>";
     var acTime ="<samp>Not Confirmed Yet</samp>";
-    var req_number = "placeholder";
+    var req_number = "<samp>Not Available</samp>";
     var reqSkus = null;
     var relabel ="<samp>No Relabling</samp>"
     var reqAmArr = [];
