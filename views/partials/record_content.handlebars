@@ -2,24 +2,3 @@
     <td class="text-primary" id="{{id}}"><a class="text-primary aTagCollection" uk-icon="icon: plus-circle" href="#detail_{{id}}" uk-toggle></a></td>
     <td><a href="/records/{{ref_number}}">{{ref_number}}</a></td>
 </tr>
-
-<div id="detail_{{id}}" uk-modal>
-   <div class="uk-modal-dialog p-3">
-      <button class="uk-modal-close-default" type="button" uk-close></button>
-      <form>
-         <h3 class="text-center lead">{{ref_number}}</h3>
-                <ul class="py-2">
-                  <li><span uk-icon="icon: user"></span>: {{user.name}}</li>
-                  <hr>
-                  <li><b>Main Number:</b> <a href="/records/{{ref_number}}">{{ref_number}}</a></li>
-                  <li><b>ParentBox:</b> <a href="/records/{{sub_number}}">{{sub_number}}</a></li>
-                  <hr>
-                  <li><b>Qty Change:</b> {{#if qty_from}}{{qty_from}}{{else}}null{{/if}} <span uk-icon="arrow-right"></span> {{qty_to}}</li>
-                  <li><b>Action Type:</b> {{action}}</li>
-                  <li><b>Notes:</b> {{action_notes}}</li>
-                  <hr>
-                  <li><span uk-icon="icon: calendar"></span>: {{created_at}}</li>
-                </ul>
-      </form>
-   </div>
-</div>

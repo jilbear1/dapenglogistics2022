@@ -10,7 +10,14 @@
         </div>
     </div>
 </div>
-
+<div class="container mt-2">
+    <div class="row justify-content-md-center">
+        <div class="col-md-6">
+            <div class="lead" id="statmentHeader" onclick="statementFormation()">Statement: </div>
+            <div id="statementBody" class="container"></div>
+        </div>
+    </div>
+</div>
 <div class="container mt-2">
     <div class="row">
         <div class="col-md-2">
@@ -27,6 +34,11 @@
                     {{/each}}
                 </tbody>
             </table>
+            <div id="invQM">
+                {{#each inventoryRecords as |modal|}}
+                        {{> record_content_modal modal }}
+                {{/each}}
+            </div>
         </div>
         <div class="col-md-2">
             <table class="table table-hover shadow-sm table-striped">
@@ -42,6 +54,11 @@
                     {{/each}}
                 </tbody>
             </table>
+            <div id="reqQM">
+                {{#each requestRecords as |modal|}}
+                        {{> record_content_modal modal }}
+                {{/each}}
+            </div>
         </div>
         <div class="col-md-2">
             <table class="table table-hover shadow-sm table-striped">
@@ -57,6 +74,11 @@
                     {{/each}}
                 </tbody>
             </table>
+             <div id="hanQM">
+                {{#each handleRecords as |modal|}}
+                        {{> record_content_modal modal }}
+                {{/each}}
+            </div>
         </div>
         <div class="col-md-2">
             <table class="table table-hover shadow-sm table-striped">
@@ -72,6 +94,11 @@
                     {{/each}}
                 </tbody>
             </table>
+             <div id="incQM">
+                {{#each initialConfirmRecords as |modal|}}
+                        {{> record_content_modal modal }}
+                {{/each}}
+            </div>
         </div>
         <div class="col-md-2">
             <table class="table table-hover shadow-sm table-striped">
@@ -87,6 +114,11 @@
                     {{/each}}
                 </tbody>
             </table>
+             <div id="ficQM">
+                {{#each finalConfirmRecords as |modal|}}
+                        {{> record_content_modal modal }}
+                {{/each}}
+            </div>
         </div>
         <div class="col-md-2">
             <table class="table table-hover shadow-sm table-striped">
@@ -101,6 +133,11 @@
                         {{> record_content record }}
                     {{/each}}
                 </tbody>
+                <div id="xccQM">
+                {{#each xcRecords as |modal|}}
+                        {{> record_content_modal modal }}
+                {{/each}}
+            </div>
             </table>
         </div>
     </div>
