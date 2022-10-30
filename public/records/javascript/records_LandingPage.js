@@ -133,6 +133,7 @@ const statementGenerator = () => {
                 }
             }
         };
+        reqSkus==null?reqSkus=[]:`reqSkus has ${reqSkus.length} elements`;
         for (let m = 0; m < reqAmArr.length; m++) {
             const amBox = reqAmArr[m];
             const skus = reqAmMap.get(amBox);
