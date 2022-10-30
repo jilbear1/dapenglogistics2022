@@ -84,11 +84,11 @@ const statementGenerator = () => {
     var spSiblings = `<div class="row">`;
     var allSkusPerSP = `<div class="row">`;
     var allSkusPerReq = `<div class="row">`;
-    var spTime ="<samp>Not Confirmed Yet</samp>";
-    var reqTime ="<samp>Not Confirmed Yet</samp>";
+    var spTime ="<samp>Not Available</samp>";
+    var reqTime ="<samp>Not Available</samp>";
     var ccTime ="<samp>Not Confirmed Yet</samp>";
     var acTime ="<samp>Not Confirmed Yet</samp>";
-    var req_number = null;
+    var req_number = "placeholder";
     var reqSkus = null;
     var relabel ="<samp>No Relabling</samp>"
     var reqAmArr = [];
@@ -119,7 +119,10 @@ const statementGenerator = () => {
                 reqSkus = reqestModal.getElementsByClassName("action_notes")[k].innerText.split("Colletion: ")[1].split(",");
                 reqSkus.pop();
             } else {
-                const reqAmBox = reqestModal.getElementsByClassName("action_notes")[k].innerText.split(": ")[2];
+                var reqAmBox = "<samp>Not Available</samp>";
+                if (reqestModal.getElementsByClassName("action_notes")[k].innerText.split(": ")[2]) {
+                    reqAmBox = reqestModal.getElementsByClassName("action_notes")[k].innerText.split(": ")[2];
+                }
                 if (!reqAmArr.includes(reqAmBox)) {
                     reqAmArr.push(reqAmBox);
                     reqAmMap.set(reqAmBox, [ref_number]);
@@ -167,7 +170,15 @@ const statementGenerator = () => {
         var xcMap = new Map;
         for (let a = 0; a < associatedXC.length; a++) {
             const ref_number = associatedXC[a].innerText.trim();
-            var hisArr = JSON.parse(xcModal.getElementsByClassName('action_notes')[a].innerText.split("Collection: ")[1].trim());
+            const sub_number = xcModal.getElementsByClassName('sub_number')[a].innerText;
+            var hisArr = [];
+            if (sub_number.includes("#")){
+                hisArr = JSON.parse(xcModal.getElementsByClassName('action_notes')[a].innerText.split("Collection: ")[1].trim());
+            } else {
+                var hisArr2 = xcModal.getElementsByClassName('action_notes')[a].innerText.split("Collection: ")[1].split(",");
+                hisArr2.pop();
+                hisArr2.forEach(i => hisArr.push(`${i.split(" ---> ")[0]}=>${i.split(" ---> ")[1].split(" (")[0]}`));
+            }
             if (!xcArr.includes(ref_number)) {
                 xcArr.push(ref_number);
                 xcMap.set(ref_number, hisArr);
@@ -183,9 +194,9 @@ const statementGenerator = () => {
         for (let b = 0; b < xcArr.length; b++) {
             const eachLabelCharge = xcArr[b];
             const eachXCArr = xcMap.get(eachLabelCharge);
-            eachXCArr.forEach(i => xcInfo+=`<li>${i}</li>`);
+            eachXCArr.forEach(i => xcInfo+=`<li><a href="/records/${i.split("=>")[0]}">${i.split("=>")[0]}</a><span uk-icon="arrow-right"></span><a href="/records/${i.split("=>")[1]}">${i.split("=>")[1]}</a></li>`);
+            relabel = xcInfo;
         }
-        relabel = xcInfo;
     };
     const statement = `
         This container <a href="/records/${targetedNumber}">${targetedNumber}</a> was generated at ${spTime} containing the following SKUs: ${allSkusPerSP}</div> along with its sibling SP boxes: ${spSiblings}</div> under a single REQUEST: <br><a href="/records/${req_number}">${req_number}</a><br>
@@ -193,10 +204,11 @@ const statementGenerator = () => {
         <br>
         This <a href="/records/${targetedNumber}">${targetedNumber}</a> was confirmed by the client at ${ccTime}, and received the final confirmation by the admin at ${acTime}.
         <br>
-        Relabel service was engaged when the admin handling the client’s request at TIME 5: <ul>${relabel}</ul>.
+        RELABEL service was engaged: <ul>${relabel}</ul>.
     `;
     return statement
 }
+
 const statementHeader = document.getElementById('statmentHeader');
 const statementBody = document.getElementById('statementBody');
 const statementFormation = () => {
