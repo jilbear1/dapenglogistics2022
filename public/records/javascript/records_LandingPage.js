@@ -69,59 +69,143 @@ targetedNumber.length>0?target_data(targetedNumber):UIkit.notification({
     timeout: 3000
 });
 
-var handlingModal= document.getElementById('hanQM');
-var reqestModal = document.getElementById('reqQM');
-var associatedReqs = reqestModal.getElementsByTagName('h3');
-var assoicatedSPs = handlingModal.getElementsByTagName('h3');
-var spSiblings = `<div class="row">`;
-var allSkusPerSP = `<div class="row">`;
-var spTime = null;
-var reqTime = null;
-var req_number = null;
-for (let i = 0; i < assoicatedSPs.length; i++) {
-    const ref_number = assoicatedSPs[i].innerText;
-    if (ref_number.substring(0,2) == "SP") {
-        spSiblings+=`<div class="col-md-3 col-sm-4"><a href="/records/${ref_number}">${ref_number}</a></div>`;
-        if (ref_number == targetedNumber) {
-            var skuArr;
-            handlingModal.getElementsByTagName('i')[i].innerText[10] != ":"?skuArr=handlingModal.getElementsByTagName('i')[i].innerText.split("(P): ")[1].split(','):skuArr=handlingModal.getElementsByTagName('i')[i].innerText.split("Collection: ")[1].split(',');
-            spTime = handlingModal.getElementsByClassName("timeStamp")[i].innerText;
-            req_number = handlingModal.getElementsByClassName("sub_number")[i].innerText.split("(")[0];
-            skuArr.pop();
-            for (let j = 0; j < skuArr.length; j++) {
-                const sku = skuArr[j];
-                allSkusPerSP+=`<div class="col-md-3 col-sm-4"><a href="/records/${sku.split("(")[0].trim()}">${sku}</a></div>`;
+
+const statementGenerator = () => {
+    var handlingModal= document.getElementById('hanQM');
+    var reqestModal = document.getElementById('reqQM');
+    var clientConfirmModal = document.getElementById('incQM');
+    var adminConfirmModal = document.getElementById('ficQM');
+    var xcModal = document.getElementById('xccQM');
+    var associatedReqs = reqestModal.getElementsByTagName('h3');
+    var assoicatedSPs = handlingModal.getElementsByTagName('h3');
+    var associatedCC = clientConfirmModal.getElementsByTagName('h3');
+    var associatedAC = adminConfirmModal.getElementsByTagName('h3');
+    var associatedXC = xcModal.getElementsByTagName('h3');
+    var spSiblings = `<div class="row">`;
+    var allSkusPerSP = `<div class="row">`;
+    var allSkusPerReq = `<div class="row">`;
+    var spTime ="<samp>Not Confirmed Yet</samp>";
+    var reqTime ="<samp>Not Confirmed Yet</samp>";
+    var ccTime ="<samp>Not Confirmed Yet</samp>";
+    var acTime ="<samp>Not Confirmed Yet</samp>";
+    var req_number = null;
+    var reqSkus = null;
+    var relabel ="<samp>No Relabling</samp>"
+    var reqAmArr = [];
+    var xcArr = [];
+    var reqAmMap = new Map;
+    if (assoicatedSPs.length) {
+        for (let i = 0; i < assoicatedSPs.length; i++) {
+            const ref_number = assoicatedSPs[i].innerText;
+            if (ref_number.substring(0,2) == "SP") {
+                spSiblings+=`<div class="col-md-3 col-sm-4"><a href="/records/${ref_number}">${ref_number}</a></div>`;
+                if (ref_number == targetedNumber) {
+                    var skuArr;
+                    handlingModal.getElementsByTagName('i')[i].innerText[10] != ":"?skuArr=handlingModal.getElementsByTagName('i')[i].innerText.split("(P): ")[1].split(','):skuArr=handlingModal.getElementsByTagName('i')[i].innerText.split("Collection: ")[1].split(',');
+                    spTime = handlingModal.getElementsByClassName("timeStamp")[i].innerText.split(": ")[1];
+                    req_number = handlingModal.getElementsByClassName("sub_number")[i].innerText.split("(")[0];
+                    skuArr.pop();
+                    for (let j = 0; j < skuArr.length; j++) {
+                        const sku = skuArr[j];
+                        allSkusPerSP+=`<div class="col-md-3 col-sm-4"><a href="/records/${sku.split("(")[0].trim()}">${sku}</a></div>`;
+                    }
+                }
+            }
+        };
+        for (let k = 0; k < associatedReqs.length; k++) {
+            const ref_number = associatedReqs[k].innerText;
+            if (ref_number.substring(0,6) == req_number.substring(0,6)) {
+                reqTime = reqestModal.getElementsByClassName("timeStamp")[k].innerText.split(": ")[1];
+                reqSkus = reqestModal.getElementsByClassName("action_notes")[k].innerText.split("Colletion: ")[1].split(",");
+                reqSkus.pop();
+            } else {
+                const reqAmBox = reqestModal.getElementsByClassName("action_notes")[k].innerText.split(": ")[2];
+                if (!reqAmArr.includes(reqAmBox)) {
+                    reqAmArr.push(reqAmBox);
+                    reqAmMap.set(reqAmBox, [ref_number]);
+                } else {
+                    var oldArr = reqAmMap.get(reqAmBox);
+                    oldArr.push(ref_number);
+                    reqAmMap.set(reqAmBox, oldArr);
+                }
+            }
+        };
+        for (let m = 0; m < reqAmArr.length; m++) {
+            const amBox = reqAmArr[m];
+            const skus = reqAmMap.get(amBox);
+            allSkusPerReq += `
+            <div class="bg-warning text-center mt-2">
+                <a href="/records/${amBox}">
+                   ${amBox}
+                </a>
+            </div>
+            `
+            for (let l = 0; l < reqSkus.length; l++) {
+                const sku = reqSkus[l];
+                const skuNoQty = sku.split("(")[0].trim();
+                if (skus.includes(skuNoQty)){
+                    allSkusPerReq += `
+                    <div class="col-md-3 col-sm-4">
+                        <a href="/records/${skuNoQty}">${sku}</a>
+                    </div>
+                `;
+                }
+            };
+        }
+        for (let n = 0; n < associatedCC.length; n++) {
+            const ref_number = associatedCC[n].innerText.trim();
+            if (ref_number == targetedNumber) {
+                ccTime = clientConfirmModal.getElementsByClassName("timeStamp")[n].innerText.split(": ")[1];
             }
         }
-    }
-};
-for (let k = 0; k < associatedReqs.length; k++) {
-    const ref_number = associatedReqs[k].innerText;
-    if (ref_number.substring(0,6) == req_number.substring(0,6)) {
-        reqTime = reqestModal.getElementsByClassName("timeStamp")[k].innerText;
-    }
-
+        for (let o = 0; o < associatedAC.length; o++) {
+            const ref_number = associatedAC[o].innerText.trim();
+            if (ref_number == targetedNumber) {
+                acTime = adminConfirmModal.getElementsByClassName("timeStamp")[o].innerText.split(": ")[1];
+            }
+        }
+        var xcMap = new Map;
+        for (let a = 0; a < associatedXC.length; a++) {
+            const ref_number = associatedXC[a].innerText.trim();
+            var hisArr = JSON.parse(xcModal.getElementsByClassName('action_notes')[a].innerText.split("Collection: ")[1].trim());
+            if (!xcArr.includes(ref_number)) {
+                xcArr.push(ref_number);
+                xcMap.set(ref_number, hisArr);
+            } else {
+                var newArr = xcMap.get(ref_number).concat(hisArr);
+                newArr = newArr.filter((c, index) => {
+                    return newArr.indexOf(c) === index;
+                });
+                xcMap.set(ref_number, newArr);
+            }
+        }
+        var xcInfo = "";
+        for (let b = 0; b < xcArr.length; b++) {
+            const eachLabelCharge = xcArr[b];
+            const eachXCArr = xcMap.get(eachLabelCharge);
+            eachXCArr.forEach(i => xcInfo+=`<li>${i}</li>`);
+        }
+        relabel = xcInfo;
+    };
+    const statement = `
+        This container <a href="/records/${targetedNumber}">${targetedNumber}</a> was generated at ${spTime} containing the following SKUs: ${allSkusPerSP}</div> along with its sibling SP boxes: ${spSiblings}</div> under a single REQUEST: <br><a href="/records/${req_number}">${req_number}</a><br>
+        The REQUEST was created at ${reqTime}, and the following SKUs were requested out of their associated AM INVENTORY BOX: ${allSkusPerReq}</div>
+        <br>
+        This <a href="/records/${targetedNumber}">${targetedNumber}</a> was confirmed by the client at ${ccTime}, and received the final confirmation by the admin at ${acTime}.
+        <br>
+        Relabel service was engaged when the admin handling the client’s request at TIME 5: <ul>${relabel}</ul>.
+    `;
+    return statement
 }
-
-const statement = `
-This <a href="/records/${targetedNumber}">${targetedNumber}</a> was generated at ${spTime} with the following SKUs: ${allSkusPerSP}</div> along with its sibling SP boxes: ${spSiblings}</div> under a single REQUEST: <br><a href="/records/${req_number}">${req_number}</a><br>
-The associated REQ was requested at ${reqTime} with the following SKUs. EACH SKU came from associated AM INVENTORY BOX.
-<br>
-This <a href="/records/${targetedNumber}">${targetedNumber}</a> was confirmed by the client at TIME 3, and received the final confirmation by admin at TIME 4
-<br>
-Relabel service was engaged when the admin handling the client’s request at TIME 5. SKU CHNAGED TO SKU 2.
-`
-
-
 const statementHeader = document.getElementById('statmentHeader');
 const statementBody = document.getElementById('statementBody');
 const statementFormation = () => {
-    if (statementHeader.className == "lead") {
-        statementHeader.className = "text-primary lead";
+    if (statementHeader.className == "lead text-center") {
+        statementHeader.className = "text-primary lead text-center";
         statementBody.style.display = ""
-        statementBody.innerHTML = statement;
+        statementBody.innerHTML = statementGenerator();
     } else {
-        statementHeader.className = "lead";
+        statementHeader.className = "lead text-center";
         statementBody.style.display = "none";
     }
 }
