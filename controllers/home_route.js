@@ -3128,6 +3128,9 @@ router.get('/records', withAuth, async (req, res) => {
 router.get('/records/:sp', withAuth, async (req, res) => {
   try {
     var spSegment = req.params.sp;
+    var credential = {
+      [Op.ne]: null
+    };
     if (req.params.sp.toUpperCase().substring(0,2) == "SP" && req.params.sp.length > 5) {
       const spNumberOnly = req.params.sp.toUpperCase().split('SP')[1];
       spSegment = spNumberOnly.substring(0,4);
@@ -3138,9 +3141,12 @@ router.get('/records/:sp', withAuth, async (req, res) => {
       const spNumberOnly = req.params.sp.toUpperCase().split('(#')[1].split(")")[0];
       spSegment = spNumberOnly;
     }
-    if (req.session.admin){
+    if (!req.session.admin){
+      credential = req.session.user_id
+    }
       const recordData = await Record.findAll({
         where: {
+          user_id: credential,
           [Op.or]: [{ref_number: req.params.sp},{sub_number: req.params.sp}],
           [Op.or]:[
             {ref_number:{[Op.like]: '%' + spSegment + '%'}},
@@ -3192,7 +3198,6 @@ router.get('/records/:sp', withAuth, async (req, res) => {
           loggedIn: true,
           admin: req.session.admin
         });
-    }
   } catch (error) {
     console.log(error);
     res.status(500).json(error);

@@ -2,18 +2,18 @@
     <div class="row justify-content-md-center">
         <div class="col-md-auto">
             <div class="input-group mb-2">
-                <input type="text" class="form-control" id="keyWordSearch" placeholder="key word search">
+                <input type="text" class="form-control" id="keyWordSearch" {{#if admin}}placeholder="key word search"{{else}}placeholder="输入SP箱码或任何关键字"{{/if}}>
             </div>
         </div>
         <div class="col-md-auto">
-            <button onclick="searchBtn()" class="btn btn-primary mb-2">Search</button>
+            <button onclick="searchBtn()" class="btn btn-primary mb-2">{{#if admin}}Search{{else}}查询{{/if}}</button>
         </div>
     </div>
 </div>
 <div class="container mt-2">
     <div class="row justify-content-md-center">
         <div class="col-md-6">
-            <div class="lead text-center" id="statmentHeader" onclick="statementFormation()"><a uk-icon="bookmark" uk-tooltip="The summary generator is limited for a complete sp box # only"></a>Search Summary: </div>
+            <div class="lead text-center" id="statmentHeader" onclick="statementFormation()"><a uk-icon="bookmark" uk-tooltip="The summary generator is limited for a complete sp box # only"></a>{{#if admin}}Search Summary: {{else}}资料整合报告{{/if}}</div>
             <div id="statementBody" class="container border border-success p-2 rounded shadow-sm" style="display: none;"></div>
         </div>
     </div>
@@ -25,7 +25,7 @@
                 <thead>
                     <tr>
                         <th></th>
-                        <th>Inventory Queue</th>
+                        <th>{{#if admin}}Inventory Queue{{else}}1. 入库/库存纪录{{/if}}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,7 +45,7 @@
                 <thead>
                     <tr>
                         <th></th>
-                        <th>Request Queue</th>
+                        <th>{{#if admin}}Request Queue{{else}}2. 出库通知纪录{{/if}}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -65,7 +65,7 @@
                 <thead class="border border-warning">
                     <tr>
                         <th></th>
-                        <th>Handling Queue</th>
+                        <th>{{#if admin}}Handling Queue{{else}}3. 管理员处理纪录{{/if}}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -85,7 +85,7 @@
                 <thead>
                     <tr>
                         <th></th>
-                        <th>Client Confirmation</th>
+                        <th>{{#if admin}}Client Confirmation{{else}}4. 客户确认纪录{{/if}}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -105,7 +105,7 @@
                 <thead>
                     <tr>
                         <th></th>
-                        <th>Admin Confirmation</th>
+                        <th>{{#if admin}}Admin Confirmation{{else}}5. 管理员确认纪录{{/if}}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -125,7 +125,7 @@
                 <thead class="border border-info">
                     <tr>
                         <th></th>
-                        <th>Label Change</th>
+                        <th>{{#if admin}}Label Change{{else}}<span>标签服务纪录</span>{{/if}}</th>
                     </tr>
                 </thead>
                 <tbody>
