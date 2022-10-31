@@ -46,7 +46,7 @@ function allItem() {
     tr = containerTable.getElementsByTagName('tr');
     for (let i = 1; i < tr.length; i++) {
       var skuCount = 0;
-      const container_number = tr[i].getElementsByTagName('td')[1].innerHTML;
+      const container_number = tr[i].getElementsByTagName('td')[1].innerText;
       const sku = tr[i].getElementsByTagName('td')[2];
       const qty = tr[i].getElementsByTagName('td')[3];
       if(containerMap.get(container_number) && container_number.substring(0,1) != "T"){
