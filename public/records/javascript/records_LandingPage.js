@@ -173,7 +173,7 @@ const statementGenerator = () => {
             const ref_number = associatedXC[a].innerText.trim();
             const sub_number = xcModal.getElementsByClassName('sub_number')[a].innerText;
             var hisArr = [];
-            if (sub_number.includes("#")){
+            if (sub_number.includes("SPs")){
                 hisArr = JSON.parse(xcModal.getElementsByClassName('action_notes')[a].innerText.split("Collection: ")[1].trim());
             } else {
                 var hisArr2 = xcModal.getElementsByClassName('action_notes')[a].innerText.split("Collection: ")[1].split(",");
