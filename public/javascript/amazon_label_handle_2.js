@@ -895,7 +895,7 @@ const prepareRecord = (boxData, itemData, recordType) => {
     } else {
         record.type = 402;
         record.ref_number = boxData.ref_number;
-        record.sub_number = `${requestBoxData.container_number} (#${requestBoxData.id}) => SPs)`;
+        record.sub_number = `${requestBoxData.container_number} (#${requestBoxData.id}) => SPs`;
         record.status_from = 4;
         record.status_to = 4;
         record.qty_from = boxData.qty_from;
