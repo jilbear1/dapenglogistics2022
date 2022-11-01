@@ -69,8 +69,7 @@ targetedNumber.length>0?target_data(targetedNumber):UIkit.notification({
     timeout: 3000
 });
 
-
-const statementGenerator = () => {
+const statementGenerator = (isAdmin) => {
     var handlingModal= document.getElementById('hanQM');
     var reqestModal = document.getElementById('reqQM');
     var clientConfirmModal = document.getElementById('incQM');
@@ -199,7 +198,9 @@ const statementGenerator = () => {
             relabel = xcInfo;
         }
     };
-    const statement = `
+    var statement;
+    if (isAdmin) {
+        statement = `
         This container <a href="/records/${targetedNumber}">${targetedNumber}</a> was generated at ${spTime} containing the following SKUs: ${allSkusPerSP}</div> along with its sibling SP boxes: ${spSiblings}</div> under a single REQUEST: <br><a href="/records/${req_number}">${req_number}</a><br>
         The REQUEST was created at ${reqTime}, and the following SKUs were requested out of their associated AM INVENTORY BOX: ${allSkusPerReq}</div>
         <br>
@@ -207,18 +208,49 @@ const statementGenerator = () => {
         <br>
         RELABEL service was engaged: <ul>${relabel}</ul>.
     `;
-    return statement
+    } else {
+        statement = `此一出库货箱 - <a href="/records/${targetedNumber}">${targetedNumber}</a> 与其内含货品SKU: ${allSkusPerSP}</div> 在 ${spTime} 被管理员从您的要求清单中 (<a href="/records/${req_number}">${req_number}</a>) 汇整出来。
+        您的要求清单汇整出的其他出库货箱: ${spSiblings}
+        <hr>
+        <div class="textcenter">
+        您的要求清单(<a href="/records/${req_number}">${req_number}</a>)细目如下 (库存母箱与其SKU):
+        <br>
+        <small class="text-secondary">纪录时间为${reqTime}</small>
+        <br>
+        ${allSkusPerReq}</div>
+        <br>
+        </div>
+        <hr>
+        <div class="ml-2"><a href="/records/${targetedNumber}">${targetedNumber}</a>${yetOrAlready(ccTime)}被您确认并寄出运输标签</div>
+        <br>
+        <small class="text-secondary">纪录时间为${ccTime}</small>
+        <br>
+        <div class="ml-2">并且${yetOrAlready(acTime)}被管理员在出库前做了最后确认。</div>
+        <br>
+        <small class="text-secondary">纪录时间为${acTime}</small>
+        <br>
+        <hr>
+        <div class="ml-2">换标签服务: <ul>${relabel}</ul><div>
+        `
+    }
+    return statement;
 }
-
 const statementHeader = document.getElementById('statmentHeader');
 const statementBody = document.getElementById('statementBody');
+const translater = document.getElementById('translater');
 const statementFormation = () => {
     if (statementHeader.className == "lead text-center") {
         statementHeader.className = "text-primary lead text-center";
-        statementBody.style.display = ""
+        statementBody.style.display = "";
         statementBody.innerHTML = statementGenerator();
     } else {
         statementHeader.className = "lead text-center";
         statementBody.style.display = "none";
     }
+}
+
+const yetOrAlready = (time) => {
+    if (time.includes("samp")){
+        return`<span class="text-danger">还没</span>`
+    } return "已经"
 }

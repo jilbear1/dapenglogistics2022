@@ -13,7 +13,7 @@
 <div class="container mt-2">
     <div class="row justify-content-md-center">
         <div class="col-md-6">
-            <div class="lead text-center" id="statmentHeader" onclick="statementFormation()"><a uk-icon="bookmark" uk-tooltip="The summary generator is limited for a complete sp box # only"></a>{{#if admin}}Search Summary: {{else}}资料整合报告{{/if}}</div>
+            <div class="lead text-center" id="statmentHeader" onclick="statementFormation({{admin}})"><a uk-icon="bookmark" uk-tooltip="The summary generator is limited for a complete sp box # only"></a>{{#if admin}}Search Summary: {{else}}资料整合报告{{/if}}</div>
             <div id="statementBody" class="container border border-success p-2 rounded shadow-sm" style="display: none;"></div>
         </div>
     </div>
