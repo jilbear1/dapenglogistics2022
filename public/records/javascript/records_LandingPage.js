@@ -238,11 +238,11 @@ const statementGenerator = (isAdmin) => {
 const statementHeader = document.getElementById('statmentHeader');
 const statementBody = document.getElementById('statementBody');
 const translater = document.getElementById('translater');
-const statementFormation = () => {
+const statementFormation = (isAdmin) => {
     if (statementHeader.className == "lead text-center") {
         statementHeader.className = "text-primary lead text-center";
         statementBody.style.display = "";
-        statementBody.innerHTML = statementGenerator();
+        statementBody.innerHTML = statementGenerator(isAdmin);
     } else {
         statementHeader.className = "lead text-center";
         statementBody.style.display = "none";
