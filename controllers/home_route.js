@@ -3167,7 +3167,8 @@ router.get('/records/:sp', withAuth, async (req, res) => {
           "date",
           "type",
           "id",
-          "created_at"
+          "created_at",
+          "date"
         ],
         include:[
           {
@@ -3188,82 +3189,9 @@ router.get('/records/:sp', withAuth, async (req, res) => {
       const initialConfirmRecords = records.filter(i => i.type == 12);
       const finalConfirmRecords = records.filter(i => i.type == 129 || i.type == -100);
       const xcRecords = records.filter(i => i.type == 401 || i.type == 402);
-        res.render('record_ContentPage', {
-          handleRecords,
-          requestRecords,
-          inventoryRecords,
-          initialConfirmRecords,
-          finalConfirmRecords,
-          xcRecords,
-          loggedIn: true,
-          admin: req.session.admin
-        });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json(error);
-  }
-});
-router.get('/records_groom/:sp', withAuth, async (req, res) => {
-  try {
-    var spSegment = req.params.sp;
-    var credential = {
-      [Op.ne]: null
-    };
-    if (req.params.sp.toUpperCase().substring(0,2) == "SP" && req.params.sp.length > 5) {
-      const spNumberOnly = req.params.sp.toUpperCase().split('SP')[1];
-      spSegment = spNumberOnly.substring(0,4);
-    } else if (req.params.sp.toUpperCase().substring(0,4) == "TEMP" && req.params.sp.length > 4) {
-      const spNumberOnly = req.params.sp.toUpperCase().split('TEMP')[1];
-      spSegment = spNumberOnly;
-    } else if (req.params.sp.toUpperCase().substring(0,3) == "REQ" && req.params.sp.includes("#")) {
-      const spNumberOnly = req.params.sp.toUpperCase().split('(#')[1].split(")")[0];
-      spSegment = spNumberOnly;
-    }
-    if (!req.session.admin){
-      credential = req.session.user_id
-    }
-      const recordData = await Record.findAll({
-        where: {
-          user_id: credential,
-          [Op.or]: [{ref_number: req.params.sp},{sub_number: req.params.sp}],
-          [Op.or]:[
-            {ref_number:{[Op.like]: '%' + spSegment + '%'}},
-            {sub_number:{[Op.like]: '%' + spSegment + '%'}},
-            {action_notes:{[Op.like]: '%' + spSegment + '%'}}
-          ]
-        },
-        attributes: [
-          "user_id",
-          "ref_number",
-          "sub_number",
-          "qty_from",
-          "qty_to",
-          "status_from",
-          "status_to",
-          "action",
-          "action_notes",
-          "date",
-          "type",
-          "id",
-          "created_at",
-          "date"
-        ],
-        include:[
-          {
-            model: User,
-            attributes: [
-              'name'
-            ]
-          }
-        ],
-        order: [
-          ["type", "ASC"],
-        ]
-      })
-      const records = recordData.map(record => record.get({ plain: true }));
-      const handleRecords = records.filter(i =>  i.ref_number.substring(0,2) == "SP" && (i.type == 121 || i.type == 122 || i.type == 131));
+      const handleRecords_groomed = records.filter(i =>  i.ref_number.substring(0,2) == "SP" && (i.type == 121 || i.type == 122 || i.type == 131));
       const unprocessedRequestRecords = records.filter(i => i.type == 11 && i.ref_number.substring(0,3) == "REQ");
-      const requestRecords = unprocessedRequestRecords.map(i => {
+      const requestRecords_groomed = unprocessedRequestRecords.map(i => {
         i.ref_number = i.ref_number.split("(")[0];
         return i
       });
@@ -3280,17 +3208,17 @@ router.get('/records_groom/:sp', withAuth, async (req, res) => {
         },
         Object.create(null)
       );
-      const amInvenotoryRecord = Object.values(processedAMInventoryRecords);
-      const initialConfirmRecords = records.filter(i => i.type == 12);
-      const finalConfirmRecords = records.filter(i => i.type == 129 || i.type == -100);
-      const xcRecords = records.filter(i => i.type == 401 || i.type == 402);
-        res.render('record_ContentPage_groomed', {
+      const invenotoryRecord_groomed = Object.values(processedAMInventoryRecords);
+        res.render('record_ContentPage', {
           handleRecords,
           requestRecords,
-          amInvenotoryRecord,
+          inventoryRecords,
           initialConfirmRecords,
           finalConfirmRecords,
           xcRecords,
+          handleRecords_groomed,
+          requestRecords_groomed,
+          invenotoryRecord_groomed,
           loggedIn: true,
           admin: req.session.admin
         });
