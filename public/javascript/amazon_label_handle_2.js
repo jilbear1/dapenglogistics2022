@@ -1,5 +1,6 @@
 console.log("type_2");
 const promises = [];
+const spinnerIcon = document.getElementById('spinner_2');
 var alreadyCalculated = false;
 function masterFunction(id, type) {
     const code =  prompt(`Please enter the passcode to confirm the ${type.toUpperCase()} of REQ box (id: ${id})`);
@@ -512,12 +513,12 @@ const shipment_next = (container_id, user_id, account_id, event) => {
     foregin_key.container_id = container_id;
     foregin_key.user_id = user_id;
     foregin_key.account_id = account_id;
-    for (let i = 0; i < spArr.length; i++) {
-       shippmentCreate(spArr[i], foregin_key)
-    };
     update_init();
     console.log(`original qty: ${xcRecord.qty_from} | final qty: ${xcQtyCount}`);
     xcQtyCount>0 && xcRecord.qty_from<xcQtyCount?promises.push(xcGenerator(foregin_key)):console.log('no label change');
+    for (let i = 0; i < spArr.length; i++) {
+        shippmentCreate(spArr[i], foregin_key)
+     };
     Promise.all(promises).then(() => {
         console.log('done');
     }).catch((e) => {console.log(e)})
@@ -563,6 +564,7 @@ function shippmentCreate(sp_number, foregin_key) {
 async function boxCreate(data) {
     console.log('boxCreate');
     boxCreateIndex++;
+    console.log(`tasks: #${boxCreateIndex}, completed: #${finishlineIndex}`);
     const response = await fetch('/api/container/amazon_box', {
         method: 'post',
         body: JSON.stringify(data),
@@ -579,6 +581,7 @@ const xcGenerator = async (data) => {
     xcRecord.qty_to = xcQtyCount;
     xcRecord.user_id = data.user_id;
     boxCreateIndex++;
+    console.log(`tasks: #${boxCreateIndex}, completed: #${finishlineIndex}`);
     if (xcExist) {
         xcRecord.action = `Admin modifying AC charge for label change(for Acct: ${requestBoxData.account.name})`;
         const newfba = `LR${data.container_id}`;
@@ -595,7 +598,12 @@ const xcGenerator = async (data) => {
             }),
             headers: { 'Content-Type': 'application/json' }
         });
-        response.ok?finishlineIndex++:console.log('fail to update the xc_chagre');
+        if (response.ok) {
+            finishlineIndex++;
+            console.log(`tasks: #${boxCreateIndex}, completed: #${finishlineIndex}`);
+        } else {
+            console.log('fail to update the xc_chagre');
+        }
     } else {
         const ref_code = "AC" + parseInt(String(new Date().valueOf() + Math.floor(1000000000 + Math.random() * 9000000000)).substring(4, 11));
         xcRecord.action = `Admin creating AC charge for label change(for Acct: ${requestBoxData.account.name})`;
@@ -616,7 +624,8 @@ const xcGenerator = async (data) => {
           });
           if (response.ok) {
            console.log("new xc_charge is inserted");
-           finishlineIndex++
+           finishlineIndex++;
+           console.log(`tasks: #${boxCreateIndex}, completed: #${finishlineIndex}`);
           } else {
             alert('try again')
        }
@@ -675,6 +684,8 @@ const update_init = () => {
     }
 };
 const deleteItem = async (item_id) => {
+    boxCreateIndex++;
+    console.log(`tasks: #${boxCreateIndex}, completed: #${finishlineIndex}`);
     console.log('bulk removal');
     const response = await fetch(`/api/item/bulkDestroy/`, {
       method: 'DELETE',
@@ -683,9 +694,16 @@ const deleteItem = async (item_id) => {
         }),
       headers: {'Content-Type': 'application/json'}
     });
-    response.ok?console.log("item with id: " + item_id + " removed"):console.log('failed to remove 0-qty item');
+    if (response.ok) {
+        finishlineIndex++;
+        console.log(`tasks: #${boxCreateIndex}, completed: #${finishlineIndex}`);
+    } else {
+        console.log('failed to remove 0-qty item');
+    }
 };
 const updateItem = async (item_id) => {
+    boxCreateIndex++;
+    console.log(`tasks: #${boxCreateIndex}, completed: #${finishlineIndex}`);
     const response = await fetch(`/api/item/updateQtyPerItemId/${item_id}`, {
         method: 'PUT',
         body: JSON.stringify({
@@ -693,7 +711,13 @@ const updateItem = async (item_id) => {
           }),
         headers: {'Content-Type': 'application/json'}
     });
-    response.ok?console.log(`item qty with id ${item_id} has been updated to ${skuOldMap.get(item_id)}`):console.log("failed to update qty");
+    if (response.ok) {
+        finishlineIndex++;
+        console.log(`tasks: #${boxCreateIndex}, completed: #${finishlineIndex}`);
+        console.log(`item qty with id ${item_id} has been updated to ${skuOldMap.get(item_id)}`);
+    } else {
+        console.log("failed to update qty");
+    }
 }
 
 var boxCreateIndex = 0;
@@ -919,6 +943,7 @@ const reqBoxInfoFetcher = async (reqBoxId) => {
 /////////record keeping/////////
 const loadingRecord = async (data) => {
     boxCreateIndex++;
+    console.log(`tasks: #${boxCreateIndex}, completed: #${finishlineIndex}`);
     const response = await fetch(`/api/record/record_create`, {
       method: 'POST',
       body: JSON.stringify(data),
@@ -928,6 +953,7 @@ const loadingRecord = async (data) => {
     });
     if (response.ok) {
         finishlineIndex++;
+        console.log(`tasks: #${boxCreateIndex}, completed: #${finishlineIndex}`);
         console.log('record created');
     }
 };
