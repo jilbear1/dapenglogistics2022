@@ -173,9 +173,9 @@ const statementGenerator = (isAdmin) => {
             const sub_number = xcModal.getElementsByClassName('sub_number')[a].innerText;
             var hisArr = [];
             if (sub_number.includes("SPs")){
-                hisArr = JSON.parse(xcModal.getElementsByClassName('action_notes')[a].innerText.split("Collection: ")[1].trim());
+                hisArr = JSON.parse(xcModal.getElementsByClassName('action_notes')[a].innerText.split("Notes: ")[1].trim());
             } else {
-                var hisArr2 = xcModal.getElementsByClassName('action_notes')[a].innerText.split("Collection: ")[1].split(",");
+                var hisArr2 = xcModal.getElementsByClassName('action_notes')[a].innerText.split("Notes: ")[1].split(",");
                 hisArr2.pop();
                 hisArr2.forEach(i => hisArr.push(`${i.split(" ---> ")[0]}=>${i.split(" ---> ")[1].split(" (")[0]}`));
             }
@@ -234,7 +234,7 @@ const statementGenerator = (isAdmin) => {
         `
     }
     return statement;
-}
+};
 const statementHeader = document.getElementById('statmentHeader');
 const statementBody = document.getElementById('statementBody');
 const translater = document.getElementById('translater');
@@ -247,10 +247,23 @@ const statementFormation = (isAdmin) => {
         statementHeader.className = "lead text-center";
         statementBody.style.display = "none";
     }
-}
-
+};
 const yetOrAlready = (time) => {
     if (time.includes("samp")){
         return`<span class="text-danger">还没</span>`
     } return "已经"
+};
+
+const panelChange = (e) => {
+    if (e.target.id == "spOnly") {
+        e.target.className = "uk-button uk-button-secondary";
+        document.getElementById("gsOnly").className = "uk-button uk-button-default";
+        document.getElementById("grandSearchPanel").style.display = "none";
+        document.getElementById("spOnlyPanel").style.display = "";
+    } else {
+        e.target.className = "uk-button uk-button-secondary";
+        document.getElementById("spOnly").className = "uk-button uk-button-default";
+        document.getElementById("grandSearchPanel").style.display = "";
+        document.getElementById("spOnlyPanel").style.display = "none";
+    }
 }

@@ -3189,18 +3189,33 @@ router.get('/records/:sp', withAuth, async (req, res) => {
       const initialConfirmRecords = records.filter(i => i.type == 12);
       const finalConfirmRecords = records.filter(i => i.type == 129 || i.type == -100);
       const xcRecords = records.filter(i => i.type == 401 || i.type == 402);
-      const handleRecords_groomed = records.filter(i =>  i.ref_number.substring(0,2) == "SP" && (i.type == 121 || i.type == 122 || i.type == 131));
+      const initialConfirmRecords_groomed = initialConfirmRecords.map(i=>{
+        let tempArr = i.action_notes.split(",");
+        tempArr.pop();
+        i.action_notes = tempArr.join(",");
+        return i
+      });
+      const midProcessedXcRecords = xcRecords.map(i => {
+        i.action_notes = i.action_notes.split("Collection: ")[1];
+        return i
+      })
+      const unprocessedhandleRecords = records.filter(i =>  i.ref_number.substring(0,2) == "SP" && (i.type == 121 || i.type == 122 || i.type == 131));
+      const handleRecords_groomed = unprocessedhandleRecords.map(i=> {
+        i.action_notes = i.action_notes.split("File")[0];
+        return i
+      })
       const unprocessedRequestRecords = records.filter(i => i.type == 11 && i.ref_number.substring(0,3) == "REQ");
       const requestRecords_groomed = unprocessedRequestRecords.map(i => {
         i.ref_number = i.ref_number.split("(")[0];
+        let tempArr = i.action_notes.split(",");
+        tempArr.pop();
+        i.action_notes = tempArr.join(",");
         return i
       });
       const unprocessedAMRecords = records.filter(i => i.type == 11 && i.ref_number.substring(0,3) != "REQ");
       const midProecessedAMRecords = unprocessedAMRecords.map(i => {
         if (i.action_notes != null){
-          if (i.action_notes[0] == "O") {
-            i.action_notes = i.action_notes.split("Original Box: ")[1];
-          }
+          i.action_notes = i.action_notes.split("Original Box: ")[1];
         }
         return i
       });
@@ -3214,6 +3229,7 @@ router.get('/records/:sp', withAuth, async (req, res) => {
       );
       const invenotoryRecord_groomed = Object.values(processedAMInventoryRecords);
         res.render('record_ContentPage', {
+          initialConfirmRecords_groomed,
           handleRecords,
           requestRecords,
           inventoryRecords,
