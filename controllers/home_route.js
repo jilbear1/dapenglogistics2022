@@ -3190,36 +3190,47 @@ router.get('/records/:sp', withAuth, async (req, res) => {
       const finalConfirmRecords = records.filter(i => i.type == 129 || i.type == -100);
       const xcRecords = records.filter(i => i.type == 401 || i.type == 402);
       const initialConfirmRecords_groomed = initialConfirmRecords.map(i=>{
-        let tempArr = i.action_notes.split(",");
-        tempArr.pop();
-        i.action_notes = tempArr.join(",");
-        return i
+        return Object.assign({}, i, {
+          ...i,
+          action_notes: () => {
+            let tempArr = i.action_notes.split(",");
+            tempArr.pop();
+            return tempArr.join(",").split(": ")[1];
+          }
+       })
       });
-      const midProcessedXcRecords = xcRecords.map(i => {
-        i.action_notes = i.action_notes.split("Collection: ")[1];
-        return i
-      })
       const unprocessedhandleRecords = records.filter(i =>  i.ref_number.substring(0,2) == "SP" && (i.type == 121 || i.type == 122 || i.type == 131));
       const handleRecords_groomed = unprocessedhandleRecords.map(i=> {
-        i.action_notes = i.action_notes.split("File")[0];
-        return i
-      })
+        return Object.assign({}, i, {
+          ...i,
+          action_notes: () => {
+            return i.action_notes.split("File")[0].split(": ")[1];
+          }
+       })
+      });
       const unprocessedRequestRecords = records.filter(i => i.type == 11 && i.ref_number.substring(0,3) == "REQ");
       const requestRecords_groomed = unprocessedRequestRecords.map(i => {
-        i.ref_number = i.ref_number.split("(")[0];
-        let tempArr = i.action_notes.split(",");
-        tempArr.pop();
-        i.action_notes = tempArr.join(",");
-        return i
-      });
-      const unprocessedAMRecords = records.filter(i => i.type == 11 && i.ref_number.substring(0,3) != "REQ");
-      const midProecessedAMRecords = unprocessedAMRecords.map(i => {
+          return Object.assign({}, i, {
+            ...i,
+            action_notes: () => {
+              let tempArr = i.action_notes.split(",");
+              tempArr.pop();
+              return tempArr.join(",").split(": ")[1];
+            },
+            ref_number: () => {
+              return i.ref_number.split("(")[0];
+            }
+         })
+        });
+      const unprocessedAMRecords = records.filter(i => i.type == 11 && !i.ref_number.includes("-"));
+      unprocessedAMRecords.map(i => {
         if (i.action_notes != null){
-          i.action_notes = i.action_notes.split("Original Box: ")[1];
+          i.action_notes =  i.action_notes.split(": ")[1];
         }
+        i.sub_number = i.sub_number.split("(")[0]
         return i
       });
-      const processedAMInventoryRecords = midProecessedAMRecords.reduce(
+      const processedAMInventoryRecords = unprocessedAMRecords.reduce(
         function(r, a) {
           r[a.action_notes] = r[a.action_notes] || [];
           r[a.action_notes].push(a);

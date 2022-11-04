@@ -4,11 +4,20 @@ var targetedNumber = url[url.length-1].toUpperCase();
 if (targetedNumber.includes("%")) {
     targetedNumber = targetedNumber.split("%")[0].toUpperCase();
 };
-const searchBtn = () => {
-    const input = document.getElementById("keyWordSearch").value;
-    input.length < 1?alert('Cannot search with an empty input!'):location.replace(`../records/${input}`);
+const searchBtn = (isAdmin) => {
+    const input = document.getElementById("keyWordSearch").value.trim().toUpperCase();
+    if (isAdmin) {
+        input.length < 1?alert('Cannot search with an empty input!'):location.replace(`../records/${input}`);
+    } else {
+        if (input.length>7 && input.substring(0,2) == "SP") {
+            location.replace(`../records/${input}`);
+        } else {
+            alert("请输入完整SP箱码")
+        }
+    }
+
 };
-const target_data = (target_number) => {
+const target_data = (target_number, auto) => {
     var isSP = false;
     var type = "container";
     if (targetedNumber.substring(0,2) == "SP") {
@@ -16,7 +25,11 @@ const target_data = (target_number) => {
     } else if (targetedNumber.substring(0,2) == "RE" || targetedNumber.substring(0,2) == "TE" || targetedNumber.substring(0,2) == "AM" || targetedNumber.substring(0,2) == "AC") {} else {
        type = "box"
     }
-    dataFetch(target_number, isSP, type);
+    if (auto) {
+        dataFetch(target_number, isSP, type);
+    } else {
+
+    }
 };
 const dataFetch = (target_number, isSP, type) => {
     fetch(`/api/${type}/boxDataUsingNumber/${target_number}`, {
@@ -62,7 +75,7 @@ const message = (key, isSP) => {
         timeout: 60000
     });
 };
-targetedNumber.length>0?target_data(targetedNumber):UIkit.notification({
+targetedNumber.length>0?target_data(targetedNumber, true):UIkit.notification({
     message: `Record Page`,
     status: 'primary',
     pos: 'top-right',
@@ -119,8 +132,8 @@ const statementGenerator = (isAdmin) => {
                 reqSkus.pop();
             } else {
                 var reqAmBox = "<samp>Not Available</samp>";
-                if (reqestModal.getElementsByClassName("action_notes")[k].innerText.split(": ")[2]) {
-                    reqAmBox = reqestModal.getElementsByClassName("action_notes")[k].innerText.split(": ")[2];
+                if (reqestModal.getElementsByClassName("action_notes")[k].innerText.split("Notes: ")[1]) {
+                    reqAmBox = reqestModal.getElementsByClassName("action_notes")[k].innerText.split("Notes: ")[1];
                 }
                 if (!reqAmArr.includes(reqAmBox)) {
                     reqAmArr.push(reqAmBox);
@@ -173,9 +186,9 @@ const statementGenerator = (isAdmin) => {
             const sub_number = xcModal.getElementsByClassName('sub_number')[a].innerText;
             var hisArr = [];
             if (sub_number.includes("SPs")){
-                hisArr = JSON.parse(xcModal.getElementsByClassName('action_notes')[a].innerText.split("Notes: ")[1].trim());
+                hisArr = JSON.parse(xcModal.getElementsByClassName('action_notes')[a].innerText.split("Collection: ")[1].trim());
             } else {
-                var hisArr2 = xcModal.getElementsByClassName('action_notes')[a].innerText.split("Notes: ")[1].split(",");
+                var hisArr2 = xcModal.getElementsByClassName('action_notes')[a].innerText.split("Collection: ")[1].split(",");
                 hisArr2.pop();
                 hisArr2.forEach(i => hisArr.push(`${i.split(" ---> ")[0]}=>${i.split(" ---> ")[1].split(" (")[0]}`));
             }
@@ -194,7 +207,10 @@ const statementGenerator = (isAdmin) => {
         for (let b = 0; b < xcArr.length; b++) {
             const eachLabelCharge = xcArr[b];
             const eachXCArr = xcMap.get(eachLabelCharge);
-            eachXCArr.forEach(i => xcInfo+=`<li><a href="/records/${i.split("=>")[0]}">${i.split("=>")[0]}</a><span uk-icon="arrow-right"></span><a href="/records/${i.split("=>")[1]}">${i.split("=>")[1]}</a></li>`);
+            eachXCArr.forEach(i => {
+                xcInfo+=`<li><a href="/records/${i.split("=>")[0]}">${i.split("=>")[0]}</a><span uk-icon="arrow-right"></span><a href="/records/${i.split("=>")[1]}">${i.split("=>")[1]}</a></li>`;
+                document.getElementById("relabel").appendChild(xcComponent(`${i.split("=>")[0]}<span uk-icon="arrow-right"></span>${i.split("=>")[1]}`))
+            });
             relabel = xcInfo;
         }
     };
@@ -265,5 +281,20 @@ const panelChange = (e) => {
         document.getElementById("spOnly").className = "uk-button uk-button-default";
         document.getElementById("grandSearchPanel").style.display = "";
         document.getElementById("spOnlyPanel").style.display = "none";
+    }
+}
+
+
+const xcComponent = (eachLabelCharge) =>{
+    let li = document.createElement("div");
+    li.innerHTML = `<small class="text-secondary">${eachLabelCharge}</small><hr>`
+    return li;
+}
+
+const showRelabel = (isAdmin) => {
+    if (document.getElementById("relabel").innerHTML != "") {
+        document.getElementById("relabel").innerHTML = "";
+    } else {
+        statementGenerator(isAdmin)
     }
 }

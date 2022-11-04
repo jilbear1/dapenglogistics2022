@@ -6,7 +6,7 @@
             </div>
         </div>
         <div class="col-md-auto">
-            <button onclick="searchBtn()" class="btn btn-primary mb-2">{{#if admin}}Search{{else}}查询{{/if}}</button>
+            <button onclick="searchBtn({{admin}})" class="btn btn-primary mb-2">{{#if admin}}Search{{else}}查询{{/if}}</button>
         </div>
     </div>
 </div>
@@ -72,17 +72,12 @@
                  </ul>
         </div>
        <div class="col-md-2">
-            <div class="lead">{{#if admin}}Label Change{{else}}<span>标签服务纪录</span>{{/if}}</div>
-                 <ul uk-accordion="multiple: true">
-                    {{#each xcRecords as |record|}}
-                        {{> record_content_general record }}
-                    {{/each}}
-                 </ul>
+            <a class="lead border border-info" onclick="showRelabel({{admin}})">{{#if admin}}Label Change{{else}}<span>标签服务纪录</span>{{/if}}</a>
+            <div id="relabel"></div>
         </div>
     </div>
 </div>
 </div>
-{{#if admin}}
 <div class="container mt-2" id="grandSearchPanel" style="display: none;">
     <div class="row">
         <div class="col-md-2">
@@ -207,6 +202,5 @@
         </div>
     </div>
 </div>
-{{/if}}
 
 <script src="javascript/records_LandingPage.js"></script>

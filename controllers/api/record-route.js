@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const {User, Account, Batch, Box, Container, Item, Record} = require('../../models');
 const {withAuth} = require('../../utils/auth');
+const { Op } = require("sequelize");
 
 router.post('/neworder_china', withAuth, (req, res) => {
     Record.create({
@@ -148,5 +149,7 @@ router.get('/skufilter/:number', withAuth, async (req, res) => {
       res.status(500).json(err);
     }
 });
+
+
 
 module.exports = router;
