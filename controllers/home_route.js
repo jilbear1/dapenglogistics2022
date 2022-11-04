@@ -3198,7 +3198,9 @@ router.get('/records/:sp', withAuth, async (req, res) => {
       const unprocessedAMRecords = records.filter(i => i.type == 11 && i.ref_number.substring(0,3) != "REQ");
       const midProecessedAMRecords = unprocessedAMRecords.map(i => {
         if (i.action_notes != null){
-          i.action_notes = i.action_notes.split("Original Box: ")[1];
+          if (i.action_notes[0] == "O") {
+            i.action_notes = i.action_notes.split("Original Box: ")[1];
+          }
         }
         return i
       });
