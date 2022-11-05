@@ -193,8 +193,21 @@ router.get('/boxDataUsingNumber/:key', withAuth, async (req, res) => {
       where: {
         container_number: req.params.key
       },
-      attributes:['status']
-
+      attributes:['status'],
+      include: [
+        {
+          model: Account,
+          attributes: [
+            'name'
+          ]
+        },
+        {
+          model: User,
+          attributes: [
+            'name'
+          ]
+        }
+      ]
     });
       if (singleContainer) {
         const data = singleContainer.get({plain: true});

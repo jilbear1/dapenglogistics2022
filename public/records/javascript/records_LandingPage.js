@@ -1,5 +1,8 @@
 console.log(location.href, 'records_LandingPage.js');
+const targetedInfo = document.getElementById('targetedInfo');
 const url = location.href.split('/');
+var userPerTarget = null;
+var accountPerTarget = null;
 var targetedNumber = url[url.length-1].toUpperCase();
 if (targetedNumber.includes("%")) {
     targetedNumber = targetedNumber.split("%")[0].toUpperCase();
@@ -38,6 +41,9 @@ const dataFetch = (target_number, isSP, type) => {
         return response.json();
     }).then(function (data) {
         message(data.status, isSP);
+        userPerTarget = data.user.name;
+        accountPerTarget = data.account.name;
+        targetedInfo.innerHTML = `<span uk-icon="icon: user"></span> ${userPerTarget} | ${accountPerTarget} <br> <h4>${targetedNumber}</h4> <hr>`;
     });
 };
 const message = (key, isSP) => {
@@ -299,3 +305,4 @@ const showRelabel = (isAdmin) => {
         statementGenerator(isAdmin)
     }
 }
+targetedInfo.innerHTML = `<span uk-icon="search"></span> ${targetedNumber} ...`

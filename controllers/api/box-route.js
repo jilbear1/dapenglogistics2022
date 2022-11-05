@@ -835,6 +835,20 @@ router.get('/boxDataUsingNumber/:key', withAuth, async (req, res) => {
     },
     attributes: [
       'status'
+    ],
+    include: [
+      {
+        model: Account,
+        attributes: [
+          'name'
+        ]
+      },
+      {
+        model: User,
+        attributes: [
+          'name'
+        ]
+      }
     ]
   });
     if (boxData) {
