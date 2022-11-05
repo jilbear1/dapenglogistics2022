@@ -258,6 +258,7 @@ const statementFormation = (isAdmin) => {
     if (statementHeader.className == "lead text-center") {
         statementHeader.className = "text-primary lead text-center";
         statementBody.style.display = "";
+        document.getElementById("relabel").innerHTML = "";
         statementBody.innerHTML = statementGenerator(isAdmin);
     } else {
         statementHeader.className = "lead text-center";
