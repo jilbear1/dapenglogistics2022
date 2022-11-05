@@ -669,6 +669,7 @@ async function loadingItems(data) {
         finishlineIndex++;
         console.log('finished new item insert: ' + finishlineIndex + ' item(s)');
         beforeRefresh();
+        timeOutChecker();
     }
 };
 
@@ -957,3 +958,10 @@ const loadingRecord = async (data) => {
         console.log('record created');
     }
 };
+
+const timeOutChecker = () => {
+    setInterval(() => {
+        console.log("time out checking per ONE second");
+        beforeRefresh();
+    }, 1000);
+}
