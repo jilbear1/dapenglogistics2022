@@ -405,7 +405,7 @@ function itemInput() {
         skuLabel.innerHTML = skuValue;
     };
     sku.value = null;
-   } else if (skuValue.substring(0,1) == '-' && skuValue.length > 6) {
+   } else if (skuValue.substring(0,1) == '-' && skuValue.length > 3) {
         const newSku = skuValue.substring(1, skuValue.length);
         const skuAmount = document.getElementById(`${newSku}c`);
         if (skuAmount) {
