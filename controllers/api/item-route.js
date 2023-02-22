@@ -1068,7 +1068,7 @@ router.get("/modification/:sku", withAuth, async (req, res) => {
         {
           model: Container,
           where: {
-            status: 1,
+            status: [1,2]
           },
           attributes: ["container_number"],
         },
