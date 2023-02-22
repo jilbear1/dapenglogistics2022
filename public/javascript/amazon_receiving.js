@@ -134,6 +134,8 @@ function amazonCreate() {
     amazon_box.volume = amazon_box.length * amazon_box.width * amazon_box.height;
     amazon_box.container_number = container_number.value.trim().toUpperCase();
     amazon_box.cost = itemCount;
+    amazon_box.received_date = date.value;
+    console.log("received_date: " + amazon_box.received_date);
     const newAccountName = newAccountInput.value.trim();
     const username_d = username.value.trim();
     const password_d = password.value.trim();

@@ -40,6 +40,10 @@ router.post('/new', withAuth, (req, res) => {
 });
 
 router.post('/amazon_box', withAuth, (req, res) => {
+  let received_date =new Date().toLocaleDateString("en-US");
+  if (req.body.received_date) {
+    received_date = req.body.received_date
+  }
   Container.create({
     container_number: req.body.container_number,
     account_id: req.body.account_id,
@@ -50,7 +54,7 @@ router.post('/amazon_box', withAuth, (req, res) => {
     height: req.body.height,
     volume: req.body.volume,
     cost: req.body.cost,
-    received_date: new Date().toLocaleDateString("en-US")
+    received_date: received_date
   }, {returning: true})
       .then(dbBoxData => res.json(dbBoxData))
       .catch(err => {
