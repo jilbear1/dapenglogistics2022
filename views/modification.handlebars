@@ -6,21 +6,39 @@
     >
       <div class="mb-3 container">
         <nav aria-label="breadcrumb">
-          <h3 class="breadcrumb-item active">SKU Number:
-            <span id="containerNumber_q"></span>
-          </h3>
+          <span
+            class="badge badge-sm bg-secondary mb-2"
+            onclick="activate(event)"
+          >inactive</span>
+          <span
+            id="switch"
+            class="badge badge-sm bg-info mb-2"
+            onclick="changeTable(event)"
+            style="display: none;"
+          >switch</span>
+          <h3 id="h31">SKU Number:</h3>
+          <h3 id="h32" style="display: none;">Box Info:</h3>
         </nav>
         <input
           type="text"
           class="form-control"
-          id="scanned_item"
+          id="scan_sku"
           placeholder="Scan or type..."
           onkeyup="delay(search(event))"
+          disabled
+        />
+          <input
+          type="text"
+          class="form-control"
+          id="scan_box"
+          placeholder="Scan or type..."
+          onkeyup="delay(searchUsingDescription(event))"
+          style="display: none;"
         />
       </div>
     </form>
     <div class="container">
-      <table class="table table-striped">
+      <table class="table table-striped" id="skuTable">
         <thead>
           <tr>
             <th>Box Number</th>
@@ -30,12 +48,24 @@
           </tr>
         </thead>
         <tbody id="tbody">
+        </tbody>
+      </table>
 
+      <table class="table table-striped" id="boxTable" style="display: none;">
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Box Number</th>
+            <th>Description</th>
+            <th>Archieve</th>
+          </tr>
+        </thead>
+        <tbody id="tbody2">
         </tbody>
       </table>
     </div>
-
   </div>
+
   <script src="javascript/modification.js"></script>
 {{else}}
   <script src="javascript/client_redirect.js"></script>

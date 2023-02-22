@@ -22,7 +22,6 @@ const search = (event) => {
       console.log(error);
     });
 };
-
 const makeRow = (singleData) => {
   console.log(singleData);
   const tr = document.createElement("tr");
@@ -51,7 +50,6 @@ const makeRow = (singleData) => {
   const array = [box, item, qty, ok];
   array.forEach((i) => tr.appendChild(i));
 };
-
 const update = async (id, qty) => {
   console.log(`SKU: ${id} has a new qty: ${qty}`);
   await fetch(`/api/item/updateQty/${id}&${qty}`, {
@@ -59,3 +57,37 @@ const update = async (id, qty) => {
     headers: { "Content-Type": "application/json" },
   });
 };
+const activate = (event) => {
+  const code = prompt("enrer access code to activate");
+  if (code == "0523") {
+    event.target.className = "badge badge-sm bg-success mb-2";
+    event.target.innerText = "active";
+    event.target.onclick = "";
+    document.getElementById("switch").style.display = "";
+    document.getElementById("scan_sku").disabled = false;
+  }
+};
+
+const changeTable = (event) => {
+  const boxTable = document.getElementById("boxTable");
+  const skuTable = document.getElementById("skuTable");
+  const h32 = document.getElementById("h32");
+  const h31 = document.getElementById("h31");
+  const skuInput = document.getElementById("scan_sku");
+  const boxInput = document.getElementById("scan_box");
+  const boxSearch = [boxTable, h32, boxInput];
+  const skuSearch = [skuTable, h31, skuInput];
+  if (boxTable.style.display == "none") {
+    event.target.innerText = "Archive BOX";
+    event.target.className = "badge badge-sm bg-primary mb-2";
+    boxSearch.forEach((i) => (i.style.display = ""));
+    skuSearch.forEach((j) => (j.style.display = "none"));
+  } else {
+    event.target.className = "badge badge-sm bg-info mb-2";
+    event.target.innerText = "Modify SKU qty";
+    boxSearch.forEach((i) => (i.style.display = "none"));
+    skuSearch.forEach((j) => (j.style.display = ""));
+  }
+};
+
+const searchUsingDescription = (event) => {};
