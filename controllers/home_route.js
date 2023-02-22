@@ -1859,6 +1859,19 @@ router.get('/amazon_receiving', withAuth, async(req, res) => {
   }
 });
 
+router.get('/modification/', withAuth, async (req, res) => {
+  try {
+    res.render('modification', {
+      loggedIn: true,
+      admin: req.session.admin,
+      name: req.session.name
+    });
+  } catch (error) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+})
+
 router.get('/amazon_overview', withAuth, async (req, res) => {
   try {
     const containerData = await Container.findAll({

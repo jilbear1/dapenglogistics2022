@@ -1,0 +1,42 @@
+{{#if admin}}
+  <div class="container">
+    <form
+      id="modify_form"
+      class="col-md-6 col-sm-8 mx-auto p-4 rounded bg-light"
+    >
+      <div class="mb-3 container">
+        <nav aria-label="breadcrumb">
+          <h3 class="breadcrumb-item active">SKU Number:
+            <span id="containerNumber_q"></span>
+          </h3>
+        </nav>
+        <input
+          type="text"
+          class="form-control"
+          id="scanned_item"
+          placeholder="Scan or type..."
+          onkeyup="delay(search(event))"
+        />
+      </div>
+    </form>
+    <div class="container">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Box Number</th>
+            <th>SKU Number</th>
+            <th>Qty (editable)</th>
+            <th>OK</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+  <script src="javascript/modification.js"></script>
+{{else}}
+  <script src="javascript/client_redirect.js"></script>
+{{/if}}
