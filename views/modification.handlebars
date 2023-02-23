@@ -15,9 +15,9 @@
             class="badge badge-sm bg-info mb-2"
             onclick="changeTable(event)"
             style="display: none;"
-          >switch</span>
+          >Modify SKU Qty</span>
           <h3 id="h31">SKU Number:</h3>
-          <h3 id="h32" style="display: none;">Box Info:</h3>
+          <h3 id="h32" style="display: none;">Account Id:</h3>
         </nav>
         <input
           type="text"
@@ -32,7 +32,7 @@
           class="form-control"
           id="scan_box"
           placeholder="Scan or type..."
-          onkeyup="delay(searchUsingDescription(event))"
+          onkeyup="delay(searchAccount(event))"
           style="display: none;"
         />
       </div>
@@ -54,10 +54,10 @@
       <table class="table table-striped" id="boxTable" style="display: none;">
         <thead>
           <tr>
-            <th>Customer</th>
-            <th>Box Number</th>
-            <th>Description</th>
-            <th>Archieve</th>
+            <th>AM Box (type 1)</th>
+            <th>Received (status = 1)</th>
+            <th>Sealed (status = -1)</th>
+            <th>OK</th>
           </tr>
         </thead>
         <tbody id="tbody2">
