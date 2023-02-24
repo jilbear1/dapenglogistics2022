@@ -16,7 +16,7 @@ const sku_list = document.getElementById("sku_list");
 const sku_table = document.getElementById("sku_table"); //****//
 var itemCount = 0;
 ///////////////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-date.value = today;
+date.value = new Date().toLocaleString("en-US");
 var masterMap = new Map();
 var userMap = new Map();
 var accouuntMap = new Map();
@@ -167,7 +167,11 @@ function amazonCreate() {
   amazon_box.volume = amazon_box.length * amazon_box.width * amazon_box.height;
   amazon_box.container_number = container_number.value.trim().toUpperCase();
   amazon_box.cost = itemCount;
-  amazon_box.received_date = date.value;
+  if (!date.value) {
+    amazon_box.received_date = new Date().toLocaleDateString("en-US");
+  } else {
+    amazon_box.received_date = new Date((new Date(date.value)).getTime() + (new Date(date.value)).getTimezoneOffset() * 60000).toLocaleDateString("en-US");
+  }
   console.log("received_date: " + amazon_box.received_date);
   const newAccountName = newAccountInput.value.trim();
   const username_d = username.value.trim();
