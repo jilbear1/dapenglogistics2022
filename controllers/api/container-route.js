@@ -1219,8 +1219,8 @@ router.get("/modification/:id", withAuth, async (req, res) => {
     const containerData = await Container.findAll({
       where: {
         account_id: parseInt(req.params.id),
-        type: 1,
-        status: [1,-1]
+        type: 3,
+        status: [2, -2]
       },
       attributes: ["id", "type", "status"],
       include: [

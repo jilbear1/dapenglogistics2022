@@ -391,7 +391,6 @@ function masterCheck() {
   const account_d = accountSelect.value;
   const selectedAccount = accountSelect.querySelectorAll("option");
   selectedAccount.forEach((i) => acctIdName.set(i.value, i.innerText));
-
   if (
     description_d &&
     length_d &&
