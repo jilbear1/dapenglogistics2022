@@ -56,12 +56,12 @@
             </div>
         </div>
 
-        <div class="uk-navbar-item">
+        {{!-- <div class="uk-navbar-item">
             <form class="uk-search uk-search-default">
                 <span uk-search-icon></span>
                 <input class="uk-search-input form-control search-input" type="search" placeholder="Search" data-table="myTable">
             </form>
-        </div>
+        </div> --}}
 
         <div class="uk-navbar-item">
             <a class="btn btn-sm btn-outline-danger" id='file_btn' href="#modal-files" uk-toggle uk-tooltip=".pdf, .zip, .rar">夹带档案</a>
@@ -83,7 +83,7 @@
 
     <div class="container">
         <h1 class="text-center mt-3 lead" id="noSign" style="display: none;">No available amazon box was found!</h1>
-        <table class="table table-hover myTable" id="myTable">
+        <table class="table table-hover myTable" id="myTable" style="display: none;">
             <thead>
                 <tr>
                     <th uk-tooltip=''><button class="badge bg-success" onclick="resetCheckBox()">Reset</button></th>
@@ -108,7 +108,7 @@
         </table>
     </div>
 
-<script>
+{{!-- <script>
         (function(document) {
             'use strict';
 
@@ -146,5 +146,13 @@
             });
 
         })(document);
-    </script>
+    </script> --}}
+    {{!-- <script>
+    $(document).ready( function () {
+     $('#myTable').DataTable({
+        "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "全部"]],
+     });
+    document.getElementById('loader2').remove();
+    });
+</script> --}}
 <script src="javascript/sku_qty.js"></script>
