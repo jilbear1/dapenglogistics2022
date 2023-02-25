@@ -1220,13 +1220,16 @@ router.get("/modification/:id", withAuth, async (req, res) => {
       where: {
         account_id: parseInt(req.params.id),
         type: 3,
-        status: [2, -2]
+        status: [1, 2, -1, -2],
       },
-      attributes: ["id", "type", "status"],
+      order: [
+        ['tracking', 'ASC']
+      ],
+      attributes: ["id", "type", "status", "tracking"],
       include: [
         {
           model: Account,
-          attributes: ["name"],
+          attributes: ["name", "id"],
         },
         {
           model: User,
@@ -1238,15 +1241,42 @@ router.get("/modification/:id", withAuth, async (req, res) => {
       const containers = containerData.map((container) =>
         container.get({ plain: true })
       );
-      const postive = containers.filter((i) => i.status > 0);
-      const negative = containers.filter((j) => j.status < 0);
-      const data = {
-        postive: postive.length,
-        negative: negative.length,
-        total: containers.length,
-        data: containers
-      };
-      res.json(data);
+      const data = containers.reduce(function (r, a) {
+        r[a.tracking] = r[a.tracking] || [];
+        r[a.tracking].push(a);
+        return r;
+      }, Object.create(null));
+      const metaData = Object.values(data);
+      if (metaData.length > 0) {
+        const array = [];
+        for (let i = 0; i < metaData.length; i++) {
+          if (metaData[i][0].tracking) {
+            const subData = new Object();
+            subData.account_id = metaData[i][0].account.id;
+            subData.tracking_info = metaData[i][0].tracking;
+            subData.received = metaData[i].filter(
+              (obj) => obj.status === 1
+            ).length;
+            subData.sealed_received = metaData[i].filter(
+              (obj) => obj.status === -1
+            ).length;
+            subData.requested = metaData[i].filter(
+              (obj) => obj.status === 2
+            ).length;
+            subData.sealed_requested = metaData[i].filter(
+              (obj) => obj.status === -2
+            ).length;
+            array.push(subData);
+          }
+        }
+        const userData = {
+          user: metaData[0][0].user.name,
+          account: metaData[0][0].account.name,
+        };
+        res.json({ array, userData });
+      } else {
+        res.status(404);
+      }
     } else {
       res.status(404);
     }
@@ -1255,41 +1285,19 @@ router.get("/modification/:id", withAuth, async (req, res) => {
     res.status(500).json(error);
   }
 });
-router.put("/seal/:id", withAuth, (req, res) => {
+
+router.put(`/statusChange/:id&:status&:tracking`, withAuth, (req, res) => {
+  console.log("id: " + req.params.id);
+  console.log("status: " + req.params.status);
+  console.log("tracking: " + req.params.tracking);
   Container.update(
-    {
-      status: -1,
-    },
+    { status: -parseInt(req.params.status) },
     {
       where: {
         account_id: req.params.id,
-        type: 1,
-        status: 1,
-      },
-    }
-  )
-    .then((dbContainerData) => {
-      if (!dbContainerData[0]) {
-        res.status(404).json({ message: "This Container does not exist!" });
-        return;
-      }
-      res.json(dbContainerData);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json(err);
-    });
-});
-router.put("/unseal/:id", withAuth, (req, res) => {
-  Container.update(
-    {
-      status: 1,
-    },
-    {
-      where: {
-        type: 1,
-        status: -1,
-        account_id: req.params.id,
+        type: 3,
+        status: parseInt(req.params.status),
+        tracking: req.params.tracking,
       },
     }
   )

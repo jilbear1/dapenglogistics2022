@@ -79,7 +79,7 @@ const changeTable = (event) => {
   const boxSearch = [boxTable, h32, boxInput];
   const skuSearch = [skuTable, h31, skuInput];
   if (boxTable.style.display == "none") {
-    event.target.innerText = "Seal AM box";
+    event.target.innerText = "Modify SP Status";
     event.target.className = "badge badge-sm bg-primary mb-2";
     boxSearch.forEach((i) => (i.style.display = ""));
     skuSearch.forEach((j) => (j.style.display = "none"));
@@ -92,47 +92,42 @@ const changeTable = (event) => {
 };
 
 const searchAccount = (event) => {
+  const existedTr = tbody2.getElementsByTagName("tr");
+  if (existedTr.length > 0) {
+    existedTr[0].remove();
+  };
+  document.getElementById(
+    "h32"
+  ).innerHTML = "Account Id: "
   const accountId = parseInt(event.target.value);
-  if (accountId != NaN) {
+  if (!isNaN(accountId)) {
     fetch(`/api/container/modification/${accountId}`, {
       method: "GET",
     })
       .then((response) => {
         return response.json();
       })
-      .then((singleData) => {
-        const existedTr = tbody2.getElementsByTagName("tr");
-        if (existedTr.length > 0) {
-          existedTr[0].remove();
+      .then((data) => {
+        document.getElementById(
+          "h32"
+        ).innerHTML = `Account Id: ${accountId} <br>[${data.userData.account}], User: ${data.userData.user}`;
+        for (let i = 0; i < data.array.length; i++) {
+          const singleData = data.array[i];
+          const tr = document.createElement("tr");
+          tbody2.appendChild(tr);
+          const tracking = document.createElement("td");
+          tracking.innerText = singleData.tracking_info;
+          const received = document.createElement("td");
+          singleData.sealed_received>0?received.className="bg-warning":null;
+          received.innerText = `${singleData.received}/${singleData.sealed_received}`;
+          addButtons(accountId, 1, singleData.tracking_info, received);
+          const requested = document.createElement("td");
+          singleData.sealed_requested>0?requested.className="bg-warning":null;
+          requested.innerText = `${singleData.requested}/${singleData.sealed_requested}`;
+          addButtons(accountId, 2, singleData.tracking_info, requested);
+          const array = [tracking, received, requested];
+          array.forEach((i) => tr.appendChild(i));
         }
-        console.log(singleData);
-        const tr = document.createElement("tr");
-        tbody2.appendChild(tr);
-        const total = document.createElement("td");
-        total.innerText = singleData.total;
-        const postive = document.createElement("td");
-        postive.innerText = singleData.postive;
-        const negative = document.createElement("td");
-        negative.innerText = singleData.negative;
-        const ok = document.createElement("td");
-        const button = document.createElement("button");
-        const button2 = document.createElement("button");
-        button.className = "btn btn-sm rounded bg-danger text-light";
-        button2.className = "btn btn-sm rounded bg-success text-light";
-        button.id = accountId;
-        button2.id = accountId;
-        button.addEventListener("click", function (event) {
-          sealAndUnseal(event, "seal");
-        });
-        button2.addEventListener("click", function (event) {
-          sealAndUnseal(event, "unseal");
-        });
-        button.innerText = "Seal";
-        button2.innerText = "Unseal";
-        ok.appendChild(button);
-        ok.append(button2);
-        const array = [total, postive, negative, ok];
-        array.forEach((i) => tr.appendChild(i));
       })
       .catch((error) => {
         console.log(error);
@@ -140,17 +135,41 @@ const searchAccount = (event) => {
   }
 };
 
-const sealAndUnseal = async (event, action) => {
-  const accountId = event.target.id;
-  event.target.value = accountId;
-  const res = await fetch(`/api/container/${action}/${accountId}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
+const addButtons = (accountId, status, tracking_info, parentNode) => {
+  const button = document.createElement("button");
+  const button2 = document.createElement("button");
+  button.className = "btn btn-sm rounded bg-danger text-light";
+  button2.className = "btn btn-sm rounded bg-success text-light";
+  button.id = `${accountId}.${Math.abs(parseInt(status))}.${tracking_info}`;
+  button2.id = `${accountId}.${-Math.abs(parseInt(status))}.${tracking_info}`;
+  button.addEventListener("click", function (event) {
+    sealAndUnseal(event, "seal");
   });
+  button2.addEventListener("click", function (event) {
+    sealAndUnseal(event, "unseal");
+  });
+  button.innerText = "Seal";
+  button2.innerText = "Unseal";
+  parentNode.appendChild(button);
+  parentNode.appendChild(button2);
+};
+
+const sealAndUnseal = async (event, action) => {
+  const accountId = event.target.id.split(".")[0];
+  const status = event.target.id.split(".")[1];
+  const tracking = event.target.id.split(".")[2];
+  const res = await fetch(
+    `/api/container/statusChange/${accountId}&${status}&${tracking}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+    }
+  );
   if (res.ok) {
     alert("done");
-    searchAccount(event)
+    event.target.disabled = true;
+    event.target.parentNode.style.textDecoration =  "line-through";
   } else {
-    alert("nothing to " + action)
+    alert("nothing to " + action);
   }
 };
