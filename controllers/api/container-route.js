@@ -1235,7 +1235,7 @@ router.get("/modification/:id", withAuth, async (req, res) => {
         },
       ],
     });
-    if (containerData) {
+    if (containerData.length>0) {
       const containers = containerData.map((container) =>
         container.get({ plain: true })
       );
@@ -1273,10 +1273,10 @@ router.get("/modification/:id", withAuth, async (req, res) => {
         };
         res.json({ array, userData });
       } else {
-        res.status(404);
+        res.status(404).json("not ok");
       }
     } else {
-      res.status(404);
+      res.status(404).json("not ok");
     }
   } catch (error) {
     console.log(error);

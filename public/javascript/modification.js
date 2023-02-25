@@ -106,33 +106,44 @@ const searchAccount = (event) => {
         return response.json();
       })
       .then((data) => {
-        document.getElementById(
-          "h32"
-        ).innerHTML = `Account Id: ${accountId} <br>[${data.userData.account}], User: ${data.userData.user}`;
-        for (let i = 0; i < data.array.length; i++) {
-          const singleData = data.array[i];
-          const tr = document.createElement("tr");
-          tbody2.appendChild(tr);
-          const tracking = document.createElement("td");
-          tracking.innerText = singleData.tracking_info;
-          const received = document.createElement("td");
-          if (singleData.sealed_received > 0 || singleData.received > 0) {
-            singleData.sealed_received > 0
-              ? (received.className = "bg-warning")
-              : null;
-            received.innerHTML = `${singleData.received} / ${singleData.sealed_received}    `;
-            addButtons(accountId, 1, singleData.tracking_info, received);
+        console.log(data);
+        if (data != "not ok") {
+          document.getElementById(
+            "h32"
+          ).innerHTML = `Account Id: ${accountId} <br>[${data.userData.account}], User: ${data.userData.user}`;
+          for (let i = 0; i < data.array.length; i++) {
+            const singleData = data.array[i];
+            const tr = document.createElement("tr");
+            tbody2.appendChild(tr);
+            const tracking = document.createElement("td");
+            tracking.innerText = singleData.tracking_info;
+            const received = document.createElement("td");
+            if (singleData.sealed_received > 0 || singleData.received > 0) {
+              singleData.sealed_received > 0
+                ? (received.className = "bg-warning")
+                : null;
+              received.innerHTML = `${singleData.received} / ${singleData.sealed_received}    `;
+              addButtons(accountId, 1, singleData.tracking_info, received);
+            }
+            const requested = document.createElement("td");
+            if (singleData.sealed_requested > 0 || singleData.requested > 0) {
+              singleData.sealed_requested > 0
+                ? (requested.className = "bg-warning")
+                : null;
+              requested.innerHTML = `${singleData.requested} / ${singleData.sealed_requested}    `;
+              addButtons(accountId, 2, singleData.tracking_info, requested);
+            }
+            const array = [tracking, received, requested];
+            array.forEach((i) => tr.appendChild(i));
           }
-          const requested = document.createElement("td");
-          if (singleData.sealed_requested > 0 || singleData.requested > 0) {
-            singleData.sealed_requested > 0
-              ? (requested.className = "bg-warning")
-              : null;
-            requested.innerHTML = `${singleData.requested} / ${singleData.sealed_requested}    `;
-            addButtons(accountId, 2, singleData.tracking_info, requested);
-          }
-          const array = [tracking, received, requested];
-          array.forEach((i) => tr.appendChild(i));
+          $(document).ready(function () {
+            $("#boxTable").DataTable({
+              lengthMenu: [
+                [25, 50, 100, -1],
+                [25, 50, 100, "全部"],
+              ],
+            });
+          });
         }
       })
       .catch((error) => {
