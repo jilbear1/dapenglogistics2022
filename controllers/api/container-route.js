@@ -1222,9 +1222,7 @@ router.get("/modification/:id", withAuth, async (req, res) => {
         type: 3,
         status: [1, 2, -1, -2],
       },
-      order: [
-        ['tracking', 'ASC']
-      ],
+      order: [["tracking", "ASC"]],
       attributes: ["id", "type", "status", "tracking"],
       include: [
         {
@@ -1314,4 +1312,53 @@ router.put(`/statusChange/:id&:status&:tracking`, withAuth, (req, res) => {
     });
 });
 
+router.put(`/statusMove/:id&:status&:tracking`, withAuth, (req, res) => {
+  if (req.params.status == 1) {
+    Container.update(
+      { status: 2, requested_date: new Date().toLocaleDateString("en-US") },
+      {
+        where: {
+          account_id: req.params.id,
+          type: 3,
+          status: 1,
+          tracking: req.params.tracking,
+        },
+      }
+    )
+      .then((dbContainerData) => {
+        if (!dbContainerData[0]) {
+          res.status(404).json({ message: "This Container does not exist!" });
+          return;
+        }
+        res.json(dbContainerData);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json(err);
+      });
+  } else if (req.params.status == 2) {
+    Container.update(
+      { status: 3, shipped_date: new Date().toLocaleDateString("en-US") },
+      {
+        where: {
+          account_id: req.params.id,
+          type: 3,
+          status: 2,
+          tracking: req.params.tracking,
+        },
+      }
+    )
+      .then((dbContainerData) => {
+        if (!dbContainerData[0]) {
+          res.status(404).json({ message: "This Container does not exist!" });
+          return;
+        }
+        res.json(dbContainerData);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json(err);
+      });
+  }
+});
 module.exports = router;

@@ -59,7 +59,7 @@ const update = async (id, qty) => {
   });
 };
 const activate = (event) => {
-  const code = prompt("enrer access code to activate");
+  const code = prompt("enter the access code to activate");
   if (code == "0523") {
     event.target.className = "badge badge-sm bg-success mb-2";
     event.target.innerText = "active";
@@ -95,10 +95,8 @@ const searchAccount = (event) => {
   const existedTr = tbody2.getElementsByTagName("tr");
   if (existedTr.length > 0) {
     existedTr[0].remove();
-  };
-  document.getElementById(
-    "h32"
-  ).innerHTML = "Account Id: "
+  }
+  document.getElementById("h32").innerHTML = "Account Id: ";
   const accountId = parseInt(event.target.value);
   if (!isNaN(accountId)) {
     fetch(`/api/container/modification/${accountId}`, {
@@ -118,13 +116,21 @@ const searchAccount = (event) => {
           const tracking = document.createElement("td");
           tracking.innerText = singleData.tracking_info;
           const received = document.createElement("td");
-          singleData.sealed_received>0?received.className="bg-warning":null;
-          received.innerText = `${singleData.received}/${singleData.sealed_received}`;
-          addButtons(accountId, 1, singleData.tracking_info, received);
+          if (singleData.sealed_received > 0 || singleData.received > 0) {
+            singleData.sealed_received > 0
+              ? (received.className = "bg-warning")
+              : null;
+            received.innerHTML = `${singleData.received} / ${singleData.sealed_received}    `;
+            addButtons(accountId, 1, singleData.tracking_info, received);
+          }
           const requested = document.createElement("td");
-          singleData.sealed_requested>0?requested.className="bg-warning":null;
-          requested.innerText = `${singleData.requested}/${singleData.sealed_requested}`;
-          addButtons(accountId, 2, singleData.tracking_info, requested);
+          if (singleData.sealed_requested > 0 || singleData.requested > 0) {
+            singleData.sealed_requested > 0
+              ? (requested.className = "bg-warning")
+              : null;
+            requested.innerHTML = `${singleData.requested} / ${singleData.sealed_requested}    `;
+            addButtons(accountId, 2, singleData.tracking_info, requested);
+          }
           const array = [tracking, received, requested];
           array.forEach((i) => tr.appendChild(i));
         }
@@ -138,20 +144,28 @@ const searchAccount = (event) => {
 const addButtons = (accountId, status, tracking_info, parentNode) => {
   const button = document.createElement("button");
   const button2 = document.createElement("button");
-  button.className = "btn btn-sm rounded bg-danger text-light";
-  button2.className = "btn btn-sm rounded bg-success text-light";
+  const button3 = document.createElement("button");
+  button.className = "btn btn  bg-danger text-light";
+  button2.className = "btn btn  bg-success text-light";
+  button3.className = "btn btn  bg-info text-light";
   button.id = `${accountId}.${Math.abs(parseInt(status))}.${tracking_info}`;
   button2.id = `${accountId}.${-Math.abs(parseInt(status))}.${tracking_info}`;
+  button3.id = `${accountId}.${Math.abs(parseInt(status))}.${tracking_info}`;
   button.addEventListener("click", function (event) {
     sealAndUnseal(event, "seal");
   });
   button2.addEventListener("click", function (event) {
     sealAndUnseal(event, "unseal");
   });
+  button3.addEventListener("click", function (event) {
+    moveStatus(event);
+  });
   button.innerText = "Seal";
   button2.innerText = "Unseal";
+  button3.innerText = "Move";
   parentNode.appendChild(button);
   parentNode.appendChild(button2);
+  parentNode.appendChild(button3);
 };
 
 const sealAndUnseal = async (event, action) => {
@@ -166,10 +180,29 @@ const sealAndUnseal = async (event, action) => {
     }
   );
   if (res.ok) {
-    alert("done");
+    // alert("done");
     event.target.disabled = true;
-    event.target.parentNode.style.textDecoration =  "line-through";
+    event.target.parentNode.style.textDecoration = "line-through";
   } else {
     alert("nothing to " + action);
+  }
+};
+const moveStatus = async (event) => {
+  const accountId = event.target.id.split(".")[0];
+  const status = event.target.id.split(".")[1];
+  const tracking = event.target.id.split(".")[2];
+  const res = await fetch(
+    `/api/container/statusMove/${accountId}&${status}&${tracking}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+    }
+  );
+  if (res.ok) {
+    // alert("done");
+    event.target.disabled = true;
+    event.target.parentNode.style.textDecoration = "line-through";
+  } else {
+    alert("nothing to perform");
   }
 };
