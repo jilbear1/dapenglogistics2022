@@ -4,7 +4,7 @@ const tbody2 = document.getElementById("tbody2");
 var timer = null;
 function delay(fn) {
   clearTimeout(timer);
-  timer = setTimeout(fn, 100);
+  timer = setTimeout(fn, 400);
 }
 const search = (event) => {
   fetch(`/api/item/modification/${event.target.value}`, {
@@ -66,9 +66,22 @@ const activate = (event) => {
     event.target.onclick = "";
     document.getElementById("switch").style.display = "";
     document.getElementById("scan_sku").disabled = false;
+    localStorage.setItem("passed", "pass");
   }
 };
 
+const ifActivated = () => {
+  const passed = localStorage.getItem("passed");
+  if (passed) {
+    const activateBtn = document.getElementById("activateBtn");
+    activateBtn.className = "badge badge-sm bg-success mb-2";
+    activateBtn.innerText = "active";
+    activateBtn.onclick = "";
+    document.getElementById("switch").style.display = "";
+    document.getElementById("scan_sku").disabled = false;
+  }
+};
+ifActivated();
 const changeTable = (event) => {
   const boxTable = document.getElementById("boxTable");
   const skuTable = document.getElementById("skuTable");
@@ -94,7 +107,7 @@ const changeTable = (event) => {
 const searchAccount = (event) => {
   const existedTr = tbody2.getElementsByTagName("tr");
   if (existedTr.length > 0) {
-    existedTr[0].remove();
+    tbody2.innerHTML = "";
   }
   document.getElementById("h32").innerHTML = "Account Id: ";
   const accountId = parseInt(event.target.value);
@@ -136,6 +149,7 @@ const searchAccount = (event) => {
             const array = [tracking, received, requested];
             array.forEach((i) => tr.appendChild(i));
           }
+          event.target.disabled = true;
           $(document).ready(function () {
             $("#boxTable").DataTable({
               lengthMenu: [
@@ -152,6 +166,7 @@ const searchAccount = (event) => {
   }
 };
 
+const dataTableFunction = () => {};
 const addButtons = (accountId, status, tracking_info, parentNode) => {
   const button = document.createElement("button");
   const button2 = document.createElement("button");

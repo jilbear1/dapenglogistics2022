@@ -7,6 +7,7 @@
       <div class="mb-3 container">
         <nav aria-label="breadcrumb">
           <span
+            id="activateBtn"
             class="badge badge-sm bg-secondary mb-2"
             onclick="activate(event)"
           >inactive</span>
@@ -55,8 +56,8 @@
         <thead>
           <tr>
             <th>Pallet Tracking (SP boxes)</th>
-            <th><b>Packed</b>/Sealed/Move (status 1/-1/+1)</th>
-            <th><b>Client Confirmed</b>/Sealed/Move (status 2/-2/+1)</th>
+            <th><b>Packed</b>/Sealed/<span uk-tooltip="move to status of requested">Move</span> (status 1/-1/+1)</th>
+            <th><b>Client Confirmed</b>/Sealed/<span uk-tooltip="move to status of shipped">Move</span> (status 2/-2/+1)</th>
           </tr>
         </thead>
         <tbody id="tbody2">
