@@ -434,6 +434,14 @@ const getXC = async (container_id) => {
     })
 };
 filterLoader (10);
+const refreshFilterList = (event) => {
+    event.preventDefault();
+    const n = event.target.value;
+    if (n > 10) {
+        mapinngOptions.innerHTML = "";
+        filterLoader (n);
+    }
+}
 var palletCount = 0;
 // var palletMap = new Map();
 var palletized = true;//************ */

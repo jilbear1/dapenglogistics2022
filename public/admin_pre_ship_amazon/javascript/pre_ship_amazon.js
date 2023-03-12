@@ -577,7 +577,7 @@ const loadingFilterOp = (dataArr) => {
         td_2.appendChild(label);
         mapinngOptions.appendChild(tr);
         if (i == 0 && !localStorage.getItem('filter_history')) {
-            localStorage.setItem('filter_history', item.id)
+            localStorage.setItem('filter_history', item.id);
             input.checked = true//default checked filter is the most recent linkage
             initskuchange(JSON.parse(item.action_notes), item.id)
         } else {
@@ -817,6 +817,15 @@ getXC();
 filterLoader(10);
 reqBoxInfoFetcher(container_id, targetdSpRecord);
 
+
+const refreshFilterList = (event) => {
+    event.preventDefault();
+    const n = event.target.value;
+    if (n > 10) {
+        mapinngOptions.innerHTML = "";
+        filterLoader (n);
+    }
+}
 /////////record keeping/////////
 const loadingRecord = async (data) => {
     const response = await fetch(`/api/record/record_create`, {

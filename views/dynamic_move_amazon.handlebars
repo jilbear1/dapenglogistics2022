@@ -27,7 +27,7 @@
         <div class="offcanvas-body container">
         <div scope="col">
           <b class="text-primary">Filter Options</b>
-          <small>(the most recent one on the top)</small>
+          <small>(the most recent <input type="number" id="typeNumber" value="10" onkeyup="refreshFilterList(event)"/> records on the top)</small>
           <input type="checkbox" id="allowFilter" class="form-check-input" checked><small uk-tooltip="The (SKU) filter performs auto-replacing function via pre-loaded old-new sku filters and collect associated label images. !!The reversal function will not be fully operational when this function is active." class="text-primary ml-2" > Filter On/Off</small>
           <input type="checkbox" id="palletizeCheckBox" class="form-check-input" checked onclick="palletizeAuthFunction()"><small uk-tooltip="" class="text-primary ml-2" > Palletization</small>
         </div>
