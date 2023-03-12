@@ -814,7 +814,12 @@ const reqBoxInfoFetcher = async (targetedId, targetedObject) => {
 id_and_barcode_generator();
 supplemental();
 getXC();
-filterLoader(10);
+var filter_qty = 10
+if (localStorage.getItem("filter_qty")>10){
+    document.getElementById("typeNumber").value = localStorage.getItem("filter_qty");
+    filter_qty = localStorage.getItem("filter_qty");
+}
+filterLoader(filter_qty);
 reqBoxInfoFetcher(container_id, targetdSpRecord);
 
 
@@ -822,6 +827,7 @@ const refreshFilterList = (event) => {
     event.preventDefault();
     const n = event.target.value;
     if (n > 10) {
+        localStorage.setItem("filter_qty", n);
         mapinngOptions.innerHTML = "";
         filterLoader (n);
     }
