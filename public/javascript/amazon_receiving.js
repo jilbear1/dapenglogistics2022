@@ -584,7 +584,7 @@ function quickReceiving() {
         containerNumber_q.innerHTML = scannedBox;
         scanned_item.value = null;
       });
-  } else if (scannedBox.length > 4 && !scannedBox.includes("-")) {
+  } else if (scannedBox.length > 4) {
     if (quickContainerObj.user_id) {
       totalSkuCount++;
       quickContainerObj.cost++;
