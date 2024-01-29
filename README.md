@@ -14,3 +14,6 @@ In heroku config var:
 # Contributer
 Rex Yu: lead UI designer, software developer, integration specialist
 Jilbear Hatch: project owner
+
+#error log
+1/28/2024
