@@ -68,7 +68,7 @@ function precheck() {
     const height = parseFloat(document.querySelector('#new_hei').value.trim());
     const weight = parseFloat(document.querySelector('#new_wei').value.trim());
     const qty_per_box = document.querySelector('#new_qty').value.trim();
-    const sku = document.querySelector('#new_sku').value.trim();
+    const sku = collectSKUs();
     const total_box = parseInt(document.querySelector('#new_tot').value.trim());
     if (prefix.value.length == 2) {
         prefix.value = prefix.value + "0"
@@ -366,3 +366,70 @@ const record = async (data) => {
         console.log('record fetched!');
     }
 };
+const incompleteSKUInput = () => {
+    let stillIncomplete = false;
+    document.querySelectorAll('.skuGroup').forEach(input => {
+        if (input.value.trim() === '') {
+            stillIncomplete = true;
+        }
+    });
+    collectSKUs();
+   return stillIncomplete
+};
+
+const collectSKUs = () => {
+    let totalSKU = "";
+    document.querySelectorAll('.skuGroup').forEach(input => {
+        if (input.value.trim() != '') {
+            totalSKU = totalSKU + ", " + input.value.trim();
+        }
+    });
+    return formatSKUs(totalSKU);
+}
+const formatSKUs = (input) => {
+    // Remove leading and trailing spaces
+    input = input.trim();
+    // Replace multiple consecutive commas with a single comma
+    input = input.replace(/,{2,}/g, ',');
+    // Remove the first comma if present
+    if (input.charAt(0) === ',') {
+        input = input.slice(1);
+    }
+    return input;
+};
+document.addEventListener('DOMContentLoaded', function() {
+    var skuCount = 0;
+    function addSkuInput() {
+      if (incompleteSKUInput()) {
+        alert('Please fill out the current SKU input before adding another one.');
+        return;
+      }
+      skuCount++;
+      var container = document.getElementById('sku-container');
+      var newInput = document.createElement('div');
+      newInput.className = 'form-group';
+      newInput.id = 'sku-group-' + skuCount;
+      newInput.innerHTML = '<div class="input-group"> \
+                              <input type="text" class="form-control skuGroup" id="new_sku_' + skuCount + '"> \
+                              <div class="input-group-append"> \
+                                <button class="btn btn-outline-secondary remove-sku" type="button" data-sku-group="' + skuCount + '">-</button> \
+                              </div> \
+                            </div>';
+      container.appendChild(newInput);
+    }
+
+    document.querySelectorAll('.add-sku').forEach(function(button) {
+      button.addEventListener('click', addSkuInput);
+    });
+
+    document.addEventListener('click', function(event) {
+      if (event.target && event.target.classList.contains('remove-sku')) {
+        var skuGroup = event.target.getAttribute('data-sku-group');
+        var skuGroupElement = document.getElementById('sku-group-' + skuGroup);
+        if (skuGroupElement) {
+            skuCount--;
+          skuGroupElement.parentNode.removeChild(skuGroupElement);
+        }
+      }
+    });
+  });
