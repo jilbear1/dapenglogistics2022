@@ -1,5 +1,27 @@
-# Dapeng-Logistics
-Dapeng Logistics is a full-service warehousing solution for our clients needs.  We provide logistic services and storage so that you can focus on the needs of your business.
+# DL2022 Version 24.07
+
+## Overview
+
+Welcome to DL2022 Version 24.07, the full-stack online application developed for Dapeng Logistics, a comprehensive warehousing solution provider. At Dapeng Logistics, we specialize in offering logistic services and storage, enabling our clients to focus on their core business needs. 
+
+## Application Description
+
+DL2022, initially released in 2022, is currently at version 24.07, reflecting the latest updates made in July 2024. This application is designed using the MVC (Model-View-Controller) pattern and is primarily written in JavaScript. DL2022 features two main user interfaces catering to different users:
+
+1. **Admin Interface**:
+    - **Target Users**: Warehouse owners and administrators.
+    - **Functions**:
+        - **Warehouse Management**: Admins can manage and monitor inventory based on the warehouse worflow and layout.
+        - **Billing**: Facilitates handling of billing processes for all clients.
+
+2. **Client Interface**:
+    - **Target Users**: Specifically designed for Chinese customers, with Chinese as the primary language and English as subtext or tooltips.
+    - **Functions**:
+        - **Shipping Order Initiation**: Helps customers initiate shipping orders.
+        - **Re-Organizing Capability**: Allows customers to reorganize their stored items.
+        - **Inventory Management**: Enables customers to manage their inventory within their own accounts.
+
+This dual-interface approach ensures that both admins and clients can efficiently manage their respective tasks within the Dapeng Logistics ecosystem.
 
 # Cloud Service Setup Guide
 
