@@ -11,7 +11,7 @@ DL2022, initially released in 2022, is currently at version 24.07, reflecting th
 1. **Admin Interface**:
     - **Target Users**: Warehouse owners and administrators.
     - **Functions**:
-        - **Warehouse Management**: Admins can manage and monitor inventory based on the warehouse worflow and layout.
+        - **Inventory Management**: Admins can manage and monitor inventory across all clients.
         - **Billing**: Facilitates handling of billing processes for all clients.
 
 2. **Client Interface**:
@@ -21,7 +21,16 @@ DL2022, initially released in 2022, is currently at version 24.07, reflecting th
         - **Re-Organizing Capability**: Allows customers to reorganize their stored items.
         - **Inventory Management**: Enables customers to manage their inventory within their own accounts.
 
+## Technical Details
+
+- **Backend**: The backend of DL2022 uses REST API to handle requests and render data.
+- **Database**: The application leverages AWS MySQL Cloud Service for database management.
+- **Frontend**: The pages are rendered using Handlebars, a templating engine that facilitates dynamic rendering of necessary framework parts.
+
 This dual-interface approach ensures that both admins and clients can efficiently manage their respective tasks within the Dapeng Logistics ecosystem.
+
+
+
 
 # Cloud Service Setup Guide
 
