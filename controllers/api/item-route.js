@@ -748,6 +748,25 @@ router.delete("/destroyPerContainer/:container_id", withAuth, (req, res) => {
     });
 });
 
+router.delete("/removeFromContainers", withAuth, (req, res) => {
+  Item.destroy({
+    where: {
+      container_id: req.body.container_id,
+    },
+  })
+    .then((dbItemData) => {
+      if (!dbItemData) {
+        res.status(404).json({ message: "No item found with this id" });
+        return;
+      }
+      res.json(dbItemData);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json(err);
+    });
+});
+
 router.get("/amazonInventory", withAuth, async (req, res) => {
   try {
     const itemData = await Item.findAll({

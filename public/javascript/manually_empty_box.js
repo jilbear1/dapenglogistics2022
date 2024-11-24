@@ -18,8 +18,9 @@ function delay(fn) {
 
 const container_Collection = new Map();
 const box_Collection = new Map();
+const item_Collection = new Map();
 
-function inputValidation() {
+const inputValidation = () => {
   const scannedBox = scanned_item.value.trim().toUpperCase();
   if (scannedBox.substring(0, 2) === "AM" && scannedBox.length === 8) {
     fetch(`/api/container/amazon_container/${scannedBox}`, {
@@ -54,29 +55,47 @@ function inputValidation() {
   } else {
     alert("Invalid entry format. Please check your input and try again.");
   }
-}
+};
 
-function removeFromCollections(number) {
+const removeFromCollections = (number) => {
   let removed = false;
   if (box_Collection.has(number)) {
     box_Collection.delete(number);
     console.log(`Removed number "${number}" from box_Collection.`);
     removed = true;
-  }
-  else if (container_Collection.has(number)) {
+  } else if (container_Collection.has(number)) {
     container_Collection.delete(number);
     console.log(`Removed number "${number}" from container_Collection.`);
+    item_Collection.delete(number);
     removed = true;
-  }
-  else {
+  } else {
     console.log(`Key "${number}" was not found in either collection.`);
   }
-}
+};
 
+const findAllItemsPerContainer = (container_number) => {
+  fetch(
+    `/api/item/findAllPerContainer/${container_Collection.get(
+      container_number
+    )}`,
+    {
+      method: "GET",
+    }
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.length) {
+        item_Collection.set(container_number, data)
+      } else {
+      }
+    })
+    .catch((error) => console.error("Error fetching item data:", error));
+};
 //-------------------------------------
-var masterContainerIdArr = [];
+
 
 const shipped_date_labeling = () => {
+  var masterContainerIdArr = [...container_Collection.values()];
   const shipped_date = new Date().toLocaleDateString("en-US");
   fetch(
     `/api/item/emptyContainerSearch/${JSON.stringify(masterContainerIdArr)}`,
@@ -112,22 +131,40 @@ const shipped_date_labeling = () => {
     });
 };
 
-async function removeZeroItem(data) {
-  const response = await fetch(`/api/item/destroy/${data.id}`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-  });
+async function removeItemsFromContainers(idArray) {
+  if (!Array.isArray(idArray) || idArray.length === 0) {
+    console.log("Invalid container ID array provided.");
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/item/removeFromContainers/`, {
+      method: "DELETE",
+      body: JSON.stringify({ container_id: idArray }),
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (response.ok) {
+      console.log(`Successfully cleared all items from containers: ${idArray}`);
+    } else {
+      const errorMessage = await response.text();
+      console.error(`Failed to update. Server responded with: ${errorMessage}`);
+    }
+  } catch (error) {
+    console.error("An error occurred while making the request:", error);
+  }
 }
-const updateShippedDate = async (id, shipped_date) => {
+
+const updateShippedDate = async (idArray, shipped_date) => {
   const response = await fetch(`/api/container/shipped_date_labeling`, {
     method: "PUT",
     body: JSON.stringify({
       shipped_date: shipped_date,
-      id: id,
+      id: idArray,
     }),
     headers: { "Content-Type": "application/json" },
   });
   response.ok
-    ? console.log(`updated the ending date to box id: ${id}`)
+    ? console.log(`updated the ending date to boxes: ${idArray}`)
     : console.log("failed to update");
 };
