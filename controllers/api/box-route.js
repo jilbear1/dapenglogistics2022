@@ -834,7 +834,8 @@ router.get('/boxDataUsingNumber/:key', withAuth, async (req, res) => {
       box_number: req.params.key
     },
     attributes: [
-      'status'
+      'status',
+      'id'
     ],
     include: [
       {
