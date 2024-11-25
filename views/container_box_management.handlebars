@@ -1,0 +1,128 @@
+<style>
+  body { padding: 20px; } .container { margin-bottom: 20px; } .restricted {
+  color: red; font-weight: bold; margin-top: 20px; } .btn-custom { margin-top:
+  10px; }
+</style>
+
+<header>
+  {{#if loggedIn}}
+    <p>Welcome,
+      {{name}}!
+      {{#if admin}}(Admin){{else}}<span class="restricted">Access Restricted</span>{{/if}}</p>
+  {{else}}
+    <p class="restricted">You must log in to access this page.</p>
+  {{/if}}
+</header>
+
+{{#if loggedIn}}
+  {{#if admin}}
+    <div class="container mt-5">
+  <div class="card rounded shadow-sm border-primary mx-auto" style="max-width: 900px;">
+    <div class="card-body bg-light">
+      <h1 class="text-center mb-4">Container and Box Management</h1>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <h3>Scan Container or Box Number</h3>
+          <input
+            id="scanned_item"
+            type="text"
+            class="form-control rounded"
+            placeholder="Enter Container/Box Number"
+            onkeyup="delay(inputValidation)"
+          />
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <h3>Scanned Items</h3>
+          <ul id="containerList" class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Container A123
+              <button class="badge bg-danger badge-sm" onclick="removeItem(this)">x</button>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Container B456
+              <button class="badge bg-danger badge-sm" onclick="removeItem(this)">x</button>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Container C789
+              <button class="badge bg-danger badge-sm" onclick="removeItem(this)">x</button>
+            </li>
+          </ul>
+          <ul id="boxList" class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Box X001
+              <button class="badge bg-danger badge-sm" onclick="removeItem(this)">x</button>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Box Y002
+              <button class="badge bg-danger badge-sm" onclick="removeItem(this)">x</button>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Box Z003
+              <button class="badge bg-danger badge-sm" onclick="removeItem(this)">x</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <!-- Items in Selected Containers Card -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h3>Items in Selected Containers</h3>
+          </div>
+          <div class="card-body">
+            <ul id="itemList" class="list-group list-group-flush">
+              <li class="list-group-item">Item 1 - Laptop</li>
+              <li class="list-group-item">Item 2 - Headphones</li>
+              <li class="list-group-item">Item 3 - Mouse</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <h3>Bulk Actions</h3>
+        <div class="d-flex justify-content-start gap-2">
+          <button
+            class="btn btn-warning btn-sm"
+            onclick="removeItemsFromContainers()"
+          >
+            Remove Items from Selected Containers
+          </button>
+          <button
+            class="btn btn-success btn-sm"
+            onclick="shipped_date_labeling()"
+          >
+            Mark Selected Containers as Shipped
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Function to remove an item from the list
+  function removeItem(button) {
+    var item = button.closest('li'); // Find the list item (li) element
+    item.remove(); // Remove the item from the list
+  }
+</script>
+
+  {{else}}
+    <!-- Non-admin View -->
+    <p class="restricted">You do not have the necessary permissions to view this
+      page.</p>
+  {{/if}}
+{{else}}
+  <p class="restricted">Please log in to access the system.</p>
+{{/if}}
+
+<!-- Include external JavaScript file -->
+{{#if admin}}
+  <script src="javascript/container_box_management.js"></script>
+{{else}}
+  <script src="javascript/client_redirect.js"></script>
+{{/if}}

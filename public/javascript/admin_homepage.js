@@ -426,6 +426,31 @@ function modeChange() {
 // document.getElementById('loader').style.display = '';
 
 ///////////////////////////////AMAZON ITEMS ARE HERE///////////////////////////////
+const removeItemsFromContainers = async (idArray) => {
+  if (idArray.length === 0) {
+    console.log("No items to remove.");
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/item/removeFromContainers/`, {
+      method: "DELETE",
+      body: JSON.stringify({ container_id: idArray }),
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (response.ok) {
+      console.log(`Successfully cleared items from containers: ${idArray}`);
+    } else {
+      const errorMessage = await response.text();
+      console.error(
+        `Failed to remove items. Server responded with: ${errorMessage}`
+      );
+    }
+  } catch (error) {
+    console.error("Error during bulk delete:", error);
+  }
+};
 const myContainerInput = document.getElementById('myContainerInput');
 var containerMap = new Map();
 var skuMap = new Map();
@@ -453,11 +478,25 @@ function allItem() {
       skuMap.set(number, item_data[number])
     });
     // sort items by container
+    // const container_data = data.reduce((r, a) => {
+    //   r[a.container.container_number] = r[a.container.container_number] || [];
+    //   r[a.container.container_number].push(a);
+    //   return r;
+    // }, Object.create(null));
+    const nullIds = [];
     const container_data = data.reduce((r, a) => {
-      r[a.container.container_number] = r[a.container.container_number] || [];
-      r[a.container.container_number].push(a);
+      const containerKey = a.container ? a.container.container_number : 'null'; // Use 'null' as the key if container is null
+      r[containerKey] = r[containerKey] || [];
+      r[containerKey].push(a);
+      if (!a.container) {
+        nullIds.push(a.id);
+      }
       return r;
     }, Object.create(null));
+    console.log(nullIds);
+    if (nullIds.length){
+      removeItemsFromContainers(nullIds);
+    };
     const newData = Object.values(container_data);
     for (let i = 0; i < newData.length; i++) {
       const location = newData[i][0].container.location;

@@ -2,6 +2,7 @@ const router = require("express").Router();
 const { User, Account, Batch, Box, Container, Item } = require("../../models");
 const { withAuth, adminAuth } = require("../../utils/auth");
 const { route } = require("./user_route");
+const { Op } = require('sequelize');
 
 router.put("/account_merge", withAuth, (req, res) => {
   Item.update(
@@ -751,15 +752,18 @@ router.delete("/destroyPerContainer/:container_id", withAuth, (req, res) => {
 router.delete("/removeFromContainers", withAuth, (req, res) => {
   Item.destroy({
     where: {
-      container_id: req.body.container_id,
+      [Op.or]: [
+        { container_id: req.body.container_id }, // Matches specific container_id
+        { container_id: null } // Matches items where container_id is null
+      ]
     },
   })
     .then((dbItemData) => {
       if (!dbItemData) {
-        res.status(404).json({ message: "No item found with this id" });
+        res.status(404).json({ message: "No items found with this container_id or with null container_id" });
         return;
       }
-      res.json(dbItemData);
+      res.json(dbItemData); // Respond with the deleted items
     })
     .catch((err) => {
       console.log(err);

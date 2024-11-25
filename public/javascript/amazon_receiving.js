@@ -707,7 +707,7 @@ function removeEmptyContainer() {
                 parseInt(container.cost) == 0 &&
                 container.type == 1 &&
                 container.bill_storage &&
-                !container.shipped_date
+                container.shipped_date
               ) {
                 testAMArr.push(container.container_number);
                 emptyArr.push(container.id);

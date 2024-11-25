@@ -366,6 +366,18 @@ router.get(`/sku_modification`, withAuth, async (req, res) => {
     res.status(500).json(err);
   }
 })
+router.get('/container_box_management', withAuth, async (req, res) => {
+  try {
+    res.render('container_box_management', {
+      loggedIn: req.session.loggedIn || false, // Ensure `loggedIn` is reliable
+      admin: req.session.admin || false,     // Default to false if undefined
+      name: req.session.name || 'Guest',     // Default to 'Guest' if no name
+    });
+  } catch (err) {
+    console.error('Error rendering container_box_management:', err);
+    res.status(500).json({ error: 'Failed to load the page' });
+  }
+});
 
 
 module.exports = router
