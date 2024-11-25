@@ -1,8 +1,8 @@
-# DL2022 Version 24.07
+# DL2022 Version 24.08
 
 ## Overview
 
-Welcome to DL2022 Version 24.07, the full-stack online application developed for Dapeng Logistics, a comprehensive warehousing solution provider. At Dapeng Logistics, we specialize in offering logistic services and storage, enabling our clients to focus on their core business needs. 
+Welcome to DL2022 Version 24.08, the full-stack online application developed for Dapeng Logistics, a comprehensive warehousing solution provider. At Dapeng Logistics, we specialize in offering logistic services and storage, enabling our clients to focus on their core business needs.
 
 ## Application Description
 
@@ -248,5 +248,3 @@ please refer to https://youtu.be/NZElg91l_ms
 # Contributer
 Rex Yu: lead UI designer, software developer, integration specialist
 Jilbear Hatch: project owner
-
-
