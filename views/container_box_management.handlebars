@@ -70,11 +70,12 @@
                 class="btn btn-warning btn-sm"
                 onclick="removeItemsFromContainers()"
               >
-                Remove SKU from Selected AM Boxes
+                Delete SKUs from Selected AM Boxes
               </button>
               <button
                 class="btn btn-success btn-sm"
                 onclick="shipped_date_labeling()"
+                uk-tooltip="this action will also remove all items associated with the boxes"
               >
                 Mark Selected Boxes as Shipped
               </button>
@@ -94,6 +95,17 @@
 
 <!-- Include external JavaScript file -->
 {{#if admin}}
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const correctPasscode = "0523";
+      const userPasscode = prompt("Enter the passcode to access this page:");
+      if (userPasscode !== correctPasscode) {
+        // Redirect to the previous page
+        alert("Incorrect passcode. Redirecting...");
+        window.location.href = "/";
+      }
+    });
+  </script>
   <script src="javascript/container_box_management.js"></script>
 {{else}}
   <script src="javascript/client_redirect.js"></script>

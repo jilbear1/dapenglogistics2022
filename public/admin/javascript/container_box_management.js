@@ -59,7 +59,7 @@ const inputValidation = () => {
           }
         } else {
           alert(
-            `Invalid entry: Cannot find the container "${scannedBox}" in the database.`
+            `Invalid entry: Cannot find the container "${scannedBox}" in the database, or it's already in the empty condition.`
           );
           triggerShake(scanned_item);
         }
@@ -71,7 +71,7 @@ const inputValidation = () => {
     fetch(`/api/box/boxDataUsingNumber/${scannedBox}`, { method: "GET" })
       .then((response) => response.json())
       .then((data) => {
-        if (data.id) {
+        if (data.id && data.status < 3) {
           if (!box_Collection.has(scannedBox)) {
             box_Collection.set(scannedBox, data.id);
             generateLiBox(scannedBox, boxList);
@@ -81,7 +81,7 @@ const inputValidation = () => {
           }
         } else {
           alert(
-            `Invalid entry: Cannot find the box "${scannedBox}" in the database.`
+            `Invalid entry: Cannot find the box "${scannedBox}" in the database, or it's already in shipped status.`
           );
           triggerShake(scanned_item);
         }
@@ -180,7 +180,7 @@ const removeItemsFromContainers = async () => {
 
     if (response.ok) {
       console.log(`Successfully cleared items from item lists: ${idArray}`);
-      itemList.innerHTML='';
+      itemList.innerHTML = "";
       item_Collection.clear();
     } else {
       const errorMessage = await response.text();
@@ -198,37 +198,48 @@ const removeItemsFromContainers = async () => {
  */
 const shipped_date_labeling = async () => {
   let masterContainerIdArr = [...container_Collection.values()];
+  let masterBoxIdArr = [...box_Collection.values()];
   const shipped_date = new Date().toLocaleDateString("en-US");
+  if (masterContainerIdArr.length) {
+    await removeItemsFromContainers();
+    try {
+      const response = await fetch(
+        `/api/item/emptyContainerSearch/${JSON.stringify(
+          masterContainerIdArr
+        )}`,
+        { method: "GET" }
+      );
+      const data = await response.json();
 
-  try {
-    const response = await fetch(
-      `/api/item/emptyContainerSearch/${JSON.stringify(masterContainerIdArr)}`,
-      { method: "GET" }
-    );
-    const data = await response.json();
+      // Filter out non-empty containers
+      masterContainerIdArr = masterContainerIdArr.filter(
+        (id) => !data.some((container) => container.container_id === id)
+      );
 
-    // Filter out non-empty containers
-    masterContainerIdArr = masterContainerIdArr.filter(
-      (id) => !data.some((container) => container.container_id === id)
-    );
-
-    if (masterContainerIdArr.length) {
-      await updateShippedDate(masterContainerIdArr, shipped_date);
-      console.log("Updated empty containers to shipped status.");
-      container_Collection.clear();
-      containerList.innerHTML = '';
-    } else {
-      console.log("No containers are empty.");
+      if (masterContainerIdArr.length) {
+        await updateShippedDateForContainer(masterContainerIdArr, shipped_date);
+        console.log("Updated empty containers to shipped status.");
+        container_Collection.clear();
+        containerList.innerHTML = "";
+      } else {
+        console.log("No containers are empty.");
+      }
+    } catch (error) {
+      console.error("Error during shipped status update:", error);
     }
-  } catch (error) {
-    console.error("Error during shipped status update:", error);
+  }
+
+  if (masterBoxIdArr.length) {
+    await updateShippedDateForBox(masterBoxIdArr, shipped_date);
+    box_Collection.clear();
+    boxList.innerHTML = "";
   }
 };
 
 /**
  * Updates the shipped date for a list of container IDs (PUT request).
  */
-const updateShippedDate = async (idArray, shipped_date) => {
+const updateShippedDateForContainer = async (idArray, shipped_date) => {
   try {
     const response = await fetch(`/api/container/shipped_date_labeling`, {
       method: "PUT",
@@ -240,6 +251,24 @@ const updateShippedDate = async (idArray, shipped_date) => {
       console.log(
         `Successfully updated shipped status for containers: ${idArray}`
       );
+    } else {
+      console.error("Failed to update shipped status.");
+    }
+  } catch (error) {
+    console.error("Error updating shipped status:", error);
+  }
+};
+
+const updateShippedDateForBox = async (idArray, shipped_date) => {
+  try {
+    const response = await fetch(`/api/box/toStatusShippedById`, {
+      method: "PUT",
+      body: JSON.stringify({ shipped_date: shipped_date, id: idArray }),
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (response.ok) {
+      console.log(`Successfully updated shipped status for boxes: ${idArray}`);
     } else {
       console.error("Failed to update shipped status.");
     }
