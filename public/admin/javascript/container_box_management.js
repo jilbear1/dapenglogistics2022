@@ -16,7 +16,16 @@ let timer = null;
 // Delay function to handle input debouncing
 function delay(fn) {
   clearTimeout(timer);
-  timer = setTimeout(fn, 100); // Waits 100ms after the last keypress
+  timer = setTimeout(fn, 900); // Waits 100ms after the last keypress
+}
+
+// Function to remove an item from the list
+function removeItem(button) {
+  var box = button.closest("li"); // Find the list item (li) element
+  const boxNumber = box.firstChild.textContent.trim();
+  console.log(boxNumber);
+  removeFromCollections(boxNumber);
+  box.remove(); // Remove the item from the list
 }
 
 // Collections for containers, boxes, and items
@@ -28,6 +37,9 @@ const item_Collection = new Map();
  * Validates user input for a container or box number.
  * If valid, fetches the data and updates the respective collection.
  */
+const containerList = document.getElementById("containerList");
+const boxList = document.getElementById("boxList");
+const itemList = document.getElementById("itemList");
 const inputValidation = () => {
   console.log("validating...");
   const scannedBox = scanned_item.value.trim().toUpperCase();
@@ -36,13 +48,20 @@ const inputValidation = () => {
     fetch(`/api/container/amazon_container/${scannedBox}`, { method: "GET" })
       .then((response) => response.json())
       .then((data) => {
-        if (data.id) {
-          container_Collection.set(scannedBox, data.id);
-          console.log(data);
+        if (data.id && !data.shipped_date) {
+          if (!container_Collection.has(scannedBox)) {
+            container_Collection.set(scannedBox, data.id);
+            generateLiBox(scannedBox, containerList);
+            findAllItemsPerContainer(scannedBox);
+          } else {
+            console.log(`The container "${scannedBox}" is already in the list`);
+            triggerShake(scanned_item);
+          }
         } else {
-          console.log(
+          alert(
             `Invalid entry: Cannot find the container "${scannedBox}" in the database.`
           );
+          triggerShake(scanned_item);
         }
       })
       .catch((error) => console.error("Error fetching container data:", error));
@@ -53,19 +72,58 @@ const inputValidation = () => {
       .then((response) => response.json())
       .then((data) => {
         if (data.id) {
-          box_Collection.set(scannedBox, data.id);
+          if (!box_Collection.has(scannedBox)) {
+            box_Collection.set(scannedBox, data.id);
+            generateLiBox(scannedBox, boxList);
+          } else {
+            console.log(`The box "${scannedBox}" is already in the list`);
+            triggerShake(scanned_item);
+          }
         } else {
           alert(
             `Invalid entry: Cannot find the box "${scannedBox}" in the database.`
           );
+          triggerShake(scanned_item);
         }
       })
       .catch((error) => console.error("Error fetching box data:", error));
 
     // Invalid format
   } else {
-    alert("Invalid entry format. Please check your input and try again.");
+    console.log("Invalid entry format. Please check your input and try again.");
+    triggerShake(scanned_item);
   }
+  scanned_item.value = "";
+};
+
+const triggerShake = (element) => {
+  element.classList.add("shake"); // Add the shake class
+  setTimeout(() => {
+    element.classList.remove("shake"); // Remove the class after the animation
+    element.value = ""; // Optionally clear the input field
+  }, 300); // Match the duration of the animation
+};
+
+const generateLiBox = (box_number, list) => {
+  const listBox = document.createElement("li");
+  listBox.className =
+    "list-group-item d-flex justify-content-between align-items-center"; // Add classes
+  listBox.innerHTML = `
+${box_number}
+<button class="badge bg-danger badge-sm" onclick="removeItem(this)">x</button>
+`;
+  list.appendChild(listBox);
+};
+
+const generateLiItems = (itemDataset, container_number) => {
+  var itemArry = `<h5>${container_number}</h5><br>`;
+  const listItem = document.createElement("li");
+  listItem.className = `list-group-item ${container_number}`;
+  itemDataset.forEach((item) => {
+    itemArry += `${item.item_number} (#${item.qty_per_sku}), `; // Add classes
+  });
+  listItem.innerHTML = itemArry;
+  itemList.appendChild(listItem);
 };
 
 /**
@@ -77,6 +135,9 @@ const removeFromCollections = (number) => {
   } else if (container_Collection.delete(number)) {
     console.log(`Removed number "${number}" from container_Collection.`);
     item_Collection.delete(number); // Clear associated items
+    document.querySelectorAll(`.${number}`).forEach((element) => {
+      element.remove(); // Remove each element
+    });
   } else {
     console.log(`Key "${number}" was not found in either collection.`);
   }
@@ -94,6 +155,7 @@ const findAllItemsPerContainer = (container_number) => {
     .then((data) => {
       if (data.length) {
         item_Collection.set(container_number, data);
+        generateLiItems(data, container_number);
       }
     })
     .catch((error) => console.error("Error fetching item data:", error));
@@ -110,15 +172,15 @@ const removeItemsFromContainers = async () => {
   }
 
   try {
-    const response = await fetch(`/api/item/removeFromContainers/`, {
+    const response = await fetch(`/api/item/bulkDestroy/`, {
       method: "DELETE",
-      body: JSON.stringify({ container_id: idArray }),
+      body: JSON.stringify({ id: idArray }),
       headers: { "Content-Type": "application/json" },
     });
 
     if (response.ok) {
-      console.log(`Successfully cleared items from containers: ${idArray}`);
-      location.reload();
+      console.log(`Successfully cleared items from item lists: ${idArray}`);
+      // location.reload();
     } else {
       const errorMessage = await response.text();
       console.error(

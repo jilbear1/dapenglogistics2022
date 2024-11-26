@@ -170,7 +170,10 @@ function amazonCreate() {
   if (!date.value) {
     amazon_box.received_date = new Date().toLocaleDateString("en-US");
   } else {
-    amazon_box.received_date = new Date((new Date(date.value)).getTime() + (new Date(date.value)).getTimezoneOffset() * 60000).toLocaleDateString("en-US");
+    amazon_box.received_date = new Date(
+      new Date(date.value).getTime() +
+        new Date(date.value).getTimezoneOffset() * 60000
+    ).toLocaleDateString("en-US");
   }
   console.log("received_date: " + amazon_box.received_date);
   const newAccountName = newAccountInput.value.trim();
@@ -572,16 +575,20 @@ function quickReceiving() {
         return response.json();
       })
       .then(function (data) {
-        totalSkuCount = 0;
-        quickContainerObj.user_id = data.user_id;
-        quickContainerObj.account_id = data.account_id;
-        quickContainerObj.accountname = data.account.name;
-        quickContainerObj.container_id = data.id;
-        quickContainerObj.cost = data.cost;
-        quickContainerObj.container_number = scannedBox;
-        clientName_q.innerHTML = data.user.name;
-        accountName_q.innerHTML = data.account.name;
-        containerNumber_q.innerHTML = scannedBox;
+        if (!data.shipped_date) {
+          totalSkuCount = 0;
+          quickContainerObj.user_id = data.user_id;
+          quickContainerObj.account_id = data.account_id;
+          quickContainerObj.accountname = data.account.name;
+          quickContainerObj.container_id = data.id;
+          quickContainerObj.cost = data.cost;
+          quickContainerObj.container_number = scannedBox;
+          clientName_q.innerHTML = data.user.name;
+          accountName_q.innerHTML = data.account.name;
+          containerNumber_q.innerHTML = scannedBox;
+        } else {
+          alert("this box should not be re-used. please assign a new number");
+        }
         scanned_item.value = null;
       });
   } else if (scannedBox.length > 4) {
