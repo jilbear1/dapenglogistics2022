@@ -180,7 +180,8 @@ const removeItemsFromContainers = async () => {
 
     if (response.ok) {
       console.log(`Successfully cleared items from item lists: ${idArray}`);
-      // location.reload();
+      itemList.innerHTML='';
+      item_Collection.clear();
     } else {
       const errorMessage = await response.text();
       console.error(
@@ -214,6 +215,8 @@ const shipped_date_labeling = async () => {
     if (masterContainerIdArr.length) {
       await updateShippedDate(masterContainerIdArr, shipped_date);
       console.log("Updated empty containers to shipped status.");
+      container_Collection.clear();
+      containerList.innerHTML = '';
     } else {
       console.log("No containers are empty.");
     }
