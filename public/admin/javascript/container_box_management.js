@@ -16,7 +16,7 @@ let timer = null;
 // Delay function to handle input debouncing
 function delay(fn) {
   clearTimeout(timer);
-  timer = setTimeout(fn, 900); // Waits 100ms after the last keypress
+  timer = setTimeout(fn, 100); // Waits 100ms after the last keypress
 }
 
 // Function to remove an item from the list
