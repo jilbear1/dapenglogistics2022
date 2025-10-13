@@ -1,249 +1,26 @@
-console.log(location.href, 'master admin_homepage.js');
+/**
+ * @file Master admin homepage script for managing inventory, containers, and user activity.
+ * @description Handles data fetching, UI rendering, search functionality, and administrative actions for both standard and Amazon inventory.
+ */
+
+// --------------------------------------------------------------------------------
+// --- DOM Element Constants ---
+// --------------------------------------------------------------------------------
 const inventory_count = document.getElementById('inventory_c');
 const pending_count = document.getElementById('pending_c');
 const mode = document.getElementById('mode');
 const boxInput = document.getElementById("boxInput");
+const myBoxInput = document.getElementById('myBoxInput');
 const containerInput = document.getElementById('containerInput');
+const myContainerInput = document.getElementById('myContainerInput');
 const record_dashboard = document.getElementById('record_dashboard');
 const log_body = document.getElementById('log_body');
-var receivedCount = 0;
-var requestedCount = 0;
-var pendingCount = 0;
-var shippedCount = 0;
-var objectMap = new Map();
-var locationMap = new Map()
-var boxNumberArr = [];
-var containerNumberArr =[];
-var itemNumberArr = [];
-var locationArr = [];
-var locationArr_amazon = [];
-var preUpdateArr = [];
-var preUpdateContainerArr = [];
-var xcNumberArr = [];
-
-function allBox() {
-    fetch(`/api/user/allBox_admin`, {
-        method: 'GET'
-    }).then(function (response) {
-        return response.json();
-    }).then(function (data) {
-        for (let i = 0; i < data.length; i++) {
-          const status = data[i].status;
-          const box_number = data[i].box_number;
-          const location = data[i].location;
-          //set up box_number-object map
-          objectMap.set(box_number, data[i]);
-
-          //collect box_number
-          boxNumberArr.push(box_number);
-
-          //collect xc box_number
-          if (box_number.substring(0,2) == 'AC' && !data[i].batch_id) {
-            xcNumberArr.push(box_number);
-          }
-
-            // collect location data
-            if (!locationArr.includes(location)) {
-                locationArr.push(location)
-            };
-            ///count function
-            if (status == 0 ) {
-              pendingCount++
-            } else if (status == 1) {
-              receivedCount++
-            } else if (status == 2) {
-              requestedCount++
-            } else if (status == 3){
-              shippedCount++
-            }
-        };
-        var inventoryCount = receivedCount + requestedCount;
-        pending_count.innerHTML = pendingCount;
-        inventory_count.innerHTML = `${inventoryCount} (${requestedCount} requested)`;
-        // set up location - object map
-        const location_data = data.reduce(function (r, a) {
-          r[a.location] = r[a.location] || [];
-          r[a.location].push(a);
-          return r;
-        }, Object.create(null));
-        for (let j = 0; j < locationArr.length; j++) {
-          const element = locationArr[j];
-          locationMap.set(element, location_data[element])
-        };
-    });
-};
 const boxTable = document.getElementById("boxTable");
-function box_searching() {
-  unattach();
-   var box_input = document.getElementById('myBoxInput').value.trim();
-   if (box_input) {
-      boxTable.style.display = '';
-   };
-   if (box_input.length > 2 && !isCharacterASpeical(box_input) && box_input[0] != '/') {
-    document.getElementById('searchNote').innerHTML = "No information was found according to your input! Please try again"
-    box_search(box_input)
-   } else if (isCharacterALetter(box_input[0]) && !isNaN(box_input[1])) {
-    document.getElementById('searchNote').innerHTML = "This location is not associated with any box"
-    location_search(box_input, locationArr)
-   } else if (box_input == '/all') {
-    for (let i = 0; i < boxNumberArr.length; i++) {
-      const each_of_all = boxNumberArr[i];
-      if (each_of_all) {
-        buildingRow(each_of_all)
-      }
-    }
-  } else if (box_input.substring(0,3) == '/xc') {
-    if (box_input == '/xc') {
-      for (let i = 0; i < boxNumberArr.length; i++) {
-        const eachXc = xcNumberArr[i];
-          if (eachXc) {
-            buildingRow(eachXc)
-          }
-        }
-    } else if (box_input == '/xc4'){
-      for (let i = 0; i < boxNumberArr.length; i++) {
-        const eachXc = xcNumberArr[i];
-        if (eachXc && objectMap.get(eachXc).status == 4) {
-          buildingRow(eachXc)
-        }
-      }
-    } else if (box_input == '/xc5') {
-      for (let i = 0; i < boxNumberArr.length; i++) {
-        const eachXc = xcNumberArr[i];
-        if (eachXc && objectMap.get(eachXc).status == 5) {
-          buildingRow(eachXc)
-        }
-      }
-    }
-  }
-};
-function box_search(b) {
-    for (i = 0; i < boxNumberArr.length; i++) {
-      let txtValue = boxNumberArr[i];
-      if (txtValue.toUpperCase().indexOf(b.toUpperCase()) > -1) {
-        buildingRow(boxNumberArr[i]);
-        document.getElementById('searchNote').innerHTML = null;
-      }
-  };
-};
-function location_search(l, arr) {
-  for (i = 0; i < arr.length; i++) {
-    let txtValue = arr[i];
-    if (txtValue && txtValue.toUpperCase().indexOf(l.toUpperCase()) > -1) {
-      if (localStorage.getItem('mode') == 'C') {
-        locationMap.get(arr[i]).forEach((obj)=> {buildingRow(obj.box_number)});
-        document.getElementById('searchNote').innerHTML = null;
-      } else if (localStorage.getItem('mode') == 'A') {
-        var container_numberArr_s = [];
-        locationMap_amazon.get(arr[i]).forEach((obj)=> {
-          if (!container_numberArr_s.includes(obj.container.container_number)) {
-            container_numberArr_s.push(obj.container.container_number);
-            buildingRow_amazon(obj.container.container_number);
-          }
-        });
-        document.getElementById('containerSearchNote').innerHTML = null;
-      }
-    }
-  }
-};
-function buildingRow(b) {
-    preUpdateArr.push(objectMap.get(b));
-    const boxBody = document.getElementById('boxBody')
-    const container = document.createElement('tr');
-    const user = document.createElement('td');
-    const account = document.createElement('td');
-    const box_number = document.createElement('td');
-    const description = document.createElement('td');
-    const order = document.createElement('td');
-    const total_box = document.createElement('td');
-    const qty_per_box = document.createElement('td');
-    const location = document.createElement('td');
-    const date = document.createElement('td');
-    const status = document.createElement('td');
-    container.appendChild(user);
-    container.appendChild(account);
-    container.appendChild(box_number);
-    container.appendChild(description);
-    container.appendChild(order);
-    container.appendChild(total_box);
-    container.appendChild(qty_per_box)
-    container.appendChild(location);
-    container.appendChild(date);
-    container.appendChild(status);
-    user.innerHTML = objectMap.get(b).user.name
-    account.innerHTML = objectMap.get(b).account.name;
-    box_number.innerHTML = `<a href="/admin/box/${b}" >${b}</a>`;
-    description.innerHTML = objectMap.get(b).description;
-    if (!objectMap.get(b).batch_id) {
-      order.innerHTML = `$ ${objectMap.get(b).order}/ qty`;
-      date.innerHTML = `total $${objectMap.get(b).cost}`;
-      date.setAttribute('uk-tooltip', `received date ${newDateValidate(objectMap.get(b).received_date)} ; requested date ${newDateValidate(objectMap.get(b).requested_date)} ; shipped date ${newDateValidate(objectMap.get(b).shipped_date)} ; bill for receiving ${newDateValidate(new Date(objectMap.get(b).bill_received).toLocaleDateString("en-US"))} ; bill for storage ${newDateValidate(new Date(objectMap.get(b).bill_storage).toLocaleDateString("en-US"))} ; bill for shipping ${newDateValidate(new Date(objectMap.get(b).bill_shipped).toLocaleDateString("en-US"))}`)
+const boxBody = document.getElementById('boxBody');
+const containerTable = document.getElementById("containerTable");
+const containerBody = document.getElementById('containerBody');
 
-    } else {
-      order.innerHTML = objectMap.get(b).order;
-      total_box.innerHTML = objectMap.get(b).batch.total_box;
-      date.innerHTML = convertor(objectMap.get(b));
-      date.setAttribute('uk-tooltip', `pending date ${newDateValidate(objectMap.get(b).batch.pending_date)} ; received date ${newDateValidate(objectMap.get(b).received_date)} ; requested date ${newDateValidate(objectMap.get(b).requested_date)} ; shipped date ${newDateValidate(objectMap.get(b).shipped_date)} ; bill for receiving ${newDateValidate(new Date(objectMap.get(b).bill_received).toLocaleDateString("en-US"))} ; bill for storage ${newDateValidate(new Date(objectMap.get(b).bill_storage).toLocaleDateString("en-US"))} ; bill for shipping ${newDateValidate(new Date(objectMap.get(b).bill_shipped).toLocaleDateString("en-US"))}`)
-
-    }
-    qty_per_box.innerHTML = objectMap.get(b).qty_per_box;
-    location.innerHTML = objectMap.get(b).location;
-    status.innerHTML = convertor_status(objectMap.get(b).status);
-    boxBody.appendChild(container);
-};
-///// helper functions //////
-function unattach() {
-  document.getElementById('searchNote').innerHTML = null;
-  document.getElementById('containerSearchNote').innerHTML = null;
-  preUpdateArr = [];
-  preUpdateContainerArr = [];
-  boxTable.style.display = 'none';
-  containerTable.style.display = 'none';
-  const tBody = document.getElementById('boxBody');
-  const tCBody = document.getElementById('containerBody');
-  const old_search = tBody.querySelectorAll('tr');
-  const old_search_c = tCBody.querySelectorAll('tr');
-  old_search.forEach(i => i.remove());
-  old_search_c.forEach(i => i.remove());
-};
-function convertor(object) {
-  const received_date = object.received_date;
-  const shipped_date = object.shipped_date;
-  const pending_date = object.batch.pending_date;
-  const requested_date =object.requested_date;
-  if (shipped_date) {
-    return shipped_date
-  } else if (requested_date) {
-    return requested_date
-  } else if (received_date) {
-    return received_date
-  } else {
-    return pending_date
-  }
-};
-function convertor_status(s) {
-  if (s == 0) {
-    return 'pending'
-  } else if ( s == 1) {
-    return 'received'
-  } else if (s == 2) {
-    return 'requested'
-  } else if (s ==3) {
-    return 'shipped'
-  } else if (s == 4) {
-    return 'xc pre-billed'
-  } else if (s == 5) {
-    return 'xc billed'
-  } else if (s == 98) {
-    return 'archived'
-  }
-};
-function newDateValidate(date) {
-  if (date == "12/31/1969" || !date) {
-    return 'N/A'
-  } return date
-};
-///master functions////
+// Master function buttons
 const edit_btn = document.getElementById('edit_btn');
 const update_btn = document.getElementById('update_btn');
 const update_select = document.getElementById('update_select');
@@ -251,821 +28,808 @@ const edit_select = document.getElementById('edit_select');
 const update_date_select = document.getElementById('update_date_select');
 const update_date_btn = document.getElementById('update_date_btn');
 const homepage_btn = document.getElementById('homepage');
-///security////
-function passcode(w) {
-  let code = prompt("Please enter the passcode");
-  if (code == '0523' && w == 's') {
-    localStorage.setItem('pass', 'status update')
+
+// SKU search elements
+const skuSelect = document.getElementById('skuSelect').querySelector('select');
+const bulkSelect = document.getElementById('bulkSelect').querySelector('select');
+const userSelect = document.getElementById('userSelect').querySelector('select');
+const skuResult = document.getElementById("skuResult");
+const bulkResult = document.getElementById("bulkResult");
+const collection = document.getElementById('collection');
+const totalAmount = document.getElementById('searchNumber');
+const advanceBtn = document.getElementById('advanceSearch');
+
+
+// --------------------------------------------------------------------------------
+// --- Global State Management ---
+// --------------------------------------------------------------------------------
+
+// ---- FIX: Counters are now global to hold the combined total ----
+let receivedCount = 0;
+let requestedCount = 0;
+let pendingCount = 0;
+let shippedCount = 0;
+// -----------------------------------------------------------------
+
+// Data maps for quick lookups
+const objectMap = new Map(); // box_number -> box object
+const locationMap = new Map(); // location -> [box objects]
+const containerMap = new Map(); // container_number -> [item objects]
+const skuMap = new Map(); // item_number -> [item objects]
+const locationMap_amazon = new Map(); // location -> [item objects]
+let sumMap = new Map(); // For bulk SKU search totals
+
+// Arrays for storing and filtering data
+let boxNumberArr = [];
+let containerNumberArr = [];
+let itemNumberArr = [];
+let locationArr = [];
+let locationArr_amazon = [];
+let preUpdateArr = []; // C-mode items selected for update
+let preUpdateContainerArr = []; // A-mode items selected for update
+let xcNumberArr = []; // Cross-charge box numbers
+let allXCArr = []; // All cross-charge containers
+let fourXCArr = []; // Status 4 cross-charge containers
+let fiveXCArr = []; // Status 5 cross-charge containers
+let bulkCollectionArr = []; // SKUs selected for bulk search
+
+// Activity log state
+let pass_id;
+let logChecker;
+
+
+// --------------------------------------------------------------------------------
+// --- Initialization ---
+// --------------------------------------------------------------------------------
+
+/**
+ * @description Initializes the application by fetching all necessary data and setting up event listeners.
+ */
+function init() {
+  fetchAllData();
+  addEventListeners();
+  restoreSessionState();
+  startTime();
+  setInterval(fetchRecords, 5000);
+}
+
+/**
+ * @description Fetches all initial data required for the page to function.
+ */
+function fetchAllData() {
+  fetchAllItems(); // This function will call fetchAllBoxes after it completes
+  fetchXcContainers();
+  fetchClientList();
+  fetchRecords(1); // Initial fetch
+}
+
+/**
+ * @description Restores UI state from localStorage (e.g., password access, mode).
+ */
+function restoreSessionState() {
+  const pass = localStorage.getItem('pass');
+  if (pass === 'status update') {
     edit_btn.style.display = 'none';
-    update_btn.style.display = 'none';
     edit_select.style.display = '';
-  } else if (code == '0523' && w == 'd') {
-    localStorage.setItem('pass', 'date update')
     update_btn.style.display = 'none';
+  } else if (pass === 'date update') {
     edit_btn.style.display = 'none';
+    update_btn.style.display = 'none';
     update_select.style.display = '';
-  } else {
-    alert('Incorrect passcode')
   }
-};
-function preChangeConfirm() {
-  let code_2 = prompt('Please enter the passcode again to confirm the change!');
-  if (code_2 == '0523') {
-    const status = parseInt(edit_select.value);
-    let idArr = [];
-    for (let i = 0; i < preUpdateArr.length; i++) {
-      const box_id = preUpdateArr[i].id;
-      idArr.push(box_id)
-    };
-    if (status == 99) {
-      mannual_delete(idArr)
-    } else {
-      mannual_update(status, idArr)
-    };
-    alert(`${preUpdateArr.length} items were updated to status ${status}!`)
-    location.reload();
+
+  if (!localStorage.getItem('mode')) {
+    localStorage.setItem('mode', 'C');
+  } else if (localStorage.getItem('mode') === 'A') {
+    modeChange();
   }
-};
-////fetch function for status update, delete, and date update//////
-function mannual_update(status, box_id) {
-  fetch(`/api/box/master_update_status`, {
-    method: 'PUT',
-    body: JSON.stringify({
-        box_id,
-        status
-    }),
-    headers: {
-        'Content-Type': 'application/json'
+}
+
+
+// --------------------------------------------------------------------------------
+// --- Event Handlers & Listeners ---
+// --------------------------------------------------------------------------------
+
+/**
+ * @description Attaches all event listeners to the DOM elements.
+ */
+function addEventListeners() {
+  // Search inputs
+  myBoxInput.addEventListener('keyup', box_searching);
+  myContainerInput.addEventListener('keyup', container_searching);
+
+  // Mode and master function buttons
+  mode.addEventListener('click', modeChange);
+  homepage_btn.addEventListener('click', reset);
+  edit_btn.addEventListener('click', () => passcode('s'));
+  update_btn.addEventListener('click', () => passcode('d'));
+  update_select.addEventListener('change', preUpdateConfirm);
+  update_date_btn.addEventListener('click', finalConfirmation);
+  edit_select.addEventListener('change', preChangeConfirm);
+
+  // Advanced SKU search
+  advanceBtn.addEventListener('click', advanceSearch);
+  userSelect.addEventListener('change', skuListing);
+  skuSelect.addEventListener('change', searchBySku);
+  bulkSelect.addEventListener('change', skuCollection);
+}
+
+// --------------------------------------------------------------------------------
+// --- API / Data Fetching ---
+// --------------------------------------------------------------------------------
+
+/**
+ * @description Fetches all box data from the server and adds its counts to the global totals.
+ */
+async function fetchAllBoxes() {
+  try {
+    const response = await fetch('/api/user/allBox_admin');
+    const data = await response.json();
+
+    // Group data by location
+    const location_data = data.reduce((acc, item) => {
+      acc[item.location] = acc[item.location] || [];
+      acc[item.location].push(item);
+      return acc;
+    }, {});
+
+    data.forEach(box => {
+      objectMap.set(box.box_number, box);
+      boxNumberArr.push(box.box_number);
+
+      if (box.box_number.startsWith('AC') && !box.batch_id) {
+        xcNumberArr.push(box.box_number);
+      }
+      if (!locationArr.includes(box.location)) {
+        locationArr.push(box.location);
+      }
+
+      // ---- FIX: This now ADDS to the global counts from Amazon items ----
+      switch (box.status) {
+        case 0: pendingCount++; break; // Only C-mode has pending
+        case 1: receivedCount++; break;
+        case 2: requestedCount++; break;
+        case 3: shippedCount++; break;
+      }
+    });
+
+    locationArr.forEach(loc => {
+      locationMap.set(loc, location_data[loc]);
+    });
+
+    // Update the dashboard UI with the final combined counts
+    updateDashboardCounts();
+
+  } catch (error) {
+    console.error('Failed to fetch box data:', error);
+  }
+}
+
+/**
+ * @description Fetches all Amazon item data, calculates its counts, then calls fetchAllBoxes.
+ */
+async function fetchAllItems() {
+  try {
+    const response = await fetch('/api/item/allItemAdmin');
+    const data = await response.json();
+
+    // Group data by various keys
+    const item_data = data.reduce((acc, item) => {
+      acc[item.item_number] = acc[item.item_number] || [];
+      acc[item.item_number].push(item);
+      if (!itemNumberArr.includes(item.item_number)) {
+        itemNumberArr.push(item.item_number);
+      }
+      return acc;
+    }, {});
+
+    const container_data = data.reduce((acc, item) => {
+      const key = item.container ? item.container.container_number : 'null_container';
+      acc[key] = acc[key] || [];
+      acc[key].push(item);
+      return acc;
+    }, {});
+
+    const location_data = data.reduce((acc, item) => {
+      if (item.container) {
+        const key = item.container.location;
+        acc[key] = acc[key] || [];
+        acc[key].push(item);
+        if (!locationArr_amazon.includes(key)) {
+          locationArr_amazon.push(key);
+        }
+      }
+      return acc;
+    }, {});
+
+    // Populate maps
+    itemNumberArr.forEach(sku => skuMap.set(sku, item_data[sku]));
+    Object.entries(container_data).forEach(([containerNum, items]) => {
+      if (containerNum !== 'null_container') {
+        containerMap.set(containerNum, items);
+        containerNumberArr.push(containerNum);
+      }
+    });
+    locationArr_amazon.forEach(loc => locationMap_amazon.set(loc, location_data[loc]));
+
+    // ---- FIX: Count Amazon inventory and add to global counters ----
+    containerMap.forEach(items => {
+      if (items.length > 0) {
+        const status = items[0].container.status; // All items in a container share status
+        if (status == '1') { // received
+          receivedCount++;
+        } else if (status == '2') { // requested
+          requestedCount++;
+        }
+      }
+    });
+    // -------------------------------------------------------------
+
+  } catch (error) {
+    console.error('Failed to fetch item data:', error);
+  } finally {
+    // Fetch box data after item data is processed
+    await fetchAllBoxes();
+  }
+}
+
+/**
+ * @description Fetches all cross-charge (XC) container data.
+ */
+async function fetchXcContainers() {
+  try {
+    const response = await fetch('/api/container/allXCAdmin');
+    const data = await response.json();
+    data.forEach(charge => {
+      allXCArr.push(charge);
+      if (charge.status === 4) fourXCArr.push(charge);
+      if (charge.status === 5) fiveXCArr.push(charge);
+    });
+  } catch (error) {
+    console.error('Failed to fetch XC containers:', error);
+  }
+}
+
+/**
+ * @description Fetches the list of clients for the SKU search dropdown.
+ */
+async function fetchClientList() {
+  try {
+    const response = await fetch('/api/user/');
+    const data = await response.json();
+    userSelect.innerHTML = '<option value="0">select client</option>'; // Reset
+    data.reverse().forEach(user => {
+      const option = document.createElement('option');
+      option.value = user.id;
+      option.textContent = user.name;
+      userSelect.appendChild(option);
+    });
+  } catch (error) {
+    console.error('Failed to fetch client list:', error);
+  }
+}
+
+/**
+ * @description Fetches activity records for the dashboard log.
+ * @param {number} [page=1] - The page number of logs to fetch.
+ */
+async function fetchRecords(page = 1) {
+  const logNumber = parseInt(document.getElementById('logNumber').value) || page;
+  const isNewLogRequest = logNumber !== logChecker;
+  logChecker = logNumber;
+
+  try {
+    const response = await fetch(`/api/record/dashboard_admin/${logNumber}`);
+    const data = await response.json();
+    const topItemId = data.length > 0 ? data[0].id : null;
+
+    if (pass_id !== topItemId || isNewLogRequest) {
+      updateActivityLog(data);
     }
-  });
-};
-function mannual_delete(box_id) {
- fetch(`/api/box/destroy`, {
+  } catch (error) {
+    console.error('Failed to fetch records:', error);
+  }
+}
+
+/**
+ * @description Sends a request to update the status of multiple boxes.
+ * @param {number} status - The new status code.
+ * @param {number[]} box_ids - An array of box IDs to update.
+ */
+function updateBoxStatus(status, box_ids) {
+  fetch('/api/box/master_update_status', {
+    method: 'PUT',
+    body: JSON.stringify({ box_id: box_ids, status }),
+    headers: { 'Content-Type': 'application/json' },
+  }).catch(error => console.error('Status update failed:', error));
+}
+
+/**
+ * @description Sends a request to delete multiple boxes.
+ * @param {number[]} box_ids - An array of box IDs to delete.
+ */
+function deleteBoxes(box_ids) {
+  fetch('/api/box/destroy', {
     method: 'DELETE',
-    body: JSON.stringify({
-      box_id
-  }),
-    headers: {
-        'Content-Type': 'application/json'
-    }
-  });
-};
-function mannual_date_update(id, date, s) {
-  fetch(`/api/box/dateUpdate_${s}`, {
+    body: JSON.stringify({ box_id: box_ids }),
+    headers: { 'Content-Type': 'application/json' },
+  }).catch(error => console.error('Delete failed:', error));
+}
+
+/**
+ * @description Sends a request to update a specific date field for multiple boxes.
+ * @param {number[]} ids - An array of box or batch IDs.
+ * @param {string} date - The new date string.
+ * @param {string} dateType - The type of date to update.
+ */
+function updateBoxDate(ids, date, dateType) {
+  fetch(`/api/box/dateUpdate_${dateType}`, {
     method: 'PUT',
-    body: JSON.stringify({
-        id,
-        date
-    }),
-    headers: {
-        'Content-Type': 'application/json'
+    body: JSON.stringify({ id: ids, date }),
+    headers: { 'Content-Type': 'application/json' },
+  }).catch(error => console.error('Date update failed:', error));
+}
+
+
+// --------------------------------------------------------------------------------
+// --- UI / DOM Manipulation ---
+// --------------------------------------------------------------------------------
+
+/**
+ * @description Updates the main dashboard counts using the final global values.
+ */
+function updateDashboardCounts() {
+  const inventoryCount = receivedCount + requestedCount;
+  pending_count.innerHTML = pendingCount;
+  inventory_count.innerHTML = `${inventoryCount} (${requestedCount} requested)`;
+}
+
+/**
+ * @description Resets search results and hides tables.
+ */
+function unattach() {
+  document.getElementById('searchNote').innerHTML = null;
+  document.getElementById('containerSearchNote').innerHTML = null;
+  preUpdateArr = [];
+  preUpdateContainerArr = [];
+  boxTable.style.display = 'none';
+  containerTable.style.display = 'none';
+  boxBody.innerHTML = '';
+  containerBody.innerHTML = '';
+}
+
+/**
+ * @description Builds and appends a table row for a given box number.
+ * @param {string} boxNumber - The box number to build a row for.
+ */
+function buildBoxRow(boxNumber) {
+  const box = objectMap.get(boxNumber);
+  if (!box) return;
+
+  preUpdateArr.push(box);
+  const row = boxBody.insertRow();
+  const isBatch = !!box.batch_id;
+
+  const tooltip = `
+        received date: ${newDateValidate(box.received_date)}
+        requested date: ${newDateValidate(box.requested_date)}
+        shipped date: ${newDateValidate(box.shipped_date)}
+        bill received: ${newDateValidate(new Date(box.bill_received).toLocaleDateString("en-US"))}
+        bill storage: ${newDateValidate(new Date(box.bill_storage).toLocaleDateString("en-US"))}
+        bill shipped: ${newDateValidate(new Date(box.bill_shipped).toLocaleDateString("en-US"))}
+        ${isBatch ? `pending date: ${newDateValidate(box.batch.pending_date)}` : ''}
+    `;
+
+  row.innerHTML = `
+        <td>${box.user.name}</td>
+        <td>${box.account.name}</td>
+        <td><a href="/admin/box/${boxNumber}">${boxNumber}</a></td>
+        <td>${box.description}</td>
+        <td>${isBatch ? box.order : `$ ${box.order}/ qty`}</td>
+        <td>${isBatch ? box.batch.total_box : ''}</td>
+        <td>${box.qty_per_box}</td>
+        <td>${box.location}</td>
+        <td uk-tooltip="${tooltip.trim()}">${isBatch ? convertDate(box) : `total $${box.cost}`}</td>
+        <td>${convertStatus(box.status)}</td>
+    `;
+}
+
+/**
+ * @description Builds and appends a table row for a given container number.
+ * @param {string} containerNumber - The container number to build a row for.
+ */
+function buildContainerRow(containerNumber) {
+  const items = containerMap.get(containerNumber);
+  if (!items || items.length === 0) return;
+
+  preUpdateContainerArr.push(items);
+  const firstItem = items[0];
+  const containerData = firstItem.container;
+
+  let totalSkuQty = 0;
+  let itemHtml = '';
+  let qtyHtml = '';
+
+  items.forEach(item => {
+    totalSkuQty += item.qty_per_sku;
+    itemHtml += `<div uk-tooltip="title: ${item.description}">${item.item_number}</div>`;
+    qtyHtml += `<div>${item.qty_per_sku}</div>`;
+  });
+
+  const tooltip = `
+        received date: ${newDateValidate(containerData.received_date)}
+        requested date: ${newDateValidate(containerData.requested_date)}
+        shipped date: ${newDateValidate(containerData.shipped_date)}
+        bill received: ${newDateValidate(new Date(containerData.bill_received).toLocaleDateString("en-US"))}
+        bill storage: ${newDateValidate(new Date(containerData.bill_storage).toLocaleDateString("en-US"))}
+        bill shipped: ${newDateValidate(new Date(containerData.bill_shipped).toLocaleDateString("en-US"))}
+    `;
+
+  const row = containerBody.insertRow();
+  row.innerHTML = `
+        <td>${firstItem.user.name}</td>
+        <td>${firstItem.account.name}</td>
+        <td><a href="/admin/container/${containerNumber}">${containerNumber} <small>(${totalSkuQty})</small></a></td>
+        <td>${itemHtml}</td>
+        <td>${qtyHtml}</td>
+        <td>${containerData.location}</td>
+        <td uk-tooltip="${tooltip.trim()}">${convertAmazonDate(containerData)}</td>
+        <td>${convertStatus(containerData.status)}</td>
+    `;
+}
+
+/**
+ * @description Builds and appends a row for a cross-charge (XC) container.
+ * @param {object} xcData - The cross-charge data object.
+ */
+function buildXcContainerRow(xcData) {
+  const row = containerBody.insertRow();
+  row.innerHTML = `
+        <td>${xcData.user.name}</td>
+        <td>${xcData.account.name}</td>
+        <td>${xcData.container_number}</td>
+        <td>desc: ${xcData.description}</td>
+        <td>#${xcData.qty_of_fee}</td>
+        <td>$ ${xcData.unit_fee}/qty</td>
+        <td>total: $${xcData.qty_of_fee * xcData.unit_fee}</td>
+        <td>${convertStatus(xcData.status)}</td>
+    `;
+}
+
+/**
+ * @description Updates the activity log UI with new data.
+ * @param {object[]} data - Array of record objects.
+ */
+function updateActivityLog(data) {
+  record_dashboard.innerHTML = '';
+  log_body.innerHTML = '';
+  pass_id = data.length > 0 ? data[0].id : null;
+
+  data.slice(0, 3).forEach(record => {
+    if (record) {
+      const status = `${convertStatus(record.status_from)} => ${convertStatus(record.status_to)}`;
+      const row = record_dashboard.insertRow();
+      row.innerHTML = `
+                <td class="uk-animation-slide-right-small">${record.user.name}</td>
+                <td class="uk-animation-slide-right-small">${record.ref_number}</td>
+                <td class="uk-animation-slide-right-small">${record.action}</td>
+                <td class="uk-animation-slide-right-small">${status}</td>
+            `;
     }
   });
-};
-//helper functions//
-const isCharacterALetter = (char) => {
-  return (/[a-zA-Z]/).test(char)
-};
-const isCharacterASpeical = (char) => {
-  return (/[-]/).test(char)
-};
-//reload without reset
-if (localStorage.getItem('pass') == 'status update') {
-  edit_btn.style.display = 'none';
-  edit_select.style.display = '';
-  update_btn.style.display = 'none';
-} else if (localStorage.getItem('pass') == 'date update') {
-  edit_btn.style.display = 'none';
-  update_btn.style.display = 'none';
-  update_select.style.display =''
-};
-function preUpdateConfirm() {
-  if (update_select.value) {
-    update_date_btn.style.display ='';
-  } else {
-    update_date_btn.style.display ='none';
-    update_date_select.value = null;
+
+  data.forEach(record => {
+    const status = `${convertStatus(record.status_from)} => ${convertStatus(record.status_to)}`;
+    const qty = `${record.qty_from} => ${record.qty_to}`;
+    const row = log_body.insertRow();
+    row.innerHTML = `
+            <td class="uk-animation-slide-top uk-animation-fast col-3 text-">${record.user.name}</td>
+            <td class="uk-animation-slide-top uk-animation-fast col-3 text-primary" style="word-wrap: break-word">${record.ref_number}</td>
+            <td class="uk-animation-slide-top uk-animation-fast col-3 text-" style="word-wrap: break-word">${record.sub_number}</td>
+            <td class="uk-animation-slide-top uk-animation-fast col-3 text-" style="word-wrap: break-word">${record.action}</td>
+            <td class="uk-animation-slide-top uk-animation-fast col-3 text-" style="word-wrap: break-word">${record.action_notes}</td>
+            <td class="uk-animation-slide-top uk-animation-fast col-3 text-" style="word-wrap: break-word">${qty}</td>
+            <td class="uk-animation-slide-top uk-animation-fast col-3 text-" style="word-wrap: break-word">${status}</td>
+        `;
+  });
+}
+
+/**
+ * @description Toggles the visibility of the advanced search section.
+ */
+function advanceSearch() {
+  const isHidden = advanceBtn.classList.contains('bg-secondary');
+  advanceBtn.classList.toggle('bg-secondary', !isHidden);
+  advanceBtn.classList.toggle('bg-primary', isHidden);
+  document.getElementById('advanceHide').style.display = isHidden ? 'none' : '';
+  document.getElementById('advanceShow').style.display = isHidden ? '' : 'none';
+}
+
+
+// --------------------------------------------------------------------------------
+// --- Search Functionality ---
+// --------------------------------------------------------------------------------
+
+function box_searching() {
+  unattach();
+  const input = myBoxInput.value.trim();
+  if (!input) return;
+
+  boxTable.style.display = '';
+
+  if (input.startsWith('/all')) {
+    boxNumberArr.forEach(buildBoxRow);
+  } else if (input.startsWith('/xc')) {
+    handleXcSearch(input, xcNumberArr, objectMap, buildBoxRow);
+  } else if (isLocationFormat(input)) {
+    document.getElementById('searchNote').innerHTML = "This location is not associated with any box";
+    searchByLocation(input, locationArr, 'C');
+  } else if (input.length > 2 && !isSpecialChar(input)) {
+    document.getElementById('searchNote').innerHTML = "No information was found according to your input! Please try again";
+    searchByKeyword(input, boxNumberArr, buildBoxRow, 'searchNote');
   }
-};
-function finalConfirmation() {
-  if (!preUpdateArr.length) {
-    update_date_select.value = null;
-    alert('You need to select at least one box to procced the update function');
-  } else {
-    if (confirm(`UPDATE ${update_select.value} of ${preUpdateArr.length} ITEMS to ${update_date_select.value}?`)) {
-      let password = prompt('Please enter the passcode again to confirm the change!');
-      if (password == '0523') {
-        const chosenStatus = update_select.value;
-        var newDate = update_date_select.value;
-        let idArr = [];
-        if (!newDate) {
-          newDate = null;
-        };
-        for (let i = 0; i < preUpdateArr.length; i++) {
-          var box_id = preUpdateArr[i].id;
-          if (chosenStatus == 'pending_date') {
-            box_id = preUpdateArr[i].batch_id
-          };
-          idArr.push(box_id)
-        };
-        mannual_date_update(idArr, newDate, chosenStatus);
-        alert(`${chosenStatus} of ${preUpdateArr.length} items were updated to ${newDate}!`)
-        location.reload();
-      } else {
-        alert('incorrect password!');
-        finalConfirmation()
+}
+
+function container_searching() {
+  unattach();
+  const input = myContainerInput.value.trim().toLowerCase();
+  if (!input) return;
+
+  containerTable.style.display = '';
+
+  if (input === '/all') {
+    containerNumberArr.forEach(buildContainerRow);
+  } else if (input === '/sp') {
+    containerNumberArr.filter(c => c.startsWith('SP')).forEach(buildContainerRow);
+  } else if (input.startsWith('/xc')) {
+    handleXcSearch(input, allXCArr, null, buildXcContainerRow);
+  } else if (input.startsWith('.')) {
+    document.getElementById('containerSearchNote').innerHTML = "This SKU does not exist in the system!";
+    searchBySku(input.substring(1));
+  } else if (isLocationFormat(input)) {
+    document.getElementById('containerSearchNote').innerHTML = "This location is not associated with any container";
+    searchByLocation(input, locationArr_amazon, 'A');
+  } else if (input.length > 2 && !isSpecialChar(input)) {
+    document.getElementById('containerSearchNote').innerHTML = "No information was found according to your input! Please try again";
+    searchByKeyword(input, containerNumberArr, buildContainerRow, 'containerSearchNote');
+  }
+}
+
+function searchByKeyword(keyword, dataArray, buildRowFunc, noteElementId) {
+  const upperKeyword = keyword.toUpperCase();
+  let found = false;
+  dataArray.forEach(item => {
+    if (item.toUpperCase().includes(upperKeyword)) {
+      buildRowFunc(item);
+      found = true;
+    }
+  });
+  if (found) {
+    document.getElementById(noteElementId).innerHTML = null;
+  }
+}
+
+function searchByLocation(location, locationArray, currentMode) {
+  const upperLocation = location.toUpperCase();
+  let found = false;
+
+  locationArray.forEach(loc => {
+    if (loc && loc.toUpperCase().includes(upperLocation)) {
+      if (currentMode === 'C') {
+        locationMap.get(loc)?.forEach(obj => buildBoxRow(obj.box_number));
+        found = true;
+      } else if (currentMode === 'A') {
+        const containersInLocation = new Set();
+        locationMap_amazon.get(loc)?.forEach(obj => {
+          if (obj.container) {
+            containersInLocation.add(obj.container.container_number);
+          }
+        });
+        containersInLocation.forEach(buildContainerRow);
+        found = true;
       }
     }
+  });
+
+  if (found) {
+    const noteId = currentMode === 'C' ? 'searchNote' : 'containerSearchNote';
+    document.getElementById(noteId).innerHTML = null;
   }
-};
-// rest after clicking master functions
-function reset() {
-  if (mode.innerHTML == 'C') {
-    update_date_btn.style.display = 'none';
-    update_select.style.display = 'none';
-    edit_select.style.display = 'none'
-    edit_btn.style.display = '';
-    update_btn.style.display = ''
-    localStorage.clear();
+}
+
+function searchBySku(sku) {
+  const upperSku = sku.toUpperCase();
+  const foundContainers = new Set();
+  let found = false;
+
+  itemNumberArr.forEach(itemNum => {
+    if (itemNum.toUpperCase().includes(upperSku)) {
+      skuMap.get(itemNum)?.forEach(itemObj => {
+        if (itemObj.container) {
+          foundContainers.add(itemObj.container.container_number);
+        }
+      });
+      found = true;
+    }
+  });
+
+  foundContainers.forEach(buildContainerRow);
+  if (found) {
+    document.getElementById('containerSearchNote').innerHTML = null;
   }
-};
-//--------------------------------------------------------------------//
+}
+
+function handleXcSearch(command, dataArray, dataMap, buildRowFunc) {
+  let itemsToShow = [];
+  switch (command) {
+    case '/xc':
+      itemsToShow = dataArray;
+      break;
+    case '/xc4':
+      itemsToShow = dataArray.filter(item => (dataMap ? dataMap.get(item)?.status : item.status) === 4);
+      break;
+    case '/xc5':
+      itemsToShow = dataArray.filter(item => (dataMap ? dataMap.get(item)?.status : item.status) === 5);
+      break;
+  }
+  itemsToShow.forEach(item => buildRowFunc(dataMap ? item : item));
+}
+
+
+// --------------------------------------------------------------------------------
+// --- Mode & Security ---
+// --------------------------------------------------------------------------------
+
 function modeChange() {
-  if (mode.innerHTML == 'C') {
-    localStorage.setItem('mode', 'A');
-    mode.innerHTML = 'A';
-    containerInput.style.display = '';
-    boxInput.style.display = 'none';
+  const isCMode = mode.innerHTML === 'C';
+  const newMode = isCMode ? 'A' : 'C';
+  localStorage.setItem('mode', newMode);
+
+  mode.innerHTML = newMode;
+  containerInput.style.display = isCMode ? '' : 'none';
+  boxInput.style.display = isCMode ? 'none' : '';
+
+  edit_btn.style.display = isCMode ? 'none' : '';
+  update_btn.style.display = isCMode ? 'none' : '';
+  edit_select.style.display = 'none';
+  update_select.style.display = 'none';
+  update_date_btn.style.display = 'none';
+
+  homepage_btn.href = isCMode ? '/admin/master_page_amazon' : '/admin/master_page';
+  homepage_btn.innerText = isCMode ? 'Amazon Home' : 'Home Page';
+
+  document.getElementById("badge").classList.toggle('bg-danger', isCMode);
+  document.getElementById("badge").classList.toggle('bg-success', !isCMode);
+
+  myBoxInput.value = null;
+  myContainerInput.value = null;
+  unattach();
+}
+
+function passcode(type) {
+  const code = prompt("Please enter the passcode");
+  if (code === '0523') {
     edit_btn.style.display = 'none';
     update_btn.style.display = 'none';
-    edit_select.style.display = 'none';
-    update_select.style.display = 'none';
-    update_date_btn.style.display = 'none';
-    homepage_btn.href = '/admin/master_page_amazon';
-    homepage_btn.innerText ='Amazon Home';
-    document.getElementById("badge").classList.add('bg-danger');
-    document.getElementById("badge").classList.remove('bg-success');
-    document.getElementById('myBoxInput').value = null;
-    unattach();
+    if (type === 's') {
+      localStorage.setItem('pass', 'status update');
+      edit_select.style.display = '';
+    } else if (type === 'd') {
+      localStorage.setItem('pass', 'date update');
+      update_select.style.display = '';
+    }
   } else {
-    localStorage.setItem('mode', 'C')
-    mode.innerHTML = 'C';
-    containerInput.style.display = 'none';
-    boxInput.style.display = '';
-    edit_btn.style.display = '';
-    update_btn.style.display = '';
-    homepage_btn.href = '/admin/master_page';
-    homepage_btn.innerText = 'Home Page';
-    document.getElementById("badge").classList.add('bg-success');
-    document.getElementById("badge").classList.remove('bg-danger');
-    myContainerInput.value = null;
-    unattach()
+    alert('Incorrect passcode');
   }
-};
-// document.getElementById('numberOfItems').innerHTML = `${preUpdateArr.length} items; may take up to ${preUpdateArr.length/100} seconds`;
-// document.getElementById('loader').style.display = '';
+}
 
-///////////////////////////////AMAZON ITEMS ARE HERE///////////////////////////////
-const removeItemsFromContainers = async (idArray) => {
-  if (idArray.length === 0) {
-    console.log("No items to remove.");
+function preChangeConfirm() {
+  const status = parseInt(edit_select.value);
+  const ids = preUpdateArr.map(item => item.id);
+
+  if (ids.length === 0) {
+    alert('You need to select at least one box to proceed.');
     return;
   }
 
-  try {
-    const response = await fetch(`/api/item/removeFromContainers/`, {
-      method: "DELETE",
-      body: JSON.stringify({ container_id: idArray }),
-      headers: { "Content-Type": "application/json" },
-    });
-
-    if (response.ok) {
-      console.log(`Successfully cleared items from containers: ${idArray}`);
+  const code = prompt('Please enter the passcode again to confirm the change!');
+  if (code === '0523') {
+    if (status === 99) { // 99 is delete
+      deleteBoxes(ids);
     } else {
-      const errorMessage = await response.text();
-      console.error(
-        `Failed to remove items. Server responded with: ${errorMessage}`
-      );
+      updateBoxStatus(status, ids);
     }
-  } catch (error) {
-    console.error("Error during bulk delete:", error);
+    alert(`${ids.length} items were updated!`);
+    location.reload();
   }
-};
-const myContainerInput = document.getElementById('myContainerInput');
-var containerMap = new Map();
-var skuMap = new Map();
-var locationMap_amazon = new Map();
-function allItem() {
-  fetch(`/api/item/allItemAdmin`, {
-    method: 'GET'
-  }).then(function (response) {
-    return response.json();
-  }).then(function (data) {
-    //sort items by item_number
-    const item_data = data.reduce((r, a) => {
-      r[a.item_number] = r[a.item_number] || [];
-      r[a.item_number].push(a);
-      return r;
-    }, Object.create(null));
-    //collection all skus (item_number)
-    for (let k = 0; k < data.length; k++) {
-      const item = data[k].item_number;
-      if (!itemNumberArr.includes(item)) {
-        itemNumberArr.push(item);
-      }
-    };
-    itemNumberArr.forEach(number => {
-      skuMap.set(number, item_data[number])
-    });
-    // sort items by container
-    // const container_data = data.reduce((r, a) => {
-    //   r[a.container.container_number] = r[a.container.container_number] || [];
-    //   r[a.container.container_number].push(a);
-    //   return r;
-    // }, Object.create(null));
-    const nullIds = [];
-    const container_data = data.reduce((r, a) => {
-      const containerKey = a.container ? a.container.container_number : 'null'; // Use 'null' as the key if container is null
-      r[containerKey] = r[containerKey] || [];
-      r[containerKey].push(a);
-      if (!a.container) {
-        nullIds.push(a.id);
-      }
-      return r;
-    }, Object.create(null));
-    console.log(nullIds);
-    if (nullIds.length){
-      removeItemsFromContainers(nullIds);
-    };
-    const newData = Object.values(container_data);
-    for (let i = 0; i < newData.length; i++) {
-      const location = newData[i][0].container.location;
-      const containerNumber = newData[i][0].container.container_number;
-      containerNumberArr.push(containerNumber);
-      containerMap.set(containerNumber, newData[i]);
-      if (newData[i][0].container.status == '1') {
-        receivedCount++
-      } else if (newData[i][0].container.status == '2') {
-        requestedCount++
-      };
-      if (!locationArr_amazon.includes(location)) {
-        locationArr_amazon.push(location)
-      };
-      const location_data = data.reduce(function (r, a) {
-        r[a.container.location] = r[a.container.location] || [];
-        r[a.container.location].push(a);
-        return r;
-      }, Object.create(null));
-      for (let j = 0; j < locationArr_amazon.length; j++) {
-        const element = locationArr_amazon[j];
-        locationMap_amazon.set(element, location_data[element])
-      };
-    };
-    allBox();
-  })
-};
-
-var allXCArr = [];
-var fourXCArr = [];
-var fiveXCArr = [];
-function xcContainer() {
-  fetch(`/api/container/allXCAdmin`, {
-    method: 'GET'
-  }).then(function (response) {
-    return response.json();
-  }).then(function (data) {
-    for (let i = 0; i < data.length; i++) {
-      const aCharge = data[i];
-      if (!allXCArr.includes(aCharge)) {
-        allXCArr.push(aCharge);
-        if (!fourXCArr.includes(aCharge) && aCharge.status == 4) {
-          fourXCArr.push(aCharge)
-        };
-        if (!fiveXCArr.includes(aCharge) && aCharge.status == 5) {
-          fiveXCArr.push(aCharge)
-        }
-      }
-    }
-  })
 }
-const containerTable = document.getElementById("containerTable");
-function container_searching() {
-  unattach();
-   var container_input = document.getElementById('myContainerInput').value.trim();
-   if (container_input) {
-      containerTable.style.display = '';
-   };
-   if (container_input.length > 2 && !isCharacterASpeical(container_input) && container_input[0] != '/' && container_input[0] != '.') {
-    document.getElementById('containerSearchNote').innerHTML = "No information was found according to your input! Please try again"
-    container_search(container_input)
-   } else if (isCharacterALetter(container_input[0]) && !isNaN(container_input[1])) {
-    document.getElementById('containerSearchNote').innerHTML = "This location is not associated with any container"
-    location_search(container_input, locationArr_amazon)
-   } else if (container_input.toLowerCase() == '/all') {
-    for (let i = 0; i < containerNumberArr.length; i++) {
-      const each_of_all = containerNumberArr[i];
-      if (each_of_all) {
-        buildingRow_amazon(each_of_all)
-      }
-    }
-  } else if (container_input[0] == '.' && container_input.length > 2) {
-    document.getElementById('containerSearchNote').innerHTML = "This SKU does not exist in the system!"
-    const skuSearchInput = container_input.substring(1,container_input.length);
-    item_search(skuSearchInput);
-  } else if (container_input.substring(0,3) == '/xc') {
-    if (container_input == '/xc4') {
-      for (let i = 0; i < fourXCArr.length; i++) {
-        const each_of_xc = fourXCArr [i];
-        if (each_of_xc) {
-          buildingRow_amazon_xc(each_of_xc)
-        }
-      }
-    } else if (container_input == '/xc5') {
-      for (let i = 0; i < fiveXCArr.length; i++) {
-        const each_of_xc = fiveXCArr [i];
-        if (each_of_xc) {
-          buildingRow_amazon_xc(each_of_xc)
-        }
-      }
-    } else if (container_input == '/xc')
-    for (let i = 0; i < allXCArr.length; i++) {
-      const each_of_xc = allXCArr [i];
-      if (each_of_xc) {
-        buildingRow_amazon_xc(each_of_xc)
-      }
-    }
-  } else if (container_input.toLowerCase() == '/sp') {
-    for (let i = 0; i < containerNumberArr.length; i++) {
-      const each_of_all = containerNumberArr[i];
-      if (each_of_all && each_of_all.substring(0,2) == 'SP') {
-        buildingRow_amazon(each_of_all)
-      }
-    }
-  }
-};
-function container_search(b) {
-    for (i = 0; i < containerNumberArr.length; i++) {
-      let txtValue = containerNumberArr[i];
-      if (txtValue.toUpperCase().indexOf(b.toUpperCase()) > -1) {
-        buildingRow_amazon(containerNumberArr[i]);
-        document.getElementById('containerSearchNote').innerHTML = null;
-      }
-  };
-};
-function item_search(skuSearchInput) {
-  var container_numberArr_sku = [];
-  for (i = 0; i < itemNumberArr.length; i++) {
-    let txtValue = itemNumberArr[i];
-    if (txtValue.toUpperCase().indexOf(skuSearchInput.toUpperCase()) > -1) {
-      const containersPerSku = skuMap.get(itemNumberArr[i]);
-      containersPerSku.forEach(itemObj => {
-        let singleContainerN = itemObj.container.container_number
-        if (!container_numberArr_sku.includes(singleContainerN)) {
-          container_numberArr_sku.push(singleContainerN);
-          buildingRow_amazon(singleContainerN)
-        }
-      });
-      document.getElementById('containerSearchNote').innerHTML = null;
-    }
-};
-};
-function buildingRow_amazon(b) {
-  preUpdateContainerArr.push(containerMap.get(b));
-  var skuCount = 0;
-  const containerBody = document.getElementById('containerBody')
-  const container = document.createElement('tr');
-  const user = document.createElement('td');
-  const account = document.createElement('td');
-  const container_number = document.createElement('td');
-  const item = document.createElement('td');
-  const qty_per_sku = document.createElement('td');
-  const location = document.createElement('td');
-  const date = document.createElement('td');
-  const status = document.createElement('td');
-  container.appendChild(user);
-  container.appendChild(account);
-  container.appendChild(container_number);
-  container.appendChild(item);
-  container.appendChild(qty_per_sku)
-  container.appendChild(location);
-  container.appendChild(date);
-  container.appendChild(status);
-  user.innerHTML = containerMap.get(b)[0].user.name
-  account.innerHTML = containerMap.get(b)[0].account.name;
-  for (let i = 0; i < containerMap.get(b).length; i++) {
-    const singleItem = containerMap.get(b)[i];
-    skuCount = skuCount + singleItem.qty_per_sku;
-    const listedItem = document.createElement('div');
-    listedItem.setAttribute('uk-tooltip',`title: ${singleItem.description}`)
-    const itemAmount = document.createElement('div');
-    listedItem.innerHTML = singleItem.item_number;
-    itemAmount.innerHTML = singleItem.qty_per_sku;
-    item.appendChild(listedItem);
-    qty_per_sku.appendChild(itemAmount);
-  };
-  container_number.innerHTML = `<a href="/admin/container/${b}" >${b} <small>(${skuCount})</small></a>`;
-  location.innerHTML = containerMap.get(b)[0].container.location;
-  date.innerHTML = convertor_amazon(containerMap.get(b)[0].container);
-  date.setAttribute('uk-tooltip', `received date ${newDateValidate(containerMap.get(b)[0].container.received_date)} ; requested date ${newDateValidate(containerMap.get(b)[0].container.requested_date)} ; shipped date ${newDateValidate(containerMap.get(b)[0].container.shipped_date)} ; bill for receiving ${newDateValidate(new Date(containerMap.get(b)[0].container.bill_received).toLocaleDateString("en-US"))} ; bill for storage ${newDateValidate(new Date(containerMap.get(b)[0].container.bill_storage).toLocaleDateString("en-US"))} ; bill for shipping ${newDateValidate(new Date(containerMap.get(b)[0].container.bill_shipped).toLocaleDateString("en-US"))}`)
-  status.innerHTML = convertor_status(containerMap.get(b)[0].container.status);
-  containerBody.appendChild(container);
-};
 
-function buildingRow_amazon_xc(d) {
-  const containerBody = document.getElementById('containerBody')
-  const container = document.createElement('tr');
-  const user = document.createElement('td');
-  const account = document.createElement('td');
-  const container_number = document.createElement('td');
-  const item = document.createElement('td');
-  const qty_per_sku = document.createElement('td');
-  const location = document.createElement('td');
-  const date = document.createElement('td');
-  const status = document.createElement('td');
-  container.appendChild(user);
-  container.appendChild(account);
-  container.appendChild(container_number);
-  container.appendChild(item);
-  container.appendChild(qty_per_sku)
-  container.appendChild(location);
-  container.appendChild(date);
-  container.appendChild(status);
-  user.innerHTML = d.user.name;
-  account.innerHTML = d.account.name;
-  container_number.innerHTML = d.container_number;
-  item.innerHTML = `desc: ${d.description}`;
-  qty_per_sku.innerHTML = `#${d.qty_of_fee}`
-  location.innerHTML = `$ ${d.unit_fee}/qty`
-  date.innerHTML = `total: $${d.qty_of_fee*d.unit_fee}`;
-  status.innerHTML = convertor_status(d.status);
-  containerBody.appendChild(container);
-};
-///// helper functions //////
-function convertor_amazon(object) {
-  const received_date = object.received_date;
-  const shipped_date = object.shipped_date;
-  const requested_date =object.requested_date;
-  if (shipped_date) {
-    return shipped_date
-  } else if (requested_date) {
-    return requested_date
-  } else if (received_date) {
-    return received_date
-  } else {
-    return 'N/A'
+function finalConfirmation() {
+  if (preUpdateArr.length === 0) {
+    alert('You need to select at least one box to proceed.');
+    update_date_select.value = null;
+    return;
   }
-};
-if (!localStorage.getItem('mode')) {
-  localStorage.setItem('mode', 'C');
-} else if (localStorage.getItem('mode') == 'A') {
-  modeChange();
-}
-/////// filter sku function /////////
-const skuSelect = document.getElementById('skuSelect').querySelector('select');
-const bulkSelect = document.getElementById('bulkSelect').querySelector('select');
-const skuResult = document.getElementById("skuResult");
-const bodyParent = skuResult.querySelector('tbody');
-const totalAmount = document.getElementById('searchNumber');
-function skuListing() {
-  unattachList();
-  var skuArr = [];
-  const selectedClientId = document.getElementById('userSelect').querySelector('select').value;
-  document.getElementById('masterSkuOverview').href = `/amazon_overview_admin/${selectedClientId}`
-  // localStorage.setItem('selectedClient', selectedClientId);
-  fetch(`/api/item/allItemPerClient/${selectedClientId}`, {
-    method: 'GET'
-}).then(function (response) {
-    return response.json();
-}).then(function (data) {
-  for (let i = 0; i < data.length; i++) {
-    const singleSku = data[i].item_number;
-    if (!skuArr.includes(singleSku)) {
-      //////single select code here//////
-      const option = document.createElement('option');
-      option.setAttribute('id', singleSku);
-      option.innerHTML = singleSku;
-      skuSelect.appendChild(option);
-      //////bulk select code here//////
-      const bulkOption = document.createElement('option');
-      bulkOption.setAttribute('id', singleSku);
-      bulkOption.innerHTML = singleSku;
-      bulkSelect.appendChild(bulkOption);
-      skuArr.push(singleSku);
-    }
 
-  }
-})
-};
-function searchBySku() {
-  fetch(`/api/item/allItemPerNumberAdmin/${skuSelect.value}&${document.getElementById('userSelect').querySelector('select').value}`, {
-    method: 'GET'
-  }).then(function (response) {
-    return response.json();
-  }).then(function (data) {
-  unattachTr();
-  const headerParent = skuResult.querySelector('thead tr');
-  const headerChild = document.createElement('th');
-  headerChild.setAttribute('class', 'shadow-sm text-center col-2')
-  headerParent.appendChild(headerChild);
-  headerChild.innerHTML = data[0].item_number;
-  // count++
-  var qtyCount = 0;
-  for (let i = 0; i < data.length; i++) {
-    const containerNumberPerItem = data[i].container.container_number;
-    const qtyPerItem= data[i].qty_per_sku;
-    const trParent = document.createElement('tr');
-    const bodyChild = document.createElement('td');
-    bodyChild.setAttribute('class', 'col-1')
-    trParent.appendChild(bodyChild);
-    // emptyTd(count, trParent);
-    const bodyChild_q = document.createElement('td');
-    bodyChild_q.setAttribute('class', 'shadow-sm bg-info text-center col-2');
-    bodyParent.appendChild(trParent);
-    trParent.appendChild(bodyChild_q);
-    bodyChild.innerHTML = containerNumberPerItem;
-    bodyChild_q.innerHTML = qtyPerItem;
-    qtyCount = qtyCount + qtyPerItem;
-  };
-  totalAmount.innerHTML = qtyCount;
-})
-};
-function unattachList() {
-  skuSelect.querySelectorAll('option').forEach(i => i.remove());
-  bulkSelect.querySelectorAll('option').forEach(i => i.remove());
-  removeBulkHistory();
-};
-function unattachTr() {
-  totalAmount.innerHTML = 0;
-  const headerParent = skuResult.querySelector('thead tr');
-  bodyParent.querySelectorAll('tr').forEach(i => i.remove());
-  headerParent.querySelectorAll('th').forEach(i => i.remove());
-  const defaultTh = document.createElement('th');
-  headerParent.appendChild(defaultTh);
-  defaultTh.innerHTML = 'container/sku'
-};
-///////bulk selection & collection function ///////
-const bulkResult = document.getElementById("bulkResult");
-const collection = document.getElementById('collection');
-const bodyParent_bulk = bulkResult.querySelector('tbody');
-var bulkCollectionArr = [];
-function skuCollection() {
-  const selectedSku = bulkSelect.value;
-  if (!bulkCollectionArr.includes(selectedSku)) {
-    bulkCollectionArr.push(selectedSku);
-    const item = document.createElement('div');
-    item.setAttribute('class', 'text-primary col-6')
-    collection.prepend(item);
-    item.innerHTML = selectedSku;
-  } else {
-    bulkCollectionArr = bulkCollectionArr.filter(i => i != selectedSku);
-    const allDiv = collection.querySelectorAll('div');
-    for (let i = 0; i < allDiv.length; i++) {
-      const skuToRemove = allDiv[i];
-      if (skuToRemove.innerText == selectedSku) {
-        skuToRemove.remove()
-      }
-    }
-  };
-};
-var count, containerArr, itemArr, sumMap;
-function searchByBulkSku() {
-  sumMap = new Map();
-  count = -1;
-  containerArr = [];
-  itemArr = [];
-  bulkCollectionArr.sort();
-  const id = merger(bulkCollectionArr)
-  fetch(`/api/item/allItemPerNumberAdmin/${id}&${document.getElementById('userSelect').querySelector('select').value}`, {
-    method: 'GET'
-  }).then(function (response) {
-    return response.json();
-  }).then(function (data) {
-    for (let i = 0; i < data.length; i++) {
-      const itemNumberPerItem = data[i].item_number;
-      if (!itemArr.includes(itemNumberPerItem)) {
-        sumMap.set(itemNumberPerItem, 0);
-        itemArr.push(itemNumberPerItem);
-        const headerParent = bulkResult.querySelector('thead tr');
-        const headerChild = document.createElement('th');
-        headerChild.setAttribute('class', 'shadow-sm text-center col-2')
-        headerParent.appendChild(headerChild);
-        sumMap.set(itemNumberPerItem, sumMap.get(itemNumberPerItem) + data[i].qty_per_sku);
-        headerChild.innerHTML = data[i].item_number + ` <span id="sum_${itemNumberPerItem}"><span>`;
-        count++ // to used for calculating the amount of empty cells
-      } else {
-        sumMap.set(itemNumberPerItem, sumMap.get(itemNumberPerItem) + data[i].qty_per_sku);
-      };
-      document.getElementById(`sum_${itemNumberPerItem}`).innerHTML = `(${sumMap.get(itemNumberPerItem)})`;
-     /// create rows associated with that header ////
-      const containerNumberPerItem = data[i].container.container_number;
-      if(!containerArr.includes(containerNumberPerItem)) {
-        containerArr.push(containerNumberPerItem);
-        const qtyPerItem= data[i].qty_per_sku;
-        const trParent = document.createElement('tr');
-        const bodyChild = document.createElement('td');
-        bodyChild.setAttribute('class', 'col-1')
-        trParent.appendChild(bodyChild);// first column
-        emptyTd(count, trParent);// middle colume - placement
-        const bodyChild_q = document.createElement('td');
-        bodyChild_q.setAttribute('class', 'shadow-sm bg-info text-center col-2');
-        bodyParent_bulk.appendChild(trParent);
-        trParent.appendChild(bodyChild_q);//last/ actual column
-        bodyChild.innerHTML = containerNumberPerItem;
-        bodyChild_q.innerHTML = qtyPerItem;
-      } else {
-        const y = containerArr.indexOf(containerNumberPerItem);
-        const x = itemArr.indexOf(itemNumberPerItem) + 1;
-        const qtyPerItem= data[i].qty_per_sku;
-        const bodyChild_q = document.createElement('td');
-        bodyChild_q.setAttribute('class', 'shadow-sm bg-info text-center col-2');
-        bodyChild_q.innerHTML = qtyPerItem;
-        const difference = x - bodyParent_bulk.querySelectorAll('tr')[y].querySelectorAll('td').length;
-        emptyTd(difference, bodyParent_bulk.querySelectorAll('tr')[y])
-        bodyParent_bulk.querySelectorAll('tr')[y].appendChild(bodyChild_q);
-        console.log(containerNumberPerItem, itemNumberPerItem, qtyPerItem)
-        console.log(x, y+1);
-      }
-    }
-  });
+  const dateType = update_select.value;
+  let newDate = update_date_select.value || null;
+  const confirmationMsg = `UPDATE ${dateType} of ${preUpdateArr.length} ITEMS to ${newDate || 'N/A'}?`;
 
-};
-////helper functions////////
-function removeBulkHistory() {
-  bulkCollectionArr = [];
-  const allDiv = collection.querySelectorAll('div');
-  allDiv.forEach(i => i.remove());
-};
-function emptyTd(x, trParent) {
-  for (let n = 0; n < x; n++) {
-    const emptytd = document.createElement('td');
-    trParent.appendChild(emptytd);
-  }
-};
-function resetBulkResult() {
-  if (document.getElementById('userSelect').querySelector('select').value == 0) {
-    alert('You need to select a client first!');
-  }
-  removeBulkHistory();
- const headerArr = bulkResult.querySelectorAll('thead tr');
- headerArr.forEach(i => i.remove());
- bodyParent_bulk.querySelectorAll('tr').forEach(i => i.remove());
- const orginTr = document.createElement('tr');
- orginTr.innerHTML = `<th onclick="sortSkuTable(0)">container/sku</th>`;
- bulkResult.querySelector('thead').appendChild(orginTr);
-};
-function sortSkuTable(n) {
-  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-  table = document.getElementById("bulkResult");
-  switching = true;
-  dir = "asc";
-  while (switching) {
-    switching = false;
-    rows = table.rows;
-    for (i = 1; i < (rows.length - 1); i++) {
-      shouldSwitch = false;
-      x = rows[i].getElementsByTagName("TD")[n];
-      y = rows[i + 1].getElementsByTagName("TD")[n];
-      if (dir == "asc") {
-        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-          shouldSwitch = true;
-          break;
-        }
-      } else if (dir == "desc") {
-        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-          shouldSwitch = true;
-          break;
-        }
-      }
-    }
-    if (shouldSwitch) {
-      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-      switching = true;
-      switchcount ++;
+  if (confirm(confirmationMsg)) {
+    const password = prompt('Please enter the passcode again to confirm the change!');
+    if (password === '0523') {
+      const ids = preUpdateArr.map(item => (dateType === 'pending_date') ? item.batch_id : item.id);
+      updateBoxDate(ids, newDate, dateType);
+      alert(`${dateType} of ${ids.length} items were updated to ${newDate}!`);
+      location.reload();
     } else {
-      if (switchcount == 0 && dir == "asc") {
-        dir = "desc";
-        switching = true;
-      }
+      alert('Incorrect password!');
     }
   }
-};
-function merger(array) {
-  var key = '-';
- for (let i = 0; i < array.length; i++) {
-   key = key + "-" + array[i];
- };
- return key
-};
-function clientListing() {
-  document.getElementById('userSelect').querySelectorAll('option').forEach(i => i.remove());
-  document.getElementById('userSelect').querySelector('select').innerHTML = `<option value="0">select client</option>`
-  fetch(`/api/user/`, {
-    method: 'GET'
-  }).then(function (response) {
-    return response.json();
-  }).then(function (data) {
-    for (let i = data.length-1 ; i >= 0; i--) {
-    const user = document.createElement('option');
-    user.innerHTML = data[i].name;
-    user.setAttribute('value', data[i].id);
-    document.getElementById('userSelect').querySelector('select').appendChild(user)
-    };
-  });
-};
-const advanceBtn = document.getElementById('advanceSearch');
-function advanceSearch() {
-  if (advanceBtn.getAttribute('class') == 'badge bg-secondary shadow-sm') {
-    advanceBtn.setAttribute('class', 'badge bg-primary shadow-sm');
-    document.getElementById('advanceHide').style.display = 'none';
-    document.getElementById('advanceShow').style.display = '';
-  } else {
-    advanceBtn.setAttribute('class','badge bg-secondary shadow-sm');
-    document.getElementById('advanceHide').style.display = '';
-    document.getElementById('advanceShow').style.display = 'none';
+}
+
+function preUpdateConfirm() {
+  update_date_btn.style.display = update_select.value ? '' : 'none';
+  if (!update_select.value) {
+    update_date_select.value = null;
   }
-};
+}
+
+function reset() {
+  if (mode.innerHTML === 'C') {
+    update_date_btn.style.display = 'none';
+    update_select.style.display = 'none';
+    edit_select.style.display = 'none';
+    edit_btn.style.display = '';
+    update_btn.style.display = '';
+    localStorage.removeItem('pass');
+  }
+}
 
 
-var pass_id,logChecker;
-const record_fetch = async (n) => {
-  var logPass = true;
-  const log = parseInt(document.getElementById('logNumber').value);
-  log==logChecker?logPass=true:logPass=false;
-  logChecker=log;
-  log<1||!log?n=1:n=log;
-  await fetch(`/api/record/dashboard_admin/${n}`, {
-    method: 'GET'
-  }).then((r) => {
-    return r.json();
-  }).then((d) => {
-    const topItemId = d[0].id;
-    pass_id==topItemId&&logPass?console.log('no new feed'):execution(d);
-  })
-};
-const execution = (data) => {
-  component_reset();
-  pass_id = data[0].id;
-  [data[0], data[1], data[2]].forEach(i => {
-    i?component(i):console.log('no 3 datas');
-  });
-  data.forEach(i =>component_log(i));
-}
-const component = (data) => {
-  const tr = document.createElement('tr');
-  record_dashboard.appendChild(tr);
-  const status = `${status_converter(data.status_from)} => ${status_converter(data.status_to)}`;
-  tr.innerHTML = sub_component(data.user.name) + sub_component(data.ref_number) + sub_component(data.action) + sub_component(status);
-};
-const component_log = (i) => {
-  const tr = document.createElement('tr');
-  log_body.appendChild(tr);
-  const status = `${status_converter(i.status_from)} => ${status_converter(i.status_to)}`;
-  const qty = `${i.qty_from} => ${i.qty_to}`;
-  tr.innerHTML = sub_component_full(i.user.name) + sub_component_full(i.ref_number, 'primary') + sub_component_full(i.sub_number) + sub_component_full(i.action) + sub_component_full(i.action_notes) + sub_component_full(qty) + sub_component_full(status);
-}
-const component_reset = () => {
-  const all_tr = record_dashboard.querySelectorAll('tr');
-  all_tr.length ? all_tr.forEach(i => i.remove()): null;
-  const log_tr = log_body.querySelectorAll('tr');
-  log_tr.length ? log_tr.forEach(i => i.remove()): null;
-}
-const sub_component = (sub_data) => {
-  return `<td class="uk-animation-slide-right-small">${sub_data}</td>`
-};
-const status_converter = (i) => {
-  return ( i == 0 ? 'pending'
-  : i == 1 ? 'received'
-  : i == 2 ? 'requested'
-  : i == 3 ? 'shipped'
-  : i == 99 ? 'deleted'
-  : 'null')
-}
-////// init ////////
-const init = () => {
-  record_fetch(100);
-  allItem();
-  xcContainer();
-  startTime();
-};
+// --------------------------------------------------------------------------------
+// --- Utility / Helper Functions ---
+// --------------------------------------------------------------------------------
 
-const sub_component_full = (sub_data, color) => {
-  return `<td class="uk-animation-slide-top uk-animation-fast col-3 text-${color}" style="word-wrap: break-word">${sub_data}</td>`
-};
+function convertStatus(s) {
+  const statusMap = {
+    0: 'pending', 1: 'received', 2: 'requested', 3: 'shipped',
+    4: 'xc pre-billed', 5: 'xc billed', 98: 'archived', 99: 'deleted'
+  };
+  return statusMap[s] || 'null';
+}
+
+function convertDate(box) {
+  return box.shipped_date || box.requested_date || box.received_date || (box.batch ? box.batch.pending_date : '');
+}
+
+function convertAmazonDate(container) {
+  return container.shipped_date || container.requested_date || container.received_date || 'N/A';
+}
+
+function newDateValidate(date) {
+  return (date === "12/31/1969" || !date) ? 'N/A' : date;
+}
+
+const isCharacterALetter = (char) => /[a-zA-Z]/.test(char);
+const isSpecialChar = (str) => /[-]/.test(str);
+const isLocationFormat = (input) => isCharacterALetter(input[0]) && !isNaN(input[1]);
+
 function startTime() {
   const today = new Date();
   const date = today.toLocaleDateString('en-US');
   let h = today.getHours();
   let m = today.getMinutes();
   let s = today.getSeconds();
-  m = checkTime(m);
-  s = checkTime(s);
-  document.getElementById('clock').innerHTML =  date + " " + h + ":" + m + ":" + s;
+  m = String(m).padStart(2, '0');
+  s = String(s).padStart(2, '0');
+  document.getElementById('clock').innerHTML = `${date} ${h}:${m}:${s}`;
   setTimeout(startTime, 1000);
-};
-function checkTime(i) {
-  if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
-  return i;
-};
+}
 
-init();
-setInterval(record_fetch, 5000);
+
+// --------------------------------------------------------------------------------
+// --- Execution ---
+// --------------------------------------------------------------------------------
+
+document.addEventListener('DOMContentLoaded', init);
